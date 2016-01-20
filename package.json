@@ -1,0 +1,29 @@
+{
+  "name": "appsngen-cli",
+  "version": "0.1.0",
+  "description": "Command Line Interface to interact with AppsNgen API",
+  "scripts": {
+    "test": "grunt nodeunit"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/appsngen/appsngen-cli.git"
+  },
+  "keywords": [
+    "appsngen",
+    "cli"
+  ],
+  "author": "Anton Kulikov",
+  "license": "MIT",
+  "preferGlobal": true,
+  "bin": {
+    "appsngen": "commands/appsngen-cli.js"
+  },
+  "bugs": {
+    "url": "https://github.com/appsngen/appsngen-cli/issues"
+  },
+  "homepage": "https://github.com/appsngen/appsngen-cli#readme",
+  "dependencies": {
+    "commander": ">= 2.9.0"
+  }
+}
