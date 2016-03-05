@@ -24,6 +24,7 @@
   },
   "homepage": "https://github.com/appsngen/appsngen-cli#readme",
   "dependencies": {
-    "commander": ">= 2.9.0"
+    "commander": ">= 2.9.0",
+    "semver": "^5.1.0"
   }
 }
