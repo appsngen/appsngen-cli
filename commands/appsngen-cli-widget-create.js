@@ -28,7 +28,7 @@ rl.question('Enter project folder name: ', function (folder) {
         return;
     }
     fs.mkdirSync('./' + folder);
-
+    console.log('Check dependencies...');
     for (dependency in cliConfig.dependencies) {
         try {
             info = execSync('npm list -g --depth=0 ' + dependency);
