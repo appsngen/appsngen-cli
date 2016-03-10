@@ -1,4 +1,5 @@
 #! /usr/bin/env node
+
 var cliConfig = require('../cli-config.json');
 var semver = require('semver');
 var readline = require('readline');
@@ -11,7 +12,7 @@ var rl = readline.createInterface({
 var installPackage = function (packageName) {
     execSync('npm install -g ' + packageName, {stdio: 'inherit'});
 };
-var info, packageInfo, dependency, packageVersion, folderStat;
+var info, packageInfo, dependency, folderStat;
 
 rl.question('Enter project folder name: ', function (folder) {
     rl.close();
