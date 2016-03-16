@@ -6,7 +6,7 @@
     var fs = require('fs');
     var waterfall = require('async-waterfall');
     var npmOpen = require('open');
-    process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
+    process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0'; //WARNING should be removed
 
     var encodeToBase64 = function (input) {
 
