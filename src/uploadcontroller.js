@@ -79,7 +79,7 @@
                             console.log('Get token success!');
                             options.token = body.accessToken;
                             callback(null, options);
-                        }else{
+                        } else {
                             console.log(body);
                             throw ('Unexpected response: '+response.statusCode);
                         }
@@ -109,8 +109,7 @@
                     function (error, response, body) {
                         if (error) {
                             throw error;
-                        }
-                        else {
+                        } else {
                             options.statusCode = response.statusCode;
                             options.urn = JSON.parse(response.body).urn;
                             callback(null, options);
@@ -137,8 +136,7 @@
                         function (error, response) {
                             if (error) {
                                 throw error;
-                            }
-                            else {
+                            } else {
                                 console.log('Upload success!');
                                 options.urn = JSON.parse(response.body).urn;
                                 callback(null, options);
