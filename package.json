@@ -28,6 +28,7 @@
     "commander": ">= 2.9.0",
     "jsonfile": "^2.2.3",
     "open": "0.0.5",
-    "request": "^2.69.0"
+    "request": "^2.69.0",
+    "semver": "^5.1.0"
   }
 }
