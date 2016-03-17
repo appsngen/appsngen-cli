@@ -4,29 +4,30 @@ var fs = require('fs');
 var fsExt = require('fs-extra');
 var execSync = require('child_process').execSync;
 
-var widgetPath;
+var widgetPathw, devboxConfig, projectConfig, archiveName;
 var devboxPath = path.join(process.mainModule.children[0].paths[1], '/appsngen-dev-box');
 var devboxConfigPath = path.join(devboxPath, '/serverConfig.json');
-var devboxConfig = jsonfile.readFileSync(devboxConfigPath);
-var projectConfig = jsonfile.readFileSync('./.appsngenrc');
-var archiveName = path.basename(projectConfig.zipFilePath);
 
-if (devboxConfig && projectConfig) {
+try {
+    devboxConfig = jsonfile.readFileSync(devboxConfigPath);
+    projectConfig = jsonfile.readFileSync('./.appsngenrc');
+} catch (err) {
+    console.error(err.toString());
+    return;
+}
+
+try {
+    archiveName = path.basename(projectConfig.zipFilePath);
     execSync('rm -r ' + path.join(devboxPath, '/widgets'), {
         stdio: 'inherit'
     });
     fs.mkdirSync(path.join(devboxPath, '/widgets'));
-    try {
-        fsExt.copySync(path.resolve(projectConfig.zipFilePath), path.join(devboxPath, '/widgets/', archiveName));
-    } catch (err) {
-        console.error(err);
-    }
+    fsExt.copySync(path.resolve(projectConfig.zipFilePath), path.join(devboxPath, '/widgets/', archiveName));
     devboxConfig.widgets = [path.join('/widgets/', archiveName)];
     jsonfile.writeFileSync(devboxConfigPath, devboxConfig);
-} else if (!devboxConfig) {
-    console.error('DevBox config wasn\'t found.');
-} else {
-    console.error('Project config wasn\'t found.');
+} catch (err) {
+    console.error(err.toString());
+    return;
 }
 //install devbox dependencies(routerhelpers.js require node_modules folder)
 execSync('npm install', {
