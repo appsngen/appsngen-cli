@@ -2,6 +2,7 @@ var jsonfile = require('jsonfile');
 var path = require('path');
 var fs = require('fs');
 var fsExt = require('fs-extra');
+var rmdir = require('rmdir');
 var execSync = require('child_process').execSync;
 
 var widgetPathw, devboxConfig, projectConfig, archiveName;
@@ -11,30 +12,28 @@ var devboxConfigPath = path.join(devboxPath, '/serverConfig.json');
 try {
     devboxConfig = jsonfile.readFileSync(devboxConfigPath);
     projectConfig = jsonfile.readFileSync('./.appsngenrc');
-} catch (err) {
-    console.error(err.toString());
-    return;
-}
-
-try {
     archiveName = path.basename(projectConfig.zipFilePath);
-    execSync('rm -r ' + path.join(devboxPath, '/widgets'), {
-        stdio: 'inherit'
+    rmdir(path.join(devboxPath, '/widgets'), function(err) {
+        if (err) {
+            throw err;
+        }
+        fs.mkdirSync(path.join(devboxPath, '/widgets'));
+        fsExt.copySync(path.resolve(projectConfig.zipFilePath), path.join(devboxPath, '/widgets/', archiveName));
+        devboxConfig.widgets = [path.join('/widgets/', archiveName)];
+        jsonfile.writeFileSync(devboxConfigPath, devboxConfig, {
+            spaces: 4
+        });
+        //install devbox dependencies(routerhelpers.js require node_modules folder)
+        execSync('npm install', {
+            cwd: devboxPath,
+            stdio: 'inherit'
+        });
+        execSync('node server.js', {
+            cwd: devboxPath,
+            stdio: 'inherit'
+        });
     });
-    fs.mkdirSync(path.join(devboxPath, '/widgets'));
-    fsExt.copySync(path.resolve(projectConfig.zipFilePath), path.join(devboxPath, '/widgets/', archiveName));
-    devboxConfig.widgets = [path.join('/widgets/', archiveName)];
-    jsonfile.writeFileSync(devboxConfigPath, devboxConfig);
 } catch (err) {
     console.error(err.toString());
-    return;
+    process.exit(1);
 }
-//install devbox dependencies(routerhelpers.js require node_modules folder)
-execSync('npm install', {
-    cwd: devboxPath,
-    stdio: 'inherit'
-});
-execSync('node server.js', {
-    cwd: devboxPath,
-    stdio: 'inherit'
-});
