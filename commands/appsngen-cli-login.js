@@ -3,9 +3,9 @@ var prompt = require('co-prompt');
 var request = require('request');
 var jsonfile = require('jsonfile');
 var path = require('path');
-var uploadcontroller = require('./../src/uploadcontroller');
+var authcontroller = require('./../src/authcontroller');
 
-var serviceAddress = 'https://www.appsngen.com/rest-services/tokens';
+var serviceAddress = 'https://www.appsngen.com/rest-services/tokens'; //get service address from .appsngenrc file
 var configFilePath = path.join(process.mainModule.paths[1], '/..', '/cli-config.json');
 
 co(function * () {
@@ -16,11 +16,11 @@ co(function * () {
     credentials = username + ':' + password;
     request.post(serviceAddress,
         {
-            body: uploadcontroller.tokenRequestBody,
+            body: authcontroller.tokenRequestBody,
             json: true,
             headers: {
                 'Content-Type': 'application/json',
-                'Authorization': 'Basic: ' + uploadcontroller.encodeToBase64(credentials)
+                'Authorization': 'Basic: ' + authcontroller.encodeToBase64(credentials)
             }
         },
         function (error, response, body) {
