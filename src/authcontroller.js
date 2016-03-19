@@ -66,7 +66,7 @@
                     stdio: 'inherit'
                 });
             }
-            config = jsonfile.readFileSync(path.join(process.mainModule.paths[1], './..', '/cli-config.json'));
+            config = jsonfile.readFileSync(path.join(__dirname, './..', '/cli-config.json'));
             if ((config.credentials.expiresIn + config.credentials.received) <= Date.now()) {
                 console.log('Identity token expired, receiving new one...');
                 refreshToken();

@@ -108,5 +108,5 @@
                     npmOpen(serviceAddress + '/product/marketplace/widgets/config/' + options.urn);
                 }
         }]);
-    }
+    };
 })();

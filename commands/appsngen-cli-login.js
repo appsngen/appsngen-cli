@@ -6,7 +6,7 @@ var path = require('path');
 var authcontroller = require('./../src/authcontroller');
 
 var serviceAddress = 'https://www.appsngen.com/rest-services/tokens'; //get service address from .appsngenrc file
-var configFilePath = path.join(process.mainModule.paths[1], '/..', '/cli-config.json');
+var configFilePath = path.join(__dirname, '/..', '/cli-config.json');
 
 co(function * () {
     var credentials;
