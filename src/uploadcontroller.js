@@ -1,5 +1,6 @@
 (function() {
     'use strict';
+    /*jshint bitwise: false*/
 
     var jsonfile = require('jsonfile');
     var request = require('request');
@@ -106,7 +107,7 @@
                             'Authorization': 'Bearer ' + options.token
                         }
                     },
-                    function (error, response, body) {
+                    function (error, response) {
                         if (error) {
                             throw error;
                         } else {

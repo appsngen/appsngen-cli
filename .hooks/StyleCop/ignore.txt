@@ -1,0 +1,17 @@
+#This file contains ignores for StyleCop
+#Path is relative to root repository
+#Only forward slashes allowed (example: tools/StyleCopRunner/StyleCopRunner/program.cs)
+tools/AppsngenLocalBuild/AppsngenLocalBuild/AppsngenLocalBuildForm.Designer.cs
+
+#bbt ignores
+bbt/Tests/BbtServices.Tests/Workflows/PriceChartWorkflowTest.cs
+
+#public documentaion
+portal/web-app/marketing/developers/samples/Applications integration/Standard Integration (with events)/C#/WebApplication/WebApplication/Default.aspx.cs
+portal/web-app/marketing/developers/samples/Applications integration/Standard Integration/C#/MvcApplication/MvcApplication/Controllers/HomeController.cs
+portal/web-app/marketing/developers/samples/Applications integration/Standard Integration/C#/MvcApplication/MvcApplication/Global.asax.cs
+portal/web-app/marketing/developers/samples/Applications integration/Standard Integration/C#/ThrottlingTestApplication/WebApplication/Default.aspx.cs
+portal/web-app/marketing/developers/samples/Applications integration/Standard Integration/C#/WebApplication/WebApplication/Default.aspx.cs
+portal/web-app/marketing/developers/samples/Mashups development/SampleMashup/C#/SampleService/SampleService/IService.cs
+portal/web-app/marketing/developers/samples/Mashups development/SampleMashup/C#/SampleService/SampleService/Service.svc.cs
+portal/web-app/marketing/developers/samples/Mashups development/SampleMashup/C#/SampleService/SampleService/ServiceHelper.cs
