@@ -43,11 +43,11 @@ rmdir(path.join(devboxPath, '/widgets'), function(err) {
         if (!fs.statSync(path.join(devboxPath, '/node_modules')).isDirectory()) {
             installDevBoxDependencies();
         }
-    } catch (err) {
-        if (err.code === 'ENOENT') {
+    } catch (error) {
+        if (error.code === 'ENOENT') {
             installDevBoxDependencies();
         } else {
-            errorHandler(err);
+            errorHandler(error);
         }
     }
     execSync('node server.js', {
