@@ -30,6 +30,7 @@
     "fs-extra": "^0.26.6",
     "jsonfile": "^2.2.3",
     "open": "0.0.5",
+    "readline-sync": "^1.4.1",
     "request": "^2.69.0",
     "semver": "^5.1.0"
   }
