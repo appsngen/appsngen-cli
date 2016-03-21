@@ -7,15 +7,15 @@
     var fs = require('fs');
     var waterfall = require('async-waterfall');
     var npmOpen = require('open');
+    var config = require('./../cli-config.json');
     process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0'; //WARNING should be removed
 
     exports.uploadWidget = function (settings) {
         var that = this;
-        var serviceAddress = settings.serviceAddress;
+        var serviceAddress = config.serviceAddress;
         var zipFilePath = settings.zipFilePath;
         var replaceIfExists = settings.replaceIfExists;
         var openInBrowserAfterUpload = settings.openInBrowserAfterUpload;
-        var credentials = settings.username + ':' + settings.password;
 
         authcontroller.getToken();
         // Processing block
