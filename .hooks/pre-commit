@@ -12,9 +12,6 @@ okResult="OK"
 jslintConfigPath=".hooks/jshint/config.json"
 jslintIgnorePath=".hooks/jshint/ignore.txt"
 
-StyleCopConfigPath="Settings.StyleCop"
-StyleCopIgnorePath=".hooks/StyleCop/ignore.txt"
-
 #printf "hook START \n"
 
 listOfFiles=$(git diff --cached --name-only --diff-filter=ACMR) #get list of files
@@ -28,37 +25,34 @@ do
 	filename=$(basename "$changedFile")
 	extension="${filename##*.}"
 
-	if [ $extension == $filename ] 
+	if [ $extension == $filename ]
 	then
 		extension=""
 	fi
-   
+
 	#printf "extension = $extension \n"
-	
+
 	case "$extension" in
-	"cs") 
-		if [[ "$COMSPEC" == *cmd.exe ]] 
+	"cs")
+		if [[ "$COMSPEC" == *cmd.exe ]]
 		then
-		    #printf "call StyleCop \n"
-			result=$(.hooks/StyleCop/StyleCopRunner $changedFile $StyleCopConfigPath $StyleCopIgnorePath)
-		
 			printf "$result \n"
-		
+
 			if [ "$result" != "" ]
 			then
 				ex=1
 			fi
 		fi
 		;;
-	"java") 
+	"java")
 		#printf "call Sonar \n"
 		;;
-	"js") 
+	"js")
 		#printf "call jshint \n"
 		result=$(jshint $changedFile --config=$jslintConfigPath --exclude-path=$jslintIgnorePath)
-		
+
 		printf "$result \n"
-		
+
 		if [ "$result" != "" ]
 		then
 			ex=1

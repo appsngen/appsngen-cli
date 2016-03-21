@@ -1,3 +1,0 @@
-#This file contains ignores for StyleCop
-#Path is relative to root repository
-#Only forward slashes allowed (example: tools/StyleCopRunner/StyleCopRunner/program.cs)
