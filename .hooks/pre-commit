@@ -1,0 +1,53 @@
+#!/bin/sh
+#
+# An example hook script to verify what is about to be committed.
+# Called by "git commit" with no arguments.  The hook should
+# exit with non-zero status after issuing an appropriate message if
+# it wants to stop the commit.
+#
+# To enable this hook, rename this file to "pre-commit".
+
+ex=0
+okResult="OK"
+jslintConfigPath=".hooks/jshint/config.json"
+jslintIgnorePath=".hooks/jshint/ignore.txt"
+
+#printf "hook START \n"
+
+listOfFiles=$(git diff --cached --name-only --diff-filter=ACMR) #get list of files
+
+# split file names only by newline symbol
+IFS=$'\n'
+for changedFile in $listOfFiles
+do
+	#printf "checking:$changedFile \n"
+
+	filename=$(basename "$changedFile")
+	extension="${filename##*.}"
+
+	if [ $extension == $filename ]
+	then
+		extension=""
+	fi
+
+	#printf "extension = $extension \n"
+
+	case "$extension" in
+	"js")
+		#printf "call jshint \n"
+		result=$(jshint $changedFile --config=$jslintConfigPath --exclude-path=$jslintIgnorePath)
+
+		printf "$result \n"
+
+		if [ "$result" != "" ]
+		then
+			ex=1
+		fi
+		;;
+	esac
+
+done
+
+#printf "hook END"
+
+exit $ex
