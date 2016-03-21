@@ -33,20 +33,6 @@ do
 	#printf "extension = $extension \n"
 
 	case "$extension" in
-	"cs")
-		if [[ "$COMSPEC" == *cmd.exe ]]
-		then
-			printf "$result \n"
-
-			if [ "$result" != "" ]
-			then
-				ex=1
-			fi
-		fi
-		;;
-	"java")
-		#printf "call Sonar \n"
-		;;
 	"js")
 		#printf "call jshint \n"
 		result=$(jshint $changedFile --config=$jslintConfigPath --exclude-path=$jslintIgnorePath)
