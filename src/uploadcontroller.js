@@ -2,13 +2,13 @@
     'use strict';
     /*jshint bitwise: false*/
 
-    var authcontroller = require('./authcontroller');
     var jsonfile = require('jsonfile');
     var request = require('request');
     var fs = require('fs');
     var waterfall = require('async-waterfall');
     var npmOpen = require('open');
     var config = require('./../cli-config.json');
+    var authcontroller = require('./authcontroller');
     process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0'; //WARNING should be removed
 
     exports.uploadWidget = function (settings) {
@@ -18,14 +18,41 @@
         var replaceIfExists = settings.replaceIfExists;
         var openInBrowserAfterUpload = settings.openInBrowserAfterUpload;
 
-        authcontroller.getToken();
         // Processing block
         waterfall([
             function (callback) { //token request
                 var options = {};
-
-                options.token = authcontroller.getToken();
-                callback(null, options);
+                request.post(
+                   config.serviceAddress +  '/rest-services/tokens/access',
+                   {
+                       body: {
+                           scope: {
+                               widgets: [],
+                               dataSources: [],
+                               services: [
+                                   'widgets'
+                               ],
+                               streams: [],
+                               identity: false
+                           }
+                       },
+                       json: true,
+                       headers: {
+                           'Content-Type': 'application/json',
+                           'Authorization': 'Bearer ' + authcontroller.getIdentityToken()
+                       }
+                   },
+                   function (error, response, body) {
+                       if (error) {
+                           console.log('build command error');
+                           throw error;
+                       } else {
+                           console.log('Response recieved');
+                           options.token = body.accessToken;
+                           callback(null, options);
+                       }
+                   }
+                );
             },
             function (options, callback) { // read zip file
                 fs.readFile(zipFilePath, 'binary', function (err, data) {
