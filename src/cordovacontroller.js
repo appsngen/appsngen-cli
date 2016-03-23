@@ -1,6 +1,8 @@
 (function () {
     'use strict';
 
+    /*jshint multistr: true */
+
     var path = require('path');
     var execSync = require('child_process').execSync;
     var jsonfile = require('jsonfile');
