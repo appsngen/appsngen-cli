@@ -27,8 +27,8 @@
                     var parent = location.protocol + "//" + location.host;\n\
                     var changedParams = {};\n\
                     var settings = {\n\
-                        width: "600px",\n\
-                        height: "454px",\n\
+                        width: "100%",\n\
+                        height: "100%",\n\
                         frameborder: "0",\n\
                         scrolling: "auto"\n\
                     };\n\
