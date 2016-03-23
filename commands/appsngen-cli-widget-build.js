@@ -12,10 +12,11 @@ var rcfilePath = path.join(process.cwd(), '/.appsngenrc');
 commander
     .arguments('[platform]')
     .action(function (arg) {
-        platform = arg || 'browser';
+        platform = arg;
     });
 commander.parse(process.argv);
 
+platform = platform || 'browser';
 execSync('grunt', {
     stdio: 'inherit'
 });

@@ -18,95 +18,84 @@
 
         try {
             fs.writeFileSync(path.join(process.cwd(), '/cordova/www/js/integration.js'),
-            `(function () {
-                var createApplication = function() {
-                    var div;
-                    var location = window.location;
-                    var parent = location.protocol + '//' + location.host;
-                    var changedParams = {};
-                    var settings = {
-                        width: '600px',
-                        height: '454px',
-                        frameborder: '0',
-                        scrolling: 'auto'
-                    };
-                    var url = '${widgetURL}';
-                    url = url.replace(new RegExp('([\\?&]parent=)[^&]+'), '$1' + encodeURIComponent(parent));
-
-                    for (key in changedParams) {
-                        if (changedParams.hasOwnProperty(key)) {
-                            url += '&' + key + '=' + changedParams[key];
-                        }
-                    }
-
-                    div = document.getElementById('${urn}');
-                    div.setAttribute('id', div.getAttribute('id') + appstore.util.guid());
-                    appstore.addApplication('${widgetName}' + '-' + appstore.util.guid(), div.getAttribute('id'), settings, url);
-                };
-
-                var addScriptLoadHandler = function (script, handler) {
-                    var scriptIsLoaded = false;
-                    var previousHandler = script.onload;
-
-                    // IE8 hack
-                    script.onload = script.onerror = script.onreadystatechange = function () {
-                        if (!scriptIsLoaded && (!this.readyState || this.readyState === "loaded" || this.readyState === "complete")) {
-                            scriptIsLoaded = true;
-
-                            if (previousHandler) {
-                                previousHandler.call(script);
-                            }
-
-                            handler.call(script);
-
-                            // IE8 memory leak fix
-                            script.onload = script.onerror = script.onreadystatechange = null;
-                        }
-                    };
-                };
-                var createScript = function(callback) {
-                    var scriptId = 'appstore-container-api';
-                    var script;
-
-                    script = document.getElementById(scriptId);
-                    if (script) {
-                        if (window.appstore && window.appstore.apiVersion === 'container') {
-                            callback();
-                        } else {
-                            addScriptLoadHandler(script, function () {
-                                callback();
-                            });
-                        }
-                    } else {
-                        script = document.createElement('script');
-                        script.src = '${viewerEndpoint}/content/js/appsngen.container.api.js';
-                        script.setAttribute('id', scriptId);
-                        addScriptLoadHandler(script, function () {
-                            callback();
-                        });
-
-                        document.body.appendChild(script);
-                    }
-                };
-
-                var container = document.createElement('div');
-                container.id = '${urn}';
-                document.body.appendChild(container);
-
-                if (window.appstore && window.appstore.apiVersion === 'widget') {
-                    appstore.ready(createApplication);
-                } else if (window.appstore && window.appstore.apiVersion === 'container'){
-                    createApplication();
-                } else {
-                    createScript(function () {
-                        if (window.appstore) {
-                            createApplication();
-                        } else if (window.console && window.console.error) {
-                            window.console.error('Cannot render widget: appsngen api loading failure');
-                        }
-                    });
-                }
-            }());`);
+            '(function () {\n\
+                var createApplication = function() {\n\
+                    var div;\n\
+                    var location = window.location;\n\
+                    var parent = location.protocol + "//" + location.host;\n\
+                    var changedParams = {};\n\
+                    var settings = {\n\
+                        width: "600px",\n\
+                        height: "454px",\n\
+                        frameborder: "0",\n\
+                        scrolling: "auto"\n\
+                    };\n\
+                    var url = "' + widgetURL + '";\n\
+                    url = url.replace(new RegExp("([\\\\?&]parent=)[^&]+"), "$1" + encodeURIComponent(parent));\n\
+                    for (key in changedParams) {\n\
+                        if (changedParams.hasOwnProperty(key)) {\n\
+                            url += "&" + key + "=" + changedParams[key];\n\
+                        }\n\
+                    }\n\
+                    div = document.getElementById("' + urn + '");\n\
+                    div.setAttribute("id", div.getAttribute("id") + appstore.util.guid());\n\
+                    appstore.addApplication("' + widgetName +'" + "-" + appstore.util.guid(), div.getAttribute("id"), settings, url);\n\
+                };\n\
+                var addScriptLoadHandler = function (script, handler) {\n\
+                    var scriptIsLoaded = false;\n\
+                    var previousHandler = script.onload;\n\
+                    // IE8 hack\n\
+                    script.onload = script.onerror = script.onreadystatechange = function () {\n\
+                        if (!scriptIsLoaded && (!this.readyState || this.readyState === "loaded" || this.readyState === "complete")) {\n\
+                            scriptIsLoaded = true;\n\
+                            if (previousHandler) {\n\
+                                previousHandler.call(script);\n\
+                            }\n\
+                            handler.call(script);\n\
+                            // IE8 memory leak fix\n\
+                            script.onload = script.onerror = script.onreadystatechange = null;\n\
+                        }\n\
+                    };\n\
+                };\n\
+                var createScript = function(callback) {\n\
+                    var scriptId = "appstore-container-api";\n\
+                    var script;\n\
+                    script = document.getElementById(scriptId);\n\
+                    if (script) {\n\
+                        if (window.appstore && window.appstore.apiVersion === "container") {\n\
+                            callback();\n\
+                        } else {\n\
+                            addScriptLoadHandler(script, function () {\n\
+                                callback();\n\
+                            });\n\
+                        }\n\
+                    } else {\n\
+                        script = document.createElement("script");\n\
+                        script.src = "' + viewerEndpoint + '/content/js/appsngen.container.api.js";\n\
+                        script.setAttribute("id", scriptId);\n\
+                        addScriptLoadHandler(script, function () {\n\
+                            callback();\n\
+                        });\n\
+                        document.body.appendChild(script);\n\
+                    }\n\
+                };\n\
+                var container = document.createElement("div");\n\
+                container.id = "' + urn + '";\n\
+                document.body.appendChild(container);\n\
+                if (window.appstore && window.appstore.apiVersion === "widget") {\n\
+                    appstore.ready(createApplication);\n\
+                } else if (window.appstore && window.appstore.apiVersion === "container"){\n\
+                    createApplication();\n\
+                } else {\n\
+                    createScript(function () {\n\
+                        if (window.appstore) {\n\
+                            createApplication();\n\
+                        } else if (window.console && window.console.error) {\n\
+                            window.console.error("Cannot render widget: appsngen api loading failure");\n\
+                        }\n\
+                    });\n\
+                }\n\
+            }());');
             console.log('Integration file updated.');
         } catch (error) {
             console.error(error.toString());
@@ -179,7 +168,7 @@
             },
             function (error, response) {
                 if (error) {
-                    console.log('build command error');
+                    console.error(error.toString());
                     throw error;
                 } else {
                     console.log('Response recieved');
