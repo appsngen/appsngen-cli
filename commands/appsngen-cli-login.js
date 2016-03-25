@@ -6,7 +6,7 @@ var authcontroller = require('./../src/authcontroller');
 var config = require('./../cli-config.json');
 
 var credentials, username, password;
-var serviceAddress = config.serviceAddress + '/rest-services/tokens';
+var serviceAddress = config.serviceAddress + '/rest-services/tokens/identity';
 var configFilePath = path.join(__dirname, '/..', '/cli-config.json');
 
 username = readlineSync.question('Enter your username: ');
@@ -16,7 +16,9 @@ password = readlineSync.question('Enter your password: ', {
 credentials = username + ':' + password;
 request.post(serviceAddress,
     {
-        body: authcontroller.tokenRequestBody,
+        body: {
+            scope: {}
+        },
         json: true,
         headers: {
             'Content-Type': 'application/json',

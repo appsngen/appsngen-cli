@@ -10,7 +10,7 @@ normalizePathToCurrentFile();
 program
     .version('0.1.0')
     .command('create', 'creates widget using generator', {isDefault: true})
-    .command('build [args]', 'builds widget sources')
+    .command('build', 'builds widget sources')
     .command('run', 'runs widget locally')
     .command('preview', 'preview widget at AppsNgen')
     .command('deploy', 'deploys widget to AppsNgen')

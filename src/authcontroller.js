@@ -6,6 +6,7 @@
     var path = require('path');
     var request = require('request');
     var config = require('./../cli-config.json');
+    process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0'; //WARNING should be removed
 
     var refreshToken = function() {
         //TODO implement mechanism to refresh token
@@ -47,31 +48,19 @@
         return output;
     };
 
-    exports.tokenRequestBody = {
-        scope: {
-            widgets: [],
-            dataSources: [],
-            services: [
-                'widgets'
-            ],
-            streams: [],
-            identity: false
-        }
-    };
-
-    exports.getToken = function() {
+    exports.getIdentityToken = function() {
         try {
             if (typeof config.credentials === 'undefined') {
                 execSync('appsngen login', {
                     stdio: 'inherit'
                 });
             }
-            config = jsonfile.readFileSync(path.join(__dirname, './..', '/cli-config.json'));
+            config = jsonfile.readFileSync(path.join(__dirname, './../cli-config.json'));
             if ((config.credentials.expiresIn + config.credentials.received) <= Date.now()) {
                 console.log('Identity token expired, receiving new one...');
                 refreshToken();
             }
-            return config.credentials.accessToken;
+            return config.credentials.identityToken;
         } catch (err) {
             if (err.cmd && err.cmd === 'appsngen login') {
                 console.log('You should login to appsngen.');
