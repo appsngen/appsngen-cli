@@ -3,7 +3,7 @@ var path = require('path');
 var fs = require('fs');
 var fsExt = require('fs-extra');
 var rmdir = require('rmdir');
-var child_process = require('child_process')
+var child_process = require('child_process');
 var open = require('open');
 
 var devboxConfig, projectConfig, archiveName;
@@ -61,6 +61,6 @@ rmdir(path.join(devboxPath, '/widgets'), function(err) {
         console.log(stdout);
     });
     open('http://localhost:8879/views/index.html');
-    console.log('CTRL + C to shutdown');
+    console.log('CTRL + C to shutdown dev-box server');
 });
 
