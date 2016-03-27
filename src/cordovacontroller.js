@@ -160,7 +160,7 @@
                     },
                     domains: [
                         'file://',
-                        'http://localhost:8000'
+                        'http://localhost:' + rcConfig.port
                     ]
                 },
                 json: true,
