@@ -13,7 +13,11 @@
     "appsngen",
     "cli"
   ],
-  "author": "Anton Kulikov",
+  "author": {
+    "name": "appsngen",
+    "email": "developers@appsngen.com",
+    "url": "https://www.appsngen.com"
+  },
   "license": "MIT",
   "preferGlobal": true,
   "bin": {

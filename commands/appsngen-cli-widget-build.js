@@ -1,6 +1,4 @@
-var config = require('./../cli-config.json');
 var execSync = require('child_process').execSync;
-var fs = require('fs');
 var commander = require('commander');
 var path = require('path');
 var jsonfile = require('jsonfile');

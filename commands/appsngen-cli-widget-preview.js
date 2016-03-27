@@ -5,7 +5,7 @@ var fsExt = require('fs-extra');
 var rmdir = require('rmdir');
 var execSync = require('child_process').execSync;
 
-var widgetPathw, devboxConfig, projectConfig, archiveName;
+var devboxConfig, projectConfig, archiveName;
 var devboxPath = path.join(process.mainModule.paths[1], '/appsngen-dev-box');
 var devboxConfigPath = path.join(devboxPath, '/serverConfig.json');
 var errorHandler = function(error) {

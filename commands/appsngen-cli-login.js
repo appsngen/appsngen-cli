@@ -3,14 +3,14 @@ var request = require('request');
 var jsonfile = require('jsonfile');
 var path = require('path');
 var authcontroller = require('./../src/authcontroller');
-var config = require('./../cli-config.json');
+var config = require('./../cli-config');
 
 var credentials, username, password;
 var serviceAddress = config.serviceAddress + '/rest-services/tokens/identity';
 var configFilePath = path.join(__dirname, '/..', '/cli-config.json');
 
-username = readlineSync.question('Enter your username: ');
-password = readlineSync.question('Enter your password: ', {
+username = readlineSync.question('Enter username: ');
+password = readlineSync.question('Enter password: ', {
   hideEchoBack: true
 });
 credentials = username + ':' + password;
@@ -44,9 +44,9 @@ request.post(serviceAddress,
                 console.error(err.toString());
                 process.exit(1);
             }
-            console.log('Authorisation complete successfully.');
+            console.log('Authorization completed successfully.');
         } else {
-            console.log(body);
+            console.log(body.message);
             console.log('Unexpected response: ' + response.statusCode);
             process.exit(1);
         }

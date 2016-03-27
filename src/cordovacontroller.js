@@ -159,7 +159,8 @@
                         ]
                     },
                     domains: [
-                        'file://'
+                        'file://',
+                        'http://localhost:8000'
                     ]
                 },
                 json: true,
