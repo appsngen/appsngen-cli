@@ -1,5 +1,6 @@
 (function() {
     'use strict';
+    /*jshint bitwise: false*/
 
     var execSync = require('child_process').execSync;
     var jsonfile = require('jsonfile');
@@ -21,16 +22,15 @@
     };
 
     exports.isAuthorized = function () {
-        if (!config.credentials ||
-            (config.credentials.expiresIn + config.credentials.received) <= Date.now()) {
-            return false;
+        if (config.credentials &&
+            (config.credentials.expiresIn + config.credentials.received) >= Date.now()) {
+            return true;
         }
 
-        return true;
+        return false;
     };
 
     exports.encodeToBase64 = function (input) {
-
         var keyStr = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=';
         var output = '', chr1, chr2, chr3, enc1, enc2, enc3, enc4, i = 0;
 
@@ -60,7 +60,7 @@
 
     exports.getIdentityToken = function() {
         try {
-            if (this.isAuthorized()) {
+            if (!this.isAuthorized()) {
                 refreshToken();
                 config = jsonfile.readFileSync(path.join(__dirname, './../cli-config.json'));
             }

@@ -1,6 +1,5 @@
 (function() {
     'use strict';
-    /*jshint bitwise: false*/
 
     var jsonfile = require('jsonfile');
     var request = require('request');

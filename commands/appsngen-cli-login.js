@@ -2,10 +2,12 @@ var readlineSync = require('readline-sync');
 var request = require('request');
 var jsonfile = require('jsonfile');
 var path = require('path');
+var deasync = require('deasync');
 var authcontroller = require('./../src/authcontroller');
 var config = require('./../cli-config');
 
 var credentials, username, password;
+var complete = false;
 var serviceAddress = config.serviceAddress + '/rest-services/tokens/identity';
 var configFilePath = path.join(__dirname, '/..', '/cli-config.json');
 
@@ -40,6 +42,7 @@ request.post(serviceAddress,
                 jsonfile.writeFileSync(configFilePath, config, {
                     spaces: 4
                 });
+                complete = true;
             } catch (err) {
                 console.error(err.toString());
                 process.exit(1);
@@ -52,3 +55,4 @@ request.post(serviceAddress,
         }
     }
 );
+deasync.loopWhile(function(){return !complete;});
