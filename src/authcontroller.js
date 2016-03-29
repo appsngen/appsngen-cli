@@ -19,6 +19,16 @@
             process.exit(1);
         }
     };
+
+    exports.isAuthorized = function () {
+        if (!config.credentials ||
+            (config.credentials.expiresIn + config.credentials.received) <= Date.now()) {
+            return false;
+        }
+
+        return true;
+    };
+
     exports.encodeToBase64 = function (input) {
 
         var keyStr = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=';
@@ -50,15 +60,9 @@
 
     exports.getIdentityToken = function() {
         try {
-            if (typeof config.credentials === 'undefined') {
-                execSync('appsngen login', {
-                    stdio: 'inherit'
-                });
-            }
-            config = jsonfile.readFileSync(path.join(__dirname, './../cli-config.json'));
-            if ((config.credentials.expiresIn + config.credentials.received) <= Date.now()) {
-                console.log('Identity token expired, receiving new one...');
+            if (this.isAuthorized()) {
                 refreshToken();
+                config = jsonfile.readFileSync(path.join(__dirname, './../cli-config.json'));
             }
             return config.credentials.identityToken;
         } catch (err) {
