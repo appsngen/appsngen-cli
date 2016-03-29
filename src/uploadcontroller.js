@@ -6,24 +6,20 @@
     var request = require('request');
     var fs = require('fs');
     var waterfall = require('async-waterfall');
-    var npmOpen = require('open');
     var config = require('./../cli-config.json');
     var authcontroller = require('./authcontroller');
-    process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0'; //WARNING should be removed
 
     exports.uploadWidget = function (settings) {
-        var that = this;
         var serviceAddress = config.serviceAddress;
         var zipFilePath = settings.zipFilePath;
         var replaceIfExists = settings.replaceIfExists;
-        var openInBrowserAfterUpload = settings.openInBrowserAfterUpload;
 
         // Processing block
         waterfall([
             function (callback) { //token request
                 var options = {};
                 request.post(
-                   config.serviceAddress +  '/rest-services/tokens/access',
+                   serviceAddress +  '/rest-services/tokens/access',
                    {
                        body: {
                            scope: {
@@ -44,10 +40,8 @@
                    },
                    function (error, response, body) {
                        if (error) {
-                           console.log('build command error');
                            throw error;
                        } else {
-                           console.log('Response recieved');
                            options.token = body.accessToken;
                            callback(null, options);
                        }
@@ -116,7 +110,7 @@
                     callback(null, options);
                 }
             },
-            function (options, callback) {
+            function (options) {
                 var configFile = process.cwd() + '/.appsngenrc';
 
                 jsonfile.readFile(configFile, function(err, obj) {
@@ -129,12 +123,7 @@
                         }
                     });
                 });
-                callback(null, options);
-            },
-            function (options) { // open in browser
-                if (openInBrowserAfterUpload) {
-                    npmOpen(serviceAddress + '/product/marketplace/widgets/config/' + options.urn);
-                }
-        }]);
+            }
+        ]);
     };
 })();

@@ -3,9 +3,10 @@ var path = require('path');
 var fs = require('fs');
 var fsExt = require('fs-extra');
 var rmdir = require('rmdir');
-var execSync = require('child_process').execSync;
+var child_process = require('child_process');
+var open = require('open');
 
-var widgetPathw, devboxConfig, projectConfig, archiveName;
+var devboxConfig, projectConfig, archiveName;
 var devboxPath = path.join(process.mainModule.paths[1], '/appsngen-dev-box');
 var devboxConfigPath = path.join(devboxPath, '/serverConfig.json');
 var errorHandler = function(error) {
@@ -14,7 +15,7 @@ var errorHandler = function(error) {
 };
 var installDevBoxDependencies = function() {
     console.log('Installing required dependencies...');
-    execSync('npm install', {
+    child_process.execSync('npm install', {
         cwd: devboxPath,
         stdio: 'inherit'
     });
@@ -50,9 +51,16 @@ rmdir(path.join(devboxPath, '/widgets'), function(err) {
             errorHandler(error);
         }
     }
-    execSync('node server.js', {
+    child_process.exec('node server.js', {
         cwd: devboxPath,
-        stdio: 'inherit'
+    }, function (err, stdout, stderr) {
+        if (err) {
+            console.error(err.toString());
+            process.exit(1);
+        }
+        console.log(stdout);
     });
+    open('http://localhost:8879/views/index.html');
+    console.log('CTRL + C to shutdown dev-box server');
 });
 

@@ -159,7 +159,8 @@
                         ]
                     },
                     domains: [
-                        'file://'
+                        'file://',
+                        'http://localhost:' + rcConfig.port
                     ]
                 },
                 json: true,
