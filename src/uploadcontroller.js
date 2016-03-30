@@ -5,10 +5,12 @@
     var request = require('request');
     var fs = require('fs');
     var waterfall = require('async-waterfall');
+    var deasync = require('deasync');
     var config = require('./../cli-config.json');
     var authcontroller = require('./authcontroller');
 
     exports.uploadWidget = function (settings) {
+        var complete = false;
         var serviceAddress = config.serviceAddress;
         var zipFilePath = settings.zipFilePath;
         var replaceIfExists = settings.replaceIfExists;
@@ -110,19 +112,22 @@
                 }
             },
             function (options) {
-                var configFile = process.cwd() + '/.appsngenrc';
+                var rcConfig;
+                var rcConfigPath = process.cwd() + '/.appsngenrc';
 
-                jsonfile.readFile(configFile, function(err, obj) {
-                    obj.urn = options.urn;
-                    jsonfile.writeFile(configFile, obj, {
+                try {
+                    rcConfig = jsonfile.readFileSync(rcConfigPath);
+                    rcConfig.urn = options.urn;
+                    jsonfile.writeFileSync(rcConfigPath, rcConfig, {
                         spaces: 4
-                    },function (err) {
-                        if (err) {
-                            console.error(err);
-                        }
                     });
-                });
+                    complete = true;
+                } catch (err) {
+                    console.error(err.toString());
+                    process.exit(1);
+                }
             }
         ]);
+        deasync.loopWhile(function(){return !complete;});
     };
 })();

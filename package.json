@@ -38,6 +38,7 @@
     "readline-sync": "^1.4.1",
     "request": "^2.69.0",
     "rmdir": "^1.2.0",
-    "semver": "^5.1.0"
+    "semver": "^5.1.0",
+    "underscore": "^1.8.3"
   }
 }
