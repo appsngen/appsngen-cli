@@ -2,8 +2,25 @@
 
 var program = require('commander');
 var path = require('path');
+var authcontroller = require('./../src/authcontroller');
+var execSync = require('child_process').execSync;
 
 normalizePathToCurrentFile();
+
+try {
+    if (!authcontroller.isAuthorized()) {
+        execSync('appsngen login', {
+            stdio: 'inherit'
+        });
+    }
+} catch (err) {
+    if (err.cmd && err.cmd === 'appsngen login') {
+        console.log('You should login to appsngen.');
+    } else {
+        console.error(err.toString());
+    }
+    process.exit(1);
+}
 
 program
     .version('0.1.0')

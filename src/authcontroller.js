@@ -1,5 +1,6 @@
 (function() {
     'use strict';
+    /*jshint bitwise: false*/
 
     var execSync = require('child_process').execSync;
     var jsonfile = require('jsonfile');
@@ -19,8 +20,17 @@
             process.exit(1);
         }
     };
-    exports.encodeToBase64 = function (input) {
 
+    exports.isAuthorized = function () {
+        if (config.credentials &&
+            (config.credentials.expiresIn + config.credentials.received) >= Date.now()) {
+            return true;
+        }
+
+        return false;
+    };
+
+    exports.encodeToBase64 = function (input) {
         var keyStr = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=';
         var output = '', chr1, chr2, chr3, enc1, enc2, enc3, enc4, i = 0;
 
@@ -50,15 +60,9 @@
 
     exports.getIdentityToken = function() {
         try {
-            if (typeof config.credentials === 'undefined') {
-                execSync('appsngen login', {
-                    stdio: 'inherit'
-                });
-            }
-            config = jsonfile.readFileSync(path.join(__dirname, './../cli-config.json'));
-            if ((config.credentials.expiresIn + config.credentials.received) <= Date.now()) {
-                console.log('Identity token expired, receiving new one...');
+            if (!this.isAuthorized()) {
                 refreshToken();
+                config = jsonfile.readFileSync(path.join(__dirname, './../cli-config.json'));
             }
             return config.credentials.identityToken;
         } catch (err) {
