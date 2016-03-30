@@ -1,5 +1,10 @@
 # appsngen-cli [![Build Status](https://travis-ci.org/appsngen/appsngen-cli.svg?branch=master)](https://travis-ci.org/appsngen/appsngen-cli)
-Command Line Interface to interact with AppsNgen API
+Command Line Interface to interact with AppsNgen API. It is a single enry point to AppsNgen capabilities such as:
+* create widget
+* preview widget locally
+* upload widget to the AppsNgen system
+* preview at AppsNgen website
+* create native allication based on widget. Currently we use [Apache Cordova](https://cordova.apache.org/) for native applications generation
 
 ## Install
 
@@ -15,7 +20,7 @@ You should have installed **npm** and **node**(https://nodejs.org).
 
 `appsngen widget`, `appsngen widget create` - generate basic project structure
 
-`appsngen widget build [platform]` - build cordova project for specified platform (default value: `browser`)
+`appsngen widget build [platform]` - build native appliaction for the specified platform (default value: `browser`)
 
 `appsngen widget preview` - preview widget locally in **dev-box**
 
