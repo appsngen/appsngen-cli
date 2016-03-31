@@ -1,10 +1,21 @@
 var uploader = require('./../src/uploadcontroller');
 var jsonfile = require('jsonfile');
+var path = require('path');
 
-jsonfile.readFile(process.cwd() + '/.appsngenrc', function(err, obj) {
-    if (typeof obj !== 'undefined') {
-        uploader.uploadWidget(obj);
-    } else {
-        console.error('Configuration file not found.');
-    }
-});
+var rcConfig;
+var rcConfigPath = path.join(process.cwd(), './.appsngenrc');
+
+try {
+    rcConfig = jsonfile.readFileSync(rcConfigPath);
+    uploader.uploadWidget(rcConfig)
+    .then(function (urn) {
+        rcConfig.urn = urn;
+        jsonfile.writeFileSync(rcConfigPath, rcConfig, {
+            spaces: 4
+        });
+    });
+} catch (error) {
+    console.log('LOGIN COMMAND ERROR');
+    console.error(error.toString());
+    process.exit(1);
+}

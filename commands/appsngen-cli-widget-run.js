@@ -28,7 +28,6 @@ if (!platforms) {
         console.error(err.toString());
         process.exit(1);
     }
-    console.log('PLATFORMS: ' + platforms[0]);
 }
 
 platforms.forEach(function (el) {

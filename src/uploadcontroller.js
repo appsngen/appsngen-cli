@@ -1,133 +1,83 @@
 (function() {
     'use strict';
 
+    var bluebird = require('bluebird');
     var jsonfile = require('jsonfile');
     var request = require('request');
-    var fs = require('fs');
+    var put = bluebird.Promise.promisify(request.put);
+    var post = bluebird.Promise.promisify(request.post);
+    var readFile = bluebird.Promise.promisify(require('fs').readFile);
     var waterfall = require('async-waterfall');
-    var deasync = require('deasync');
     var config = require('./../cli-config.json');
     var authcontroller = require('./authcontroller');
 
-    exports.uploadWidget = function (settings) {
-        var complete = false;
+    exports.uploadWidget = function (settings, callback) {
+        var options = {};
         var serviceAddress = config.serviceAddress;
         var zipFilePath = settings.zipFilePath;
         var replaceIfExists = settings.replaceIfExists;
 
-        // Processing block
-        waterfall([
-            function (callback) { //token request
-                var options = {};
-                request.post(
-                   serviceAddress +  '/rest-services/tokens/access',
-                   {
-                       body: {
-                           scope: {
-                               widgets: [],
-                               dataSources: [],
-                               services: [
-                                   'widgets'
-                               ],
-                               streams: [],
-                               identity: false
-                           }
-                       },
-                       json: true,
-                       headers: {
-                           'Content-Type': 'application/json',
-                           'Authorization': 'Bearer ' + authcontroller.getIdentityToken()
-                       }
-                   },
-                   function (error, response, body) {
-                       if (error) {
-                           throw error;
-                       } else {
-                           options.token = body.accessToken;
-                           callback(null, options);
-                       }
-                   }
-                );
-            },
-            function (options, callback) { // read zip file
-                fs.readFile(zipFilePath, 'binary', function (err, data) {
-                    if (err) {
-                        throw err;
-                    }
-                    options.zipFile = new Buffer(data, 'binary');
-                    console.log('File read success!');
-                    callback(null, options);
-                });
-            },
-            function (options, callback) { //upload
-                request.post(
-                    serviceAddress + '/viewer/widgets',
+        return bluebird.Promise.all([
+                post(serviceAddress +  '/rest-services/tokens/access',
                     {
-                        body: options.zipFile,
-                        headers: {
-                            'Content-Type': 'application/zip',
-                            'Authorization': 'Bearer ' + options.token
-                        }
-                    },
-                    function (error, response) {
-                        if (error) {
-                            throw error;
-                        } else {
-                            options.statusCode = response.statusCode;
-                            options.urn = JSON.parse(response.body).urn;
-                            callback(null, options);
-                        }
-                    }
-                );
-            },
-            function (options, callback) { //update if already exists
-                if (options.statusCode === 409) {
-                    if (!replaceIfExists) {
-                        console.log('To replace existing widget, set replaceIfExists option to \'true\'');
-                        return;
-                    }
-                    console.log('Post upload conflict, trying to update existing widget...');
-                    request.put(
-                        serviceAddress + '/viewer/widgets',
-                        {
-                            body: options.zipFile,
-                            headers: {
-                                'Content-Type': 'application/zip',
-                                'Authorization': 'Bearer ' + options.token
+                        body: {
+                            scope: {
+                                widgets: [],
+                                dataSources: [],
+                                services: [
+                                    'widgets'
+                                ],
+                                streams: [],
+                                identity: false
                             }
                         },
-                        function (error, response) {
-                            if (error) {
-                                throw error;
-                            } else {
-                                console.log('Upload success!');
-                                options.urn = JSON.parse(response.body).urn;
-                                callback(null, options);
-                            }
+                        json: true,
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': 'Bearer ' + authcontroller.getIdentityToken()
                         }
-                    );
+                    }),
+                readFile(zipFilePath, 'binary')
+            ])
+            .then(function (result) {
+                options.token = result[0].body.accessToken;
+                options.zipFile = new Buffer(result[1], 'binary');
+                return post(serviceAddress + '/viewer/widgets',
+                            {
+                                body: options.zipFile,
+                                headers: {
+                                    'Content-Type': 'application/zip',
+                                    'Authorization': 'Bearer ' + options.token
+                                }
+                            });
+            })
+            .then(function (response) {
+                if (response.statusCode === 409) {
+                    if (!replaceIfExists) {
+                        throw new Error('To replace existing widget, set replaceIfExists option to \'true\'');
+                    }
+                    console.log('Post upload conflict, trying to update existing widget...');
+                    return put(serviceAddress + '/viewer/widgets',
+                                {
+                                    body: options.zipFile,
+                                    headers: {
+                                        'Content-Type': 'application/zip',
+                                        'Authorization': 'Bearer ' + options.token
+                                    }
+                                });
                 } else {
-                    console.log('Upload success!');
-                    callback(null, options);
+                    return bluebird.Promise.resolve(response);
                 }
-            },
-            function (options) {
-                var rcConfig;
-                var rcConfigPath = process.cwd() + '/.appsngenrc';
-
-                try {
-                    rcConfig = jsonfile.readFileSync(rcConfigPath);
-                    rcConfig.urn = options.urn;
-                    jsonfile.writeFileSync(rcConfigPath, rcConfig, {
-                        spaces: 4
-                    });
-                    complete = true;
-                } catch (err) {
-                    console.error(err.toString());
-                    process.exit(1);
-                }
-            }
-        ]);
-        deasync.loopWhile(function(){return !complete;});
+            })
+            .then(function (response) {
+                console.log('Upload success!');
+                options.urn = JSON.parse(response.body).urn;
+                return bluebird.Promise.resolve(options.urn);
+            })
+            .catch(function (error) {
+                console.log('UPLOAD CONTROLLER ERRROR');
+                console.error(error.toString());
+                process.exit(1);
+            });
     };
 })();
