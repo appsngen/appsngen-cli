@@ -2,14 +2,16 @@
     'use strict';
     /*jshint bitwise: false*/
 
+    var bluebird = require('bluebird');
     var execSync = require('child_process').execSync;
     var jsonfile = require('jsonfile');
     var path = require('path');
-    var request = require('request');
+    var readlineSync = require('readline-sync');
+    var post = bluebird.Promise.promisify(require('request').post);
     var config = require('./../cli-config.json');
     process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0'; //WARNING should be removed
 
-    var refreshToken = function() {
+    var refreshToken = function () {
         //TODO implement mechanism to refresh token
         try {
             execSync('appsngen login', {
@@ -21,16 +23,7 @@
         }
     };
 
-    exports.isAuthorized = function () {
-        if (config.credentials &&
-            (config.credentials.expiresIn + config.credentials.received) >= Date.now()) {
-            return true;
-        }
-
-        return false;
-    };
-
-    exports.encodeToBase64 = function (input) {
+    var encodeToBase64 = function (input) {
         var keyStr = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=';
         var output = '', chr1, chr2, chr3, enc1, enc2, enc3, enc4, i = 0;
 
@@ -58,7 +51,16 @@
         return output;
     };
 
-    exports.getIdentityToken = function() {
+    exports.isAuthorized = function () {
+        if (config.credentials &&
+            (config.credentials.expiresIn + config.credentials.received) >= Date.now()) {
+            return true;
+        }
+
+        return false;
+    };
+
+    exports.getIdentityToken = function () {
         try {
             if (!this.isAuthorized()) {
                 refreshToken();
@@ -73,5 +75,27 @@
             }
             process.exit(1);
         }
+    };
+
+    exports.authorize = function () {
+        var credentials, username, password;
+        var serviceAddress = config.serviceAddress + '/rest-services/tokens/identity';
+
+        username = readlineSync.question('Enter username: ');
+        password = readlineSync.question('Enter password: ', {
+            hideEchoBack: true
+        });
+        credentials = username + ':' + password;
+
+        return post(serviceAddress, {
+                    body: {
+                        scope: {}
+                    },
+                    json: true,
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Basic: ' + encodeToBase64(credentials)
+                    }
+                });
     };
 })();
