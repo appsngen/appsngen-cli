@@ -1,12 +1,14 @@
 (function() {
     'use strict';
 
-    var bluebird = require('bluebird');
+    var Promise = require('bluebird').Promise;
     var jsonfile = require('jsonfile');
     var request = require('request');
-    var put = bluebird.Promise.promisify(request.put);
-    var post = bluebird.Promise.promisify(request.post);
-    var readFile = bluebird.Promise.promisify(require('fs').readFile);
+    var fs = require('fs');
+    var path = require('path');
+    var put = Promise.promisify(request.put);
+    var post = Promise.promisify(request.post);
+    var readFile = Promise.promisify(fs.readFile);
     var waterfall = require('async-waterfall');
     var config = require('./../cli-config.json');
     var authcontroller = require('./authcontroller');
@@ -17,7 +19,7 @@
         var zipFilePath = settings.zipFilePath;
         var replaceIfExists = settings.replaceIfExists;
 
-        return bluebird.Promise.all([
+        return Promise.all([
                 post(serviceAddress +  '/rest-services/tokens/access',
                     {
                         body: {
@@ -66,16 +68,24 @@
                                     }
                                 });
                 } else {
-                    return bluebird.Promise.resolve(response);
+                    return Promise.resolve(response);
                 }
             })
             .then(function (response) {
                 console.log('Upload success!');
                 options.urn = JSON.parse(response.body).urn;
-                return bluebird.Promise.resolve(options.urn);
+                return Promise.resolve(options.urn);
+            })
+            .then(function (urn) {
+                var rcConfigPath = path.join(process.cwd(), './.appsngenrc');
+                var rcConfig = jsonfile.readFileSync(rcConfigPath);
+                rcConfig.urn = urn;
+                jsonfile.writeFileSync(rcConfigPath, rcConfig, {
+                    spaces: 4
+                });
+                return Promise.resolve(urn);
             })
             .catch(function (error) {
-                console.log('UPLOAD CONTROLLER ERRROR');
                 console.error(error.toString());
                 process.exit(1);
             });

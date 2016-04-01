@@ -3,9 +3,11 @@ var commander = require('commander');
 var path = require('path');
 var jsonfile = require('jsonfile');
 var cordovacontroller = require('./../src/cordovacontroller');
+var uploadcontroller = require('./../src/uploadcontroller');
 
-var platform, projectConfig;
-var rcfilePath = path.join(process.cwd(), '/.appsngenrc');
+var platform;
+var rcFilePath = path.join(process.cwd(), '/.appsngenrc');
+var rcConfig = jsonfile.readFileSync(rcFilePath);
 
 commander
     .arguments('[platform]')
@@ -18,21 +20,20 @@ platform = platform || 'browser';
 execSync('grunt', {
     stdio: 'inherit'
 });
-execSync('appsngen widget deploy', {
-    stdio: 'inherit'
-});
-
-try {
-    projectConfig = jsonfile.readFileSync(rcfilePath);
-    if (typeof projectConfig.cordova === 'undefined') {
-        cordovacontroller.create();
-        projectConfig = jsonfile.readFileSync(rcfilePath);
-    }
-    if (platform !== '' && projectConfig.cordova.platforms.indexOf(platform) === -1) {
-        cordovacontroller.addPlatform(platform);
-    }
-    cordovacontroller.modify();
-} catch (error) {
-    console.error(error.toString());
-    process.exit(1);
-}
+uploadcontroller
+    .uploadWidget(rcConfig)
+    .then(function() {
+        rcConfig = jsonfile.readFileSync(rcFilePath);
+        if (typeof rcConfig.cordova === 'undefined') {
+            cordovacontroller.create();
+            rcConfig = jsonfile.readFileSync(rcFilePath);
+        }
+        if (platform !== '' && rcConfig.cordova.platforms.indexOf(platform) === -1) {
+            cordovacontroller.addPlatform(platform);
+        }
+        cordovacontroller.modify();
+    })
+    .catch(function (error) {
+        console.error(error.toString());
+        process.exit(1);
+    });
