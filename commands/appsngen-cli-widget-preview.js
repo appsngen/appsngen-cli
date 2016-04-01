@@ -35,6 +35,7 @@ rmdir(path.join(devboxPath, '/widgets'), function(err) {
     child_process.fork('server.js', {
         cwd: devboxPath
     });
-    open('http://localhost:8879/views/index.html');
+    open(devboxConfig.viewerProtocol + '://' + devboxConfig.devBoxHost + ':' + devboxConfig.devBoxPort +
+         '/views/index.html');
     console.log('CTRL + C to shutdown dev-box server');
 });
