@@ -3,8 +3,11 @@ var execSync = require('child_process').execSync;
 var path = require('path');
 var jsonfile = require('jsonfile');
 
-var platforms, config;
-var resultCommand = 'cordova run';
+var platforms, config, options, option, tmpString;
+var runCommand = 'cordova run';
+var buildArgs = '';
+var runArgs = '';
+var buildAcceptableArgs = ['release', 'browserify', 'buildConfig'];
 
 program
     .arguments('[platforms...]')
@@ -14,12 +17,11 @@ program
     .option('--browserify', 'Compile plugin JS at build time using browserify instead of runtime')
     .option('--target <targetDevice>', 'Deploy to specific target')
     .option('--buildConfig <configFile>', 'Use the specified build configuration file.')
-    .option('--platformSpecific <platformOptions>', 'Provide platform specific options')
     .action(function(arg) {
         platforms = arg;
     })
     .parse(process.argv);
-
+options = program.opts();
 if (!platforms) {
     try {
         config = jsonfile.readFileSync(path.join(process.cwd(), './.appsngenrc'));
@@ -29,27 +31,28 @@ if (!platforms) {
         process.exit(1);
     }
 }
-
-platforms.forEach(function (el) {
-    resultCommand += ' ' + el;
-});
-['list', 'release', 'nobuild', 'browserify'].forEach(function (el) {
-    if (program[el]) {
-        resultCommand += ' --' + el;
+platforms = platforms.reduce(function (prev, curr) {
+    return prev + ' ' + curr;
+}, '');
+for (option in options) {
+    if (options[option]) {
+        if (typeof options[option] === 'boolean') {
+            tmpString = ' --' + option;
+        } else {
+            tmpString = ' --' + option + '=' + options[option];
+        }
+        runArgs += tmpString;
+        if (buildAcceptableArgs.indexOf(option) !== -1) {
+            buildArgs += tmpString;
+        }
     }
-});
-['target', 'buildConfig', 'platformSpecific'].forEach(function (el) {
-    if (program[el]) {
-        resultCommand += ' --' + (el === 'platformSpecific' ? ' ' : el + '=') +
-            program[el];
-    }
-});
+}
 if (!program.nobuild) {
-    execSync('appsngen widget build', {
+    execSync('appsngen widget build ' + platforms + buildArgs, {
         stdio: 'inherit'
     });
 }
-execSync(resultCommand, {
+execSync('cordova run ' + platforms + runArgs, {
     stdio: 'inherit',
     cwd: path.join(process.cwd(), '/cordova')
 });
