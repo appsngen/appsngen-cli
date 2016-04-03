@@ -29,7 +29,6 @@
   "homepage": "https://github.com/appsngen/appsngen-cli#readme",
   "dependencies": {
     "appsngen-dev-box": "^2.0.9",
-    "async-waterfall": "^0.1.5",
     "bluebird": "^3.3.4",
     "commander": ">= 2.9.0",
     "fs-extra": "^0.26.6",
