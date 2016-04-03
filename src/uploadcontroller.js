@@ -9,7 +9,6 @@
     var put = Promise.promisify(request.put);
     var post = Promise.promisify(request.post);
     var readFile = Promise.promisify(fs.readFile);
-    var waterfall = require('async-waterfall');
     var config = require('./../cli-config.json');
     var authcontroller = require('./authcontroller');
 
