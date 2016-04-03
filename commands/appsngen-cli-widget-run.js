@@ -4,7 +4,6 @@ var path = require('path');
 var jsonfile = require('jsonfile');
 
 var platforms, config, options, option, tmpString;
-var runCommand = 'cordova run';
 var buildArgs = '';
 var runArgs = '';
 var buildAcceptableArgs = ['release', 'browserify', 'buildConfig'];
