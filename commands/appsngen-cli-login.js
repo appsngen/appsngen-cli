@@ -1,5 +1,3 @@
-var readlineSync = require('readline-sync');
-var request = require('request');
 var jsonfile = require('jsonfile');
 var path = require('path');
 var authcontroller = require('./../src/authcontroller');
