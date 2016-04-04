@@ -10,6 +10,7 @@
     var config = require('./../cli-config.json');
     var authcontroller = require('./authcontroller');
 
+    var SUPPORTED_PLATFORMS = ['browser', 'android', 'ios'];
     var rcFilePath = path.join(process.cwd(), '/.appsngenrc');
     var writeIntegrationFile = function (token, urn, serviceAddress) {
         var template, compiled;
@@ -57,7 +58,6 @@
             process.exit(1);
         }
     };
-
 
     exports.addPlatform = function (platform) {
         var rcConfig;
@@ -111,5 +111,18 @@
                 }
             }
         );
+    };
+
+    exports.parsePlatforms = function (options) {
+        var platforms = [];
+
+        SUPPORTED_PLATFORMS.forEach(function (el) {
+            if (options[el]) {
+                platforms.push(el);
+                options[el] = false;
+            }
+        });
+
+        return platforms;
     };
 })();
