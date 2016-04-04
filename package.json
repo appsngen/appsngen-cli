@@ -3,7 +3,8 @@
   "version": "0.1.0",
   "description": "Command Line Interface to interact with AppsNgen API",
   "scripts": {
-    "test": "grunt nodeunit"
+    "test": "grunt nodeunit",
+    "postinstall": "node postinstall.js"
   },
   "repository": {
     "type": "git",
@@ -26,9 +27,6 @@
   "bugs": {
     "url": "https://github.com/appsngen/appsngen-cli/issues"
   },
-  "scripts": {
-      "postinstall": "node postinstall.js"
-  },
   "homepage": "https://github.com/appsngen/appsngen-cli#readme",
   "dependencies": {
     "appsngen-dev-box": "^2.0.9",
@@ -37,6 +35,7 @@
     "commander": ">= 2.9.0",
     "fs-extra": "^0.26.6",
     "jsonfile": "^2.2.3",
+    "mkdirp": "^0.5.1",
     "open": "0.0.5",
     "readline-sync": "^1.4.1",
     "request": "^2.69.0",

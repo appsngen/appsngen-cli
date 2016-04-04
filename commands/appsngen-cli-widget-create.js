@@ -4,6 +4,7 @@ var Promise = require('bluebird').Promise;
 var execSync = require('child_process').execSync;
 var path = require('path');
 var fs = require('fs');
+var mkdirp = require('mkdirp');
 var program = require('commander');
 var jsonfile = require('jsonfile');
 
@@ -12,7 +13,7 @@ var validateWidgetName = function (name) {
     return Promise.resolve(!!name);
 };
 var registryPath = path.join(__dirname, '..', 'registry.json');
-var widgetName, widgetPath;
+var widgetName, widgetPath, registry;
 
 program
     .arguments('<name> [path]')
@@ -31,35 +32,38 @@ if (typeof widgetPath !== 'undefined') {
 } else {
     widgetPath = path.join('.', widgetName);
 }
-try {
-    if (fs.readdirSync(widgetPath).length !== 0) {
-        throw 'Path already exists and is not empty: ' + path.resolve(widgetPath);
-    }
-} catch (e) {
-    if (e.code !== 'ENOENT') {
-        console.error(e.toString());
-        process.exit(1);
-    }
-    fs.mkdirSync(widgetPath);
-}
 validateWidgetName(widgetName)
     .then(function () {
-        jsonfile.readFile(registryPath, function (err, data) {
-            if (err && err.code !== 'ENOENT') {
-                throw err;
+        try {
+            if (fs.readdirSync(widgetPath).length !== 0) {
+                throw 'Path already exists and is not empty: ' + path.resolve(widgetPath);
             }
-            data = data || {};
-            data[widgetName] = {
-                path: path.resolve(widgetPath)
-            };
-            jsonfile.writeFileSync(registryPath, data, {
-                spaces: 4
-            });
-        });
-        //TODO implement mechanism to add widget to local storage
+        } catch (e) {
+            if (e.code !== 'ENOENT') {
+                throw e;
+            }
+        }
+        try {
+            registry = jsonfile.readFileSync(registryPath);
+        } catch (e) {
+            if (e.code !== 'ENOENT') {
+                throw e;
+            }
+        }
+        registry = registry || {};
+        if (registry[widgetName]) {
+            throw 'Widget with this name already exist.'
+        }
+        mkdirp.sync(widgetPath);
         execSync('yo appsngen-web-widget', {
             cwd: widgetPath,
             stdio: 'inherit'
+        });
+        registry[widgetName] = {
+            path: path.resolve(widgetPath)
+        };
+        jsonfile.writeFileSync(registryPath, registry, {
+            spaces: 4
         });
     })
     .catch(function (error) {
