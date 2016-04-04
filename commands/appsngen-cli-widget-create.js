@@ -52,7 +52,7 @@ validateWidgetName(widgetName)
         }
         registry = registry || {};
         if (registry[widgetName]) {
-            throw 'Widget with this name already exist.'
+            throw 'Widget with this name already exist.';
         }
         mkdirp.sync(widgetPath);
         execSync('yo appsngen-web-widget', {
