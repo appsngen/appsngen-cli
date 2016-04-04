@@ -14,7 +14,7 @@ for (dependency in config.dependencies) {
     try {
         info = execSync('npm list -g --depth=0 ' + dependency);
         packageInfo = info.toString().match(new RegExp(dependency + '@\\d\\.\\d\\.\\d', 'g'));
-        if (!packageInfo || !(packageInfo[0].match(/\d\.\d\.\d/g)[0] === config.dependencies[dependency])) {
+        if (!packageInfo || packageInfo[0].match(/\d\.\d\.\d/g)[0] !== config.dependencies[dependency]) {
             installPackage(dependency, config.dependencies[dependency]);
         }
     } catch (e) {
