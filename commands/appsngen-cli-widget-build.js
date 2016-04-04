@@ -42,9 +42,6 @@ uploadcontroller
             }
         });
         cordovacontroller.modify();
-        platforms = platforms.reduce(function (prev, cur) {
-            return prev + ' ' + cur;
-        }, '');
         for (option in options) {
             if (options[option]) {
                 if (typeof options[option] === 'boolean') {
@@ -54,11 +51,10 @@ uploadcontroller
                 }
             }
         }
-        console.log('RESULT COMMAND: ' + 'cordova build ' + platforms + commandOptions);
-        // execSync('cordova build ' + platforms + commandOptions, {
-        //     stdio: 'inherit',
-        //     cwd: path.join(process.cwd(), '/cordova')
-        // });
+        execSync('cordova build ' + platforms.join(' ') + commandOptions, {
+            stdio: 'inherit',
+            cwd: path.join(process.cwd(), '/cordova')
+        });
     })
     .catch(function (error) {
         console.error(error);

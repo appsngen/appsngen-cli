@@ -33,9 +33,6 @@ if (platforms.length === 0) {
         process.exit(1);
     }
 }
-platforms = platforms.reduce(function (prev, curr) {
-    return prev + ' ' + curr;
-}, '');
 for (option in options) {
     if (options[option]) {
         if (typeof options[option] === 'boolean') {
@@ -49,16 +46,13 @@ for (option in options) {
         }
     }
 }
-//rework build command argument list to call appsngen widget build command
-console.log('BUILD RESULT COMMAND: ' + 'cordova build ' + platforms + buildArgs);
-console.log('RUN RESULT COMMAND: ' + 'cordova run ' + platforms + runArgs);
 if (!program.nobuild) {
-    execSync('appsngen widget build ' + platforms + buildArgs, {
+    execSync('appsngen widget build --' + platforms.join(' --') + buildArgs, {
         stdio: 'inherit',
         cwd: cordovaPath
     });
 }
-execSync('cordova run ' + platforms + runArgs, {
+execSync('cordova run ' + platforms.join(' ') + runArgs, {
     stdio: 'inherit',
     cwd: cordovaPath
 });
