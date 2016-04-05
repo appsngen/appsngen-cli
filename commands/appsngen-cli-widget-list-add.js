@@ -47,6 +47,10 @@ Promise
         });
     })
     .catch(function (err) {
-        console.error(err.toString());
+        if (err.code === 'ENOENT') {
+            console.error('Provided folder isn\'t appsngen widget project.');
+        } else {
+            console.error(err.toString());
+        }
         process.exit(1);
     });
