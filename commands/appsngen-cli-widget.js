@@ -30,6 +30,5 @@ program
     .command('run', 'runs widget locally')
     .command('preview', 'preview widget at AppsNgen')
     .command('deploy', 'deploys widget to AppsNgen')
-    .command('compile', 'compiles widget for target platform')
     .command('list', 'print widgets list')
     .parse(process.argv);
