@@ -7,11 +7,8 @@ var fs = require('fs');
 var mkdirp = require('mkdirp');
 var program = require('commander');
 var jsonfile = require('jsonfile');
+var helper = require('./../src/clihelper');
 
-var validateWidgetName = function (name) {
-    //TODO implement mechanism to check widget name via web call
-    return Promise.resolve(!!name);
-};
 var registryPath = path.join(__dirname, '..', 'registry.json');
 var widgetName, widgetPath, registry;
 
@@ -32,7 +29,7 @@ if (typeof widgetPath !== 'undefined') {
 } else {
     widgetPath = path.join('.', widgetName);
 }
-validateWidgetName(widgetName)
+helper.validateWidgetName(widgetName)
     .then(function () {
         try {
             if (fs.readdirSync(widgetPath).length !== 0) {
