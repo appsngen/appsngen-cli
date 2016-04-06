@@ -11,16 +11,19 @@ var rcFilePath = path.join(process.cwd(), '/.appsngenrc');
 var rcConfig = jsonfile.readFileSync(rcFilePath);
 
 program
-    .arguments('[platforms...]')
+    .option('--android', 'Build for android platform')
+    .option('--ios', 'Build for ios platform')
+    .option('--browser', 'Build for browser')
     .option('--release', 'Deploy a release build')
     .option('--browserify', 'Compile plugin JS at build time using browserify instead of runtime')
     .option('--buildConfig <configFile>', 'Use the specified build configuration file.')
-    .action(function (arg) {
-        platforms = arg;
-    })
     .parse(process.argv);
 
 options = program.opts();
+platforms = cordovacontroller.parsePlatforms(options);
+if (platforms.length === 0) {
+    platforms = ['browser'];
+}
 platforms = platforms || ['browser'];
 execSync('grunt', {
     stdio: 'inherit'
@@ -39,9 +42,6 @@ uploadcontroller
             }
         });
         cordovacontroller.modify();
-        platforms = platforms.reduce(function (prev, cur) {
-            return prev + ' ' + cur;
-        }, '');
         for (option in options) {
             if (options[option]) {
                 if (typeof options[option] === 'boolean') {
@@ -51,7 +51,7 @@ uploadcontroller
                 }
             }
         }
-        execSync('cordova build ' + platforms + commandOptions, {
+        execSync('cordova build ' + platforms.join(' ') + commandOptions, {
             stdio: 'inherit',
             cwd: path.join(process.cwd(), '/cordova')
         });

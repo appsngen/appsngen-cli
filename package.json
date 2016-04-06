@@ -29,18 +29,16 @@
   },
   "homepage": "https://github.com/appsngen/appsngen-cli#readme",
   "dependencies": {
-    "appsngen-dev-box": "^2.0.9",
-    "bluebird": "^3.3.4",
-    "commander": ">= 2.9.0",
-    "easy-table": "1.0.0",
-    "fs-extra": "^0.26.6",
-    "jsonfile": "^2.2.3",
-    "mkdirp": "^0.5.1",
+    "appsngen-dev-box": "2.0.11",
+    "bluebird": "3.3.4",
+    "commander": "2.9.0",
+    "fs-extra": "0.26.6",
+    "jsonfile": "2.2.3",
+    "mkdirp": "0.5.1",
     "open": "0.0.5",
-    "readline-sync": "^1.4.1",
-    "request": "^2.69.0",
-    "rmdir": "^1.2.0",
-    "semver": "^5.1.0",
-    "underscore": "^1.8.3"
+    "readline-sync": "1.4.1",
+    "request": "2.69.0",
+    "rmdir": "1.2.0",
+    "underscore": "1.8.3"
   }
 }

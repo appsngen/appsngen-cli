@@ -2,8 +2,8 @@ var config = require('./cli-config.json');
 var semver = require('semver');
 var execSync = require('child_process').execSync;
 
-var installPackage = function (packageName) {
-    execSync('npm install -g ' + packageName, {
+var installPackage = function (packageName, packageVersion) {
+    execSync('npm install -g ' + packageName + '@' + packageVersion, {
         stdio: 'inherit'
     });
 };
@@ -14,8 +14,8 @@ for (dependency in config.dependencies) {
     try {
         info = execSync('npm list -g --depth=0 ' + dependency);
         packageInfo = info.toString().match(new RegExp(dependency + '@\\d\\.\\d\\.\\d', 'g'));
-        if (!packageInfo || !semver.satisfies(packageInfo[0].match(/\d\.\d\.\d/g)[0], config.dependencies[dependency])) {
-            installPackage(dependency);
+        if (!packageInfo || packageInfo[0].match(/\d\.\d\.\d/g)[0] !== config.dependencies[dependency]) {
+            installPackage(dependency, config.dependencies[dependency]);
         }
     } catch (e) {
         installPackage(dependency);
