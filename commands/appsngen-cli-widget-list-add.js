@@ -3,7 +3,6 @@ var jsonfile = require('jsonfile');
 var bluebird = require('bluebird');
 var Promise = bluebird.Promise;
 var helper = require('./../src/clihelper');
-var stat = Promise.promisify(require('fs').stat);
 var path = require('path');
 
 var widgetName, widgetPath, registry;
@@ -22,11 +21,12 @@ if (!widgetName || !widgetPath) {
     process.exit(1);
 }
 
-Promise
-    .all([
-        helper.validateWidgetName(widgetName),
-        stat(path.join(widgetPath, '.appsngenrc'))//TODO create full check
-    ])
+helper.validateWidgetName(widgetName)
+    .then(function () {
+        if (helper.isProjectFolder(widgetPath)) {
+            return Promise.resolve();
+        }
+    })
     .then(function () {
         try {
             registry = jsonfile.readFileSync(registryPath);
@@ -47,10 +47,6 @@ Promise
         });
     })
     .catch(function (err) {
-        if (err.code === 'ENOENT') {
-            console.error('Provided folder isn\'t appsngen widget project.');
-        } else {
-            console.error(err.toString());
-        }
+        console.error(err.toString());
         process.exit(1);
     });

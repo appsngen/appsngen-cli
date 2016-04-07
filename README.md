@@ -20,13 +20,13 @@ You should have installed **npm** and **node**(https://nodejs.org).
 
 `appsngen widget create <name> [path]` - generate basic project structure with given name (if path is specified, then generate project at given path).
 
-`appsngen widget build` - build native appliaction for the specified platform (default value: `browser`)
+`appsngen widget build [widget_name]` - build native appliaction for the specified platform (default value: `browser`), if name is specified then run command in `widget_name` folder. 
  * `--ios, --android, --browser` - build application for ios, android and browser platform respectively
  * `--release` - build release version
  * `--browserify` - compile plugin JS at build time using browserify instead of runtime
  * `--buildConfig <pathToConfigFile>` - use the specified build configuration file.
   
-`appsngen widget run` - run widget at specified platforms (default value: `browser`)
+`appsngen widget run [widget_name]` - run widget at specified platforms (default value: `browser`), if name is specified then run command in `widget_name` folder. 
  * `--ios, --android, --browser` - build application for ios, android and browser platform respectively
  * `--list` - lists available targets
  * `--release` - build release version
@@ -35,9 +35,9 @@ You should have installed **npm** and **node**(https://nodejs.org).
  * `--target <targetDevice>` - deploy to specific target
  * `--buildConfig <pathToConfigFile>` - use the specified build configuration file.
 
-`appsngen widget preview` - preview widget locally in **dev-box**
+`appsngen widget preview [widget_name]` - preview widget locally in **dev-box**, if name is specified then run command in `widget_name` folder. 
 
-`appsngen widget deploy` - deploy widget to *appsngen.com*
+`appsngen widget deploy [widget_name]` - deploy widget to *appsngen.com*, if name is specified then run command in `widget_name` folder. 
 
 `appsngen widget list` - print list of widgets
 

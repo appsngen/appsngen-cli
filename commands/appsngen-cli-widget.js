@@ -2,17 +2,40 @@
 
 var program = require('commander');
 var path = require('path');
+var jsonfile = require('jsonfile');
 var authcontroller = require('./../src/authcontroller');
 var execSync = require('child_process').execSync;
 var helper = require('./../src/clihelper');
 
-helper.normalizePathToCurrentFile();
+var ADDRESSABLE_COMMANDS = [
+    'build',
+    'run',
+    'preview',
+    'deploy'
+];
+var registry, widgetName, callWithName;
 
 try {
     if (!authcontroller.isAuthorized()) {
         execSync('appsngen login', {
             stdio: 'inherit'
         });
+    }
+    callWithName = process.argv.length >= 4 &&
+            ADDRESSABLE_COMMANDS.indexOf(process.argv[2]) !== -1 && //check command is addressable
+            process.argv[3].indexOf('-') !== 0; //check 4th argument isn't option
+    if (callWithName) {
+        widgetName = process.argv[3];
+        registry = jsonfile.readFileSync(path.join(__dirname, '..', 'registry.json'));
+        if (registry[widgetName]) {
+            process.chdir(registry[widgetName].path);
+        } else {
+            throw 'Widget "' + widgetName + '"doesn\'t exist';
+        }
+    } else {
+        if (!helper.isProjectFolder('.')) {
+            throw 'Current folder isn\'t appsngen widget project.';
+        }
     }
 } catch (err) {
     if (err.cmd && err.cmd === 'appsngen login') {
@@ -22,6 +45,8 @@ try {
     }
     process.exit(1);
 }
+
+helper.normalizePathToCurrentFile();
 
 program
     .version('0.1.0')
