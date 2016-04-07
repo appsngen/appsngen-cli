@@ -8,19 +8,6 @@ authcontroller.authorize()
         var config;
         var configFilePath = path.join(__dirname, '/../cli-config.json');
 
-        // if (response.statusCode === 201) {
-        //     config = jsonfile.readFileSync(configFilePath);
-        //     config.credentials = response.body;
-        //     config.credentials.received = Date.now();
-        //     jsonfile.writeFileSync(configFilePath, config, {
-        //         spaces: 4
-        //     });
-        //     console.log('Authorization completed successfully.');
-        // } else {
-        //     console.log(response.body.message);
-        //     console.log('Unexpected response: ' + response.statusCode);
-        //     process.exit(1);
-        // }
         switch (response.statusCode) {
             case 201:
                 config = jsonfile.readFileSync(configFilePath);
@@ -34,6 +21,7 @@ authcontroller.authorize()
             case 401:
                 console.log('Invalid username or password.');
                 process.exit(1);
+                break;
             default:
                 console.log(response.body.message);
                 console.log('Unexpected response: ' + response.statusCode);
