@@ -21,20 +21,21 @@ try {
             stdio: 'inherit'
         });
     }
-    callWithName = process.argv.length >= 4 &&
-            ADDRESSABLE_COMMANDS.indexOf(process.argv[2]) !== -1 && //check command is addressable
+    if (ADDRESSABLE_COMMANDS.indexOf(process.argv[2]) !== -1) {
+        callWithName = process.argv.length >= 4 &&
             process.argv[3].indexOf('-') !== 0; //check 4th argument isn't option
-    if (callWithName) {
-        widgetName = process.argv[3];
-        registry = jsonfile.readFileSync(path.join(__dirname, '..', 'registry.json'));
-        if (registry[widgetName]) {
-            process.chdir(registry[widgetName].path);
+        if (callWithName) {
+            widgetName = process.argv[3];
+            registry = jsonfile.readFileSync(path.join(__dirname, '..', 'registry.json'));
+            if (registry[widgetName]) {
+                process.chdir(registry[widgetName].path);
+            } else {
+                throw 'Widget "' + widgetName + '"doesn\'t exist';
+            }
         } else {
-            throw 'Widget "' + widgetName + '"doesn\'t exist';
-        }
-    } else {
-        if (!helper.isProjectFolder('.')) {
-            throw 'Current folder isn\'t appsngen widget project.';
+            if (!helper.isProjectFolder('.')) {
+                throw 'Current folder isn\'t appsngen widget project.';
+            }
         }
     }
 } catch (err) {
