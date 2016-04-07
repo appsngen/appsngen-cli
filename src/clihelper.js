@@ -24,7 +24,7 @@
             return !!statSync(path.join(widgetPath, '.appsngenrc'));
         } catch (err) {
             if (err.code === 'ENOENT') {
-                return false
+                return false;
             } else {
                 throw err;
             }
