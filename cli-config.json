@@ -1,8 +1,7 @@
 {
     "serviceAddress": "https://www.appsngen.com",
     "dependencies": {
-        "generator-appsngen-web-widget": "0.3.5",
-        "cordova": "6.0.0"
+        "generator-appsngen-web-widget": "0.3.7"
     },
     "credentials": null
 }

@@ -42,8 +42,8 @@
         var packageConfig, rcConfig;
         try {
             packageConfig = jsonfile.readFileSync(path.join(process.cwd(),'/package.json'));
-            execSync('cordova create cordova io.cordova.helloappsngen ' + packageConfig.name +
-            ' --template="' + path.join(__dirname, '/../templates/cordova-template"'), {
+            execSync('npm run cordova create cordova io.cordova.helloappsngen ' + packageConfig.name +
+            ' -- --template=' + path.resolve(path.join(__dirname, '/../templates/cordova-template')), {
                 stdio: 'inherit'
             });
             rcConfig = jsonfile.readFileSync(rcFilePath);
@@ -62,9 +62,8 @@
     exports.addPlatform = function (platform) {
         var rcConfig;
 
-        execSync('cordova platform add ' + platform, {
-            stdio: 'inherit',
-            cwd: path.join(process.cwd(), '/cordova')
+        execSync('npm run cordova-manipulation platform add ' + platform, {
+            stdio: 'inherit'
         });
         try {
             rcConfig = jsonfile.readFileSync(rcFilePath);

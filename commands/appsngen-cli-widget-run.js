@@ -24,35 +24,49 @@ program
 
 options = program.opts();
 platforms = cordovacontroller.parsePlatforms(options);
-if (platforms.length === 0) {
-    try {
-        config = jsonfile.readFileSync(path.join(process.cwd(), './.appsngenrc'));
-        platforms = ['browser -- --port=' + config.port];
-    } catch (err) {
-        console.error(err.toString());
-        process.exit(1);
-    }
-}
-for (option in options) {
-    if (options[option]) {
-        if (typeof options[option] === 'boolean') {
-            tmpString = ' --' + option;
-        } else {
-            tmpString = ' --' + option + '=' + options[option];
-        }
-        runArgs += tmpString;
-        if (buildAcceptableArgs.indexOf(option) !== -1) {
-            buildArgs += tmpString;
+try {
+    config = jsonfile.readFileSync(path.join(process.cwd(), './.appsngenrc'));
+
+    for (option in options) {
+        if (options[option]) {
+            if (typeof options[option] === 'boolean') {
+                tmpString = ' --' + option;
+            } else {
+                tmpString = ' --' + option + '=' + options[option];
+            }
+            runArgs += tmpString;
+            if (buildAcceptableArgs.indexOf(option) !== -1) {
+                buildArgs += tmpString;
+            }
         }
     }
-}
-if (!program.nobuild) {
-    execSync('appsngen widget build --' + platforms.join(' --') + buildArgs, {
+
+    //set default platform if no platforms passed
+    if (platforms.length === 0) {
+        platforms = ['browser'];
+    }
+    if (platforms.indexOf('browser') !== -1) {
+        runArgs += [' -- --port=' + config.port];
+    }
+
+    //skip building phase if call with --nobuild flag, and check
+    //does required platform was built before
+    if (!program.nobuild) {
+        execSync('appsngen widget build --' + platforms.join(' --') + buildArgs, {
+            stdio: 'inherit'
+        });
+    } else {
+        if (!config.cordova || !platforms.every(function (el) {
+                return config.cordova.indexOf(el) !== -1;
+            })) {
+            throw 'Required platforms wasn\'t built yet.';
+        }
+    }
+    execSync('npm run cordova-manipulation run ' + platforms.join(' ') + (runArgs ? ' -- ' + runArgs : ''), {
         stdio: 'inherit',
         cwd: cordovaPath
     });
+} catch (err) {
+    console.error(err.toString());
+    process.exit(1);
 }
-execSync('cordova run ' + platforms.join(' ') + runArgs, {
-    stdio: 'inherit',
-    cwd: cordovaPath
-});
