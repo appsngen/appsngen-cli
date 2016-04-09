@@ -1,6 +1,5 @@
 #! /usr/bin/env node
 
-var Promise = require('bluebird').Promise;
 var execSync = require('child_process').execSync;
 var path = require('path');
 var fs = require('fs');
@@ -52,8 +51,8 @@ helper.validateWidgetName(widgetName)
             throw 'Widget with this name already exist.';
         }
         mkdirp.sync(widgetPath);
-        execSync('yo appsngen-web-widget', {
-            cwd: widgetPath,
+        execSync('npm run yo appsngen-web-widget ' + path.resolve(widgetPath), {
+            cwd: path.join(__dirname, '..'),
             stdio: 'inherit'
         });
         registry[widgetName] = {

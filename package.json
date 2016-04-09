@@ -4,7 +4,8 @@
   "description": "Command Line Interface to interact with AppsNgen API",
   "scripts": {
     "test": "grunt nodeunit",
-    "postinstall": "node postinstall.js"
+    "postinstall": "node postinstall.js",
+    "yo": "yo"
   },
   "repository": {
     "type": "git",
@@ -40,6 +41,7 @@
     "readline-sync": "1.4.1",
     "request": "2.69.0",
     "rmdir": "1.2.0",
-    "underscore": "1.8.3"
+    "underscore": "1.8.3",
+    "yo": "1.7.0"
   }
 }

@@ -15,7 +15,17 @@
 
     exports.validateWidgetName = function (name) {
         //TODO implement mechanism to check widget name via web call
-        return Promise.resolve(!!name);
+        var VALID_CHARACTERS_PATTERN = /[\w \-\.]+/;
+
+        return new Promise(function (resolve, reject) {
+            if (!name || name.length === 0) {
+                reject('Name can\'t be empty.');
+            } else if (name.match(VALID_CHARACTERS_PATTERN)[0] === name) {
+                resolve();
+            } else {
+                reject('Invalid widget name.');
+            }
+        });
     };
     
     exports.isProjectFolder = function (widgetPath) {
