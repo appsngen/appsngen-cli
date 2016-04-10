@@ -20,13 +20,13 @@ You should have installed **npm** and **node**(https://nodejs.org).
 
 `appsngen widget create <name> [path]` - generate basic project structure with given name (if path is specified, then generate project at given path).
 
-`appsngen widget build [widget_name]` - build native appliaction for the specified platform (default value: `browser`), if name is specified then run command in `widget_name` folder. 
+`appsngen widget build [widget_name] [options]` - build native appliaction for the specified platform (default value: `browser`), if name is specified then run command in `widget_name` folder. 
  * `--ios, --android, --browser` - build application for ios, android and browser platform respectively
  * `--release` - build release version
  * `--browserify` - compile plugin JS at build time using browserify instead of runtime
  * `--buildConfig <pathToConfigFile>` - use the specified build configuration file.
   
-`appsngen widget run [widget_name]` - run widget at specified platforms (default value: `browser`), if name is specified then run command in `widget_name` folder. 
+`appsngen widget run [widget_name] [options]` - run widget at specified platforms (default value: `browser`), if name is specified then run command in `widget_name` folder. 
  * `--ios, --android, --browser` - build application for ios, android and browser platform respectively
  * `--list` - lists available targets
  * `--release` - build release version
@@ -43,5 +43,5 @@ You should have installed **npm** and **node**(https://nodejs.org).
 
 `appsngen widget list add <name> <path>` - add widget to widgets list
 
-`appsngen widget list remove <name>` - remove widget from widgets list
+`appsngen widget list remove <name> [option]` - remove widget from widgets list
   * `--hard` - remove project folder of widget
