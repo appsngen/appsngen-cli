@@ -51,9 +51,9 @@ uploadcontroller
                 }
             }
         }
-        execSync('cordova build ' + platforms.join(' ') + commandOptions, {
-            stdio: 'inherit',
-            cwd: path.join(process.cwd(), '/cordova')
+        execSync('npm run cordova-manipulation build ' + platforms.join(' ') +
+                (commandOptions ? ' -- ' + commandOptions: ''), {
+            stdio: 'inherit'
         });
     })
     .catch(function (error) {
