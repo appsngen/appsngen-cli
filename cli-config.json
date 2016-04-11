@@ -1,7 +1,4 @@
 {
     "serviceAddress": "https://www.appsngen.com",
-    "dependencies": {
-        "generator-appsngen-web-widget": "0.3.7"
-    },
     "credentials": null
 }
