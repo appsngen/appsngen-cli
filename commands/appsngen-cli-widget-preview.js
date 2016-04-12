@@ -37,10 +37,9 @@ rmdir(path.join(devboxPath, '/widgets'), function(err) {
         if (fs.statSync(devboxCachePath).isFile()) {
             fs.unlinkSync(devboxCachePath);
         }
-    } catch (err) {
-        if (err.code !== 'ENOENT') {
-            console.error(err.toString());
-            process.exit(1);
+    } catch (error) {
+        if (error.code !== 'ENOENT') {
+            errorHandler(error);
         }
     }
     child_process.fork('server.js', {
