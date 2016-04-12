@@ -1,6 +1,6 @@
 #! /usr/bin/env node
 
-var program = require('commander');
+var program = require('./../src/customcommander');
 var path = require('path');
 var jsonfile = require('jsonfile');
 var authcontroller = require('./../src/authcontroller');
@@ -50,8 +50,9 @@ try {
 helper.normalizePathToCurrentFile();
 
 program
-    .version('0.1.0')
-    .command('create', 'creates widget', {isDefault: true})
+    .alias('appsngen widget')
+    .usage('[command]')
+    .command('create', 'creates widget')
     .command('build', 'builds widget sources')
     .command('run', 'runs widget locally')
     .command('preview', 'preview widget at AppsNgen')

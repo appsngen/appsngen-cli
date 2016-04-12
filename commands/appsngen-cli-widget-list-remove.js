@@ -1,4 +1,4 @@
-var program = require('commander');
+var program = require('./../src/customcommander');
 var rmdir = require('rmdir');
 var jsonfile = require('jsonfile');
 var path = require('path');
@@ -14,7 +14,9 @@ var removeRegistryRecord = function (name) {
 };
 
 program
+    .alias('appsngen widget list remove')
     .arguments('<name>')
+    .usage('<name> [option]')
     .option('--hard', 'delete widget folder')
     .action(function (name) {
         widgetName = name;

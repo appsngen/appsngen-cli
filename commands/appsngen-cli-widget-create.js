@@ -4,7 +4,7 @@ var execSync = require('child_process').execSync;
 var path = require('path');
 var fs = require('fs');
 var mkdirp = require('mkdirp');
-var program = require('commander');
+var program = require('./../src/customcommander');
 var jsonfile = require('jsonfile');
 var helper = require('./../src/clihelper');
 
@@ -12,6 +12,8 @@ var registryPath = path.join(__dirname, '..', 'registry.json');
 var widgetName, widgetPath, registry;
 
 program
+    .alias('appsngen widget create')
+    .usage('<name> [path]')
     .arguments('<name> [path]')
     .action(function (name, path) {
         widgetName = name;
