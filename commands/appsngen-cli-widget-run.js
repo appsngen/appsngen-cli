@@ -1,4 +1,4 @@
-var program = require('commander');
+var program = require('./../src/customcommander');
 var execSync = require('child_process').execSync;
 var path = require('path');
 var jsonfile = require('jsonfile');
@@ -11,6 +11,7 @@ var cordovaPath = path.join(process.cwd(), 'cordova');
 var buildAcceptableArgs = ['release', 'browserify', 'buildConfig'];
 
 program
+    .alias('appsngen widget run')
     .option('--android', 'Build for android platform')
     .option('--ios', 'Build for ios platform')
     .option('--browser', 'Build for browser')
