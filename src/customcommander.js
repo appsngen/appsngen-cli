@@ -14,8 +14,8 @@
 
         if (this._description) {
             desc = [
-                '  ' + this._description
-                , ''
+                '  ' + this._description,
+                ''
             ];
         }
 
