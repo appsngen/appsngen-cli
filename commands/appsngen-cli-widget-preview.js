@@ -8,6 +8,7 @@ var open = require('open');
 
 var devboxConfig, projectConfig, archiveName;
 var devboxPath = path.dirname(require.resolve('appsngen-dev-box'));
+var devboxCachePath = path.join(devboxPath, 'views', 'config.json');
 var devboxConfigPath = path.join(devboxPath, '/serverConfig.json');
 var errorHandler = function(error) {
     console.error(error.toString());
@@ -32,6 +33,16 @@ rmdir(path.join(devboxPath, '/widgets'), function(err) {
     jsonfile.writeFileSync(devboxConfigPath, devboxConfig, {
         spaces: 4
     });
+    try {
+        if (fs.statSync(devboxCachePath).isFile()) {
+            fs.unlinkSync(devboxCachePath);
+        }
+    } catch (err) {
+        if (err.code !== 'ENOENT') {
+            console.error(err.toString());
+            process.exit(1);
+        }
+    }
     child_process.fork('server.js', {
         cwd: devboxPath
     });
