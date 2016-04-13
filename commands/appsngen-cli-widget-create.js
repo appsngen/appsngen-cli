@@ -53,7 +53,7 @@ helper.validateWidgetName(widgetName)
             throw 'Widget with this name already exist.';
         }
         mkdirp.sync(widgetPath);
-        execSync('npm run yo appsngen-web-widget ' + path.resolve(widgetPath), {
+        execSync('npm run yo appsngen-web-widget "' + path.resolve(widgetPath) + '"', {
             cwd: path.join(__dirname, '..'),
             stdio: 'inherit'
         });
