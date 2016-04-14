@@ -26,9 +26,13 @@ if (typeof widgetName === 'undefined') {
     process.exit(1);
 }
 if (typeof widgetPath !== 'undefined') {
-    widgetPath = path.join(widgetPath, widgetName);
+    if (path.isAbsolute(widgetPath)) {
+        widgetPath = path.join(widgetPath, widgetName);
+    } else {
+        widgetPath = path.join(process.cwd(), widgetPath, widgetName);
+    }
 } else {
-    widgetPath = path.join('.', widgetName);
+    widgetPath = path.join(process.cwd(), widgetName);
 }
 helper.validateWidgetName(widgetName)
     .then(function () {
