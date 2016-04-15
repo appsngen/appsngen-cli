@@ -26,11 +26,7 @@ if (typeof widgetName === 'undefined') {
     process.exit(1);
 }
 if (typeof widgetPath !== 'undefined') {
-    if (path.isAbsolute(widgetPath)) {
-        widgetPath = path.join(widgetPath, widgetName);
-    } else {
-        widgetPath = path.join(process.cwd(), widgetPath, widgetName);
-    }
+    widgetPath = path.resolve(widgetPath);
 } else {
     widgetPath = path.join(process.cwd(), widgetName);
 }
