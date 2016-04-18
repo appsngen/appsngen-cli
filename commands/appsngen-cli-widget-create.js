@@ -1,5 +1,7 @@
 #! /usr/bin/env node
 
+'use strict';
+
 var execSync = require('child_process').execSync;
 var path = require('path');
 var fs = require('fs');
@@ -30,6 +32,8 @@ if (typeof widgetPath !== 'undefined') {
 } else {
     widgetPath = path.join(process.cwd(), widgetName);
 }
+
+helper.checkSystemConfiguration();
 helper.validateWidgetName(widgetName)
     .then(function () {
         try {
@@ -53,7 +57,7 @@ helper.validateWidgetName(widgetName)
             throw 'Widget with this name already exist.';
         }
         mkdirp.sync(widgetPath);
-        execSync('npm run yo appsngen-web-widget "' + path.resolve(widgetPath) + '"', {
+        execSync('npm run yo appsngen-web-widget "' + path.resolve(widgetPath) + '" "' + widgetName + '"', {
             cwd: path.join(__dirname, '..'),
             stdio: 'inherit'
         });
