@@ -33,6 +33,7 @@ if (typeof widgetPath !== 'undefined') {
 } else {
     widgetPath = path.join(process.cwd(), widgetName);
 }
+helper.checkSystemConfiguration();
 widgetId = _s.slugify(widgetName);
 helper.validateWidgetName(widgetName, widgetId)
     .then(function () {
@@ -57,7 +58,7 @@ helper.validateWidgetName(widgetName, widgetId)
             throw 'Widget with this name already exist.';
         }
         mkdirp.sync(widgetPath);
-        execSync('npm run yo appsngen-web-widget "' + path.resolve(widgetPath) + '"', {
+        execSync('npm run yo appsngen-web-widget "' + path.resolve(widgetPath) + '" "' + widgetName + '"', {
             cwd: path.join(__dirname, '..'),
             stdio: 'inherit'
         });

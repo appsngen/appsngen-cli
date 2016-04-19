@@ -4,6 +4,8 @@
     var path = require('path');
     var bluebird = require('bluebird');
     var request = require('request');
+    var jsonfile = require('jsonfile');
+    var execSync = require('child_process').execSync;
     var Promise = bluebird.Promise;
     var post = Promise.promisify(request.post);
     var statSync = require('fs').statSync;
@@ -42,7 +44,7 @@
                 }
             });
     };
-
+    
     exports.isProjectFolder = function (widgetPath) {
         //TODO create more complete check
         try {
@@ -53,6 +55,21 @@
             } else {
                 throw err;
             }
+        }
+    };
+
+    exports.checkSystemConfiguration = function () {
+        var systemInfo = JSON.parse(execSync('npm ls -g --json generator-appsngen-web-widget').toString());
+        var generatorInfo = systemInfo.dependencies['generator-appsngen-web-widget'];
+        var generatorRequirements = (jsonfile.readFileSync(path.join(__dirname, '..', 'package.json')))
+                .dependencies['generator-appsngen-web-widget'];
+
+        if (generatorInfo && generatorInfo.version !== generatorRequirements) {
+            console.error('Generating aborted.\n' +
+                          'You have globally installed old version of generator-appsngen-web-widget\n' +
+                          'For correct work of appsngen-cli you should either delete global generator, \n' +
+                          'or update generator to version ' + generatorRequirements);
+            process.exit(1);
         }
     };
 })();
