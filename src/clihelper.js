@@ -1,8 +1,14 @@
 (function () {
+    'use strict';
+
     var path = require('path');
     var bluebird = require('bluebird');
+    var request = require('request');
     var Promise = bluebird.Promise;
+    var post = Promise.promisify(request.post);
     var statSync = require('fs').statSync;
+    var config = require('./../cli-config.json');
+    var authcontroller = require('./authcontroller');
 
     //add file extension to current file in this extension not exists
     exports.normalizePathToCurrentFile = function () {
@@ -13,21 +19,30 @@
         process.argv[1] = currentFile;
     };
 
-    exports.validateWidgetName = function (name) {
-        //TODO implement mechanism to check widget name via web call
-        var VALID_CHARACTERS_PATTERN = /[\w \-\.]+/;
-
-        return new Promise(function (resolve, reject) {
-            if (!name || name.length === 0) {
-                reject('Name can\'t be empty.');
-            } else if (name.match(VALID_CHARACTERS_PATTERN)[0] === name) {
-                resolve();
-            } else {
-                reject('Invalid widget name.');
-            }
-        });
+    exports.validateWidgetName = function (widgetName, widgetId) {
+        return authcontroller.getWidgetAccessToken()
+            .then(function (response) {
+                return post(config.serviceAddress + '/rest-services/widgets/is-valid', {
+                    body: {
+                        name: widgetName,
+                        id: widgetId
+                    },
+                    json: true,
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer ' + response.body.accessToken
+                    }
+                });
+            })
+            .then(function (response) {
+                if (response.statusCode === 200) {
+                    return Promise.resolve();
+                } else {
+                    return Promise.reject(response.body.message);
+                }
+            });
     };
-    
+
     exports.isProjectFolder = function (widgetPath) {
         //TODO create more complete check
         try {

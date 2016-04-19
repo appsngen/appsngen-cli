@@ -1,5 +1,7 @@
 #! /usr/bin/env node
 
+'use strict';
+
 var execSync = require('child_process').execSync;
 var path = require('path');
 var fs = require('fs');
@@ -7,9 +9,10 @@ var mkdirp = require('mkdirp');
 var program = require('./../src/customcommander');
 var jsonfile = require('jsonfile');
 var helper = require('./../src/clihelper');
+var _s = require('underscore.string');
 
 var registryPath = path.join(__dirname, '..', 'registry.json');
-var widgetName, widgetPath, registry;
+var widgetName, widgetPath, registry, widgetId;
 
 program
     .alias('appsngen widget create')
@@ -30,7 +33,8 @@ if (typeof widgetPath !== 'undefined') {
 } else {
     widgetPath = path.join(process.cwd(), widgetName);
 }
-helper.validateWidgetName(widgetName)
+widgetId = _s.slugify(widgetName);
+helper.validateWidgetName(widgetName, widgetId)
     .then(function () {
         try {
             if (fs.readdirSync(widgetPath).length !== 0) {
