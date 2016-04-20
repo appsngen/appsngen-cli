@@ -1,5 +1,4 @@
 var program = require('./../src/customcommander');
-var path = require('path');
 var helper = require('./../src/clihelper');
 
 helper.normalizePathToCurrentFile();

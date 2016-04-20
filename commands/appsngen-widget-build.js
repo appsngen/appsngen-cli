@@ -1,16 +1,19 @@
-var execSync = require('child_process').execSync;
-var program = require('./../src/customcommander');
-var path = require('path');
-var jsonfile = require('jsonfile');
-var cordovacontroller = require('./../src/cordovacontroller');
-var uploadcontroller = require('./../src/uploadcontroller');
+(function () {
+    'use strict';
 
-var platforms, options, option;
-var commandOptions = ''; // options passed to cordova build command
-var rcFilePath = path.join(process.cwd(), '/.appsngenrc');
-var rcConfig = jsonfile.readFileSync(rcFilePath);
+    var execSync = require('child_process').execSync;
+    var program = require('./../src/customcommander');
+    var path = require('path');
+    var jsonfile = require('jsonfile');
+    var cordovacontroller = require('./../src/cordovacontroller');
+    var uploadcontroller = require('./../src/uploadcontroller');
 
-program
+    var platforms, options, option;
+    var commandOptions = ''; // options passed to cordova build command
+    var rcFilePath = path.join(process.cwd(), '/.appsngenrc');
+    var rcConfig = jsonfile.readFileSync(rcFilePath);
+
+    program
     .alias('appsngen widget build')
     .option('--android', 'Build for android platform')
     .option('--ios', 'Build for ios platform')
@@ -20,16 +23,16 @@ program
     .option('--buildConfig <configFile>', 'Use the specified build configuration file.')
     .parse(process.argv);
 
-options = program.opts();
-platforms = cordovacontroller.parsePlatforms(options);
-if (platforms.length === 0) {
-    platforms = ['browser'];
-}
-platforms = platforms || ['browser'];
-execSync('grunt', {
-    stdio: 'inherit'
-});
-uploadcontroller
+    options = program.opts();
+    platforms = cordovacontroller.parsePlatforms(options);
+    if (platforms.length === 0) {
+        platforms = ['browser'];
+    }
+    platforms = platforms || ['browser'];
+    execSync('grunt', {
+        stdio: 'inherit'
+    });
+    uploadcontroller
     .uploadWidget(rcConfig)
     .then(function() {
         rcConfig = jsonfile.readFileSync(rcFilePath);
@@ -53,7 +56,7 @@ uploadcontroller
             }
         }
         execSync('npm run cordova-manipulation build ' + platforms.join(' ') +
-                (commandOptions ? ' -- ' + commandOptions: ''), {
+        (commandOptions ? ' -- ' + commandOptions: ''), {
             stdio: 'inherit'
         });
     })
@@ -61,3 +64,4 @@ uploadcontroller
         console.error(error);
         process.exit(1);
     });
+})();

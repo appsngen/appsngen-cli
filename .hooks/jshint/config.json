@@ -91,6 +91,8 @@
         "jsPlumb": true,
         "confirm": true,
         "d3": true,
-        "interact": true
+        "interact": true,
+        "process": true,
+        "__dirname": true
     }
 }
