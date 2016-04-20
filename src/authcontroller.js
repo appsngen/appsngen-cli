@@ -18,7 +18,7 @@
                 stdio: 'inherit'
             });
         } catch (err) {
-            cosnole.error(err.toString());
+            console.error(err.toString());
             process.exit(1);
         }
     };

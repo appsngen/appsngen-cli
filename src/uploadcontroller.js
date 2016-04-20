@@ -12,7 +12,7 @@
     var config = require('./../cli-config.json');
     var authcontroller = require('./authcontroller');
 
-    exports.uploadWidget = function (settings, callback) {
+    exports.uploadWidget = function (settings) {
         var options = {};
         var serviceAddress = config.serviceAddress;
         var zipFilePath = settings.zipFilePath;
