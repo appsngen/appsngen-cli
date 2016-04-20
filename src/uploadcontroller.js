@@ -19,38 +19,20 @@
         var replaceIfExists = settings.replaceIfExists;
 
         return Promise.all([
-                post(serviceAddress +  '/rest-services/tokens/access',
-                    {
-                        body: {
-                            scope: {
-                                widgets: [],
-                                dataSources: [],
-                                services: [
-                                    'widgets'
-                                ],
-                                streams: [],
-                                identity: false
-                            }
-                        },
-                        json: true,
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'Authorization': 'Bearer ' + authcontroller.getIdentityToken()
-                        }
-                    }),
+                authcontroller.getWidgetAccessToken(),
                 readFile(zipFilePath, 'binary')
             ])
             .then(function (result) {
                 options.token = result[0].body.accessToken;
                 options.zipFile = new Buffer(result[1], 'binary');
                 return post(serviceAddress + '/viewer/widgets',
-                            {
-                                body: options.zipFile,
-                                headers: {
-                                    'Content-Type': 'application/zip',
-                                    'Authorization': 'Bearer ' + options.token
-                                }
-                            });
+                    {
+                        body: options.zipFile,
+                        headers: {
+                            'Content-Type': 'application/zip',
+                            'Authorization': 'Bearer ' + options.token
+                        }
+                    });
             })
             .then(function (response) {
                 if (response.statusCode === 409) {
@@ -59,13 +41,13 @@
                     }
                     console.log('Post upload conflict, trying to update existing widget...');
                     return put(serviceAddress + '/viewer/widgets',
-                                {
-                                    body: options.zipFile,
-                                    headers: {
-                                        'Content-Type': 'application/zip',
-                                        'Authorization': 'Bearer ' + options.token
-                                    }
-                                });
+                        {
+                            body: options.zipFile,
+                            headers: {
+                                'Content-Type': 'application/zip',
+                                'Authorization': 'Bearer ' + options.token
+                            }
+                        });
                 } else {
                     return Promise.resolve(response);
                 }
