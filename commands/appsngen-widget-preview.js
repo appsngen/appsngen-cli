@@ -1,3 +1,7 @@
+'use strict';
+
+/*jshint -W079 */
+
 var jsonfile = require('jsonfile');
 var path = require('path');
 var fs = require('fs');

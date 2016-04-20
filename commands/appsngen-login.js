@@ -1,7 +1,8 @@
+'use strict';
+
 var jsonfile = require('jsonfile');
 var path = require('path');
 var authcontroller = require('./../src/authcontroller');
-var config = require('./../cli-config');
 
 authcontroller.authorize()
     .then(function (response) {

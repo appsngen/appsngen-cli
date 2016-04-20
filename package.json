@@ -22,7 +22,7 @@
   "license": "MIT",
   "preferGlobal": true,
   "bin": {
-    "appsngen": "commands/appsngen-cli.js"
+    "appsngen": "commands/appsngen.js"
   },
   "bugs": {
     "url": "https://github.com/appsngen/appsngen-cli/issues"

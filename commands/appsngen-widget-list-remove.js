@@ -1,3 +1,5 @@
+'use strict';
+
 var program = require('./../src/customcommander');
 var rmdir = require('rmdir');
 var jsonfile = require('jsonfile');

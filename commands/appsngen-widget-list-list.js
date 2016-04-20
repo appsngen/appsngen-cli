@@ -8,9 +8,11 @@ var table = new Table();
 try {
     registry = jsonfile.readFileSync(path.join(__dirname, '..', 'registry.json'));
     for (item in registry) {
-        table.cell('Name', item);
-        table.cell('Path', registry[item].path);
-        table.newRow();
+        if (registry.hasOwnProperty(item)) {
+            table.cell('Name', item);
+            table.cell('Path', registry[item].path);
+            table.newRow();
+        }
     }
     console.log(table.toString());
 } catch (err) {

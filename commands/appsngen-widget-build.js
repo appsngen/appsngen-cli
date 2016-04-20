@@ -1,3 +1,5 @@
+'use strict';
+
 var execSync = require('child_process').execSync;
 var program = require('./../src/customcommander');
 var path = require('path');

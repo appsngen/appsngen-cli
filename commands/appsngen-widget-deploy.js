@@ -1,3 +1,7 @@
+'use strict';
+
+/*jshint -W079 */
+
 var uploader = require('./../src/uploadcontroller');
 var config = require('./../cli-config.json');
 var jsonfile = require('jsonfile');
