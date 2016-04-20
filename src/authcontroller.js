@@ -18,7 +18,7 @@
                 stdio: 'inherit'
             });
         } catch (err) {
-            cosnole.error(err.toString());
+            console.error(err.toString());
             process.exit(1);
         }
     };
@@ -75,6 +75,28 @@
             }
             process.exit(1);
         }
+    };
+    
+    exports.getWidgetAccessToken = function () {
+        return post(config.serviceAddress +  '/rest-services/tokens/access',
+            {
+                body: {
+                    scope: {
+                        widgets: [],
+                        dataSources: [],
+                        services: [
+                            'widgets'
+                        ],
+                        streams: [],
+                        identity: false
+                    }
+                },
+                json: true,
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer ' + this.getIdentityToken()
+                }
+            });
     };
 
     exports.authorize = function () {
