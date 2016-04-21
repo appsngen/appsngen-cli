@@ -17,7 +17,6 @@
     };
 
     program
-    .alias('appsngen widget list remove')
     .arguments('<name>')
     .usage('<name> [option]')
     .option('--hard', 'delete widget folder')

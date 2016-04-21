@@ -50,7 +50,6 @@ try {
 helper.normalizePathToCurrentFile();
 
 program
-    .alias('appsngen widget')
     .usage('[command]')
     .command('create', 'creates widget')
     .command('build', 'builds widget sources')

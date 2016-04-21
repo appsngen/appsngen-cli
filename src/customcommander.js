@@ -9,7 +9,7 @@
         var usage, options;
         var desc = [];
         var cmds = [];
-        var cmdName = this._alias;
+        var cmdName = this._name.split('-').join(' ');
         var commandHelp = this.commandHelp();
 
         if (this._description) {

@@ -15,7 +15,6 @@ var registryPath = path.join(__dirname, '..', 'registry.json');
 var widgetName, widgetPath, registry, widgetId;
 
 program
-    .alias('appsngen widget create')
     .usage('<name> [path]')
     .arguments('<name> [path]')
     .action(function (name, path) {
