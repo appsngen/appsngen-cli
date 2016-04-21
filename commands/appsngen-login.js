@@ -11,7 +11,7 @@
         var configFilePath = path.join(__dirname, './../cli-config.json');
 
         switch (response.statusCode) {
-            case 200:
+            case 201:
             config = jsonfile.readFileSync(configFilePath);
             config.credentials.appsngen = response.body;
             config.credentials.appsngen.received = Date.now();
