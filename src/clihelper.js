@@ -44,7 +44,7 @@
                 }
             });
     };
-    
+
     exports.isProjectFolder = function (widgetPath) {
         //TODO create more complete check
         try {

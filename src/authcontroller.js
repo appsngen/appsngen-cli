@@ -52,8 +52,9 @@
     };
 
     exports.isAuthorized = function () {
-        if (config.credentials &&
-            (config.credentials.expiresIn + config.credentials.received) >= Date.now()) {
+        var appsngenCredentials = config.credentials && config.credentials.appsngen;
+
+        if (appsngenCredentials && (appsngenCredentials.expiresIn + appsngenCredentials.received) >= Date.now()) {
             return true;
         }
 
@@ -66,7 +67,7 @@
                 refreshToken();
                 config = jsonfile.readFileSync(path.join(__dirname, './../cli-config.json'));
             }
-            return config.credentials.identityToken;
+            return config.credentials.appsngen.identityToken;
         } catch (err) {
             if (err.cmd && err.cmd === 'appsngen login') {
                 console.log('You should login to appsngen.');
@@ -76,7 +77,7 @@
             process.exit(1);
         }
     };
-    
+
     exports.getWidgetAccessToken = function () {
         return post(config.serviceAddress +  '/rest-services/tokens/access',
             {

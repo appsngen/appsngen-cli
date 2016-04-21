@@ -8,13 +8,13 @@
     authcontroller.authorize()
     .then(function (response) {
         var config;
-        var configFilePath = path.join(__dirname, '/../cli-config.json');
+        var configFilePath = path.join(__dirname, './../cli-config.json');
 
         switch (response.statusCode) {
-            case 201:
+            case 200:
             config = jsonfile.readFileSync(configFilePath);
-            config.credentials = response.body;
-            config.credentials.received = Date.now();
+            config.credentials.appsngen = response.body;
+            config.credentials.appsngen.received = Date.now();
             jsonfile.writeFileSync(configFilePath, config, {
                 spaces: 4
             });
@@ -31,7 +31,6 @@
         }
     })
     .catch(function(error) {
-        console.log('catcher catch');
         console.error(error);
         process.exit(1);
     });
