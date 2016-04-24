@@ -1,8 +1,6 @@
 #! /usr/bin/env node
 
 var program = require('./../src/customcommander');
-var path = require('path');
-var jsonfile = require('jsonfile');
 var authcontroller = require('./../src/authcontroller');
 var execSync = require('child_process').execSync;
 var helper = require('./../src/clihelper');
@@ -13,7 +11,7 @@ var ADDRESSABLE_COMMANDS = [
     'preview',
     'deploy'
 ];
-var registry, widgetName, callWithName;
+var callWithName;
 
 try {
     if (!authcontroller.isAuthorized()) {
@@ -25,17 +23,9 @@ try {
         callWithName = process.argv.length >= 4 &&
             process.argv[3].indexOf('-') !== 0; //check 4th argument isn't option
         if (callWithName) {
-            widgetName = process.argv[3];
-            registry = jsonfile.readFileSync(path.join(__dirname, '..', 'registry.json'));
-            if (registry[widgetName]) {
-                process.chdir(registry[widgetName].path);
-            } else {
-                throw 'Widget "' + widgetName + '"doesn\'t exist';
-            }
-        } else {
-            if (!helper.isProjectFolder('.')) {
-                throw 'Current folder isn\'t appsngen widget project.';
-            }
+            helper.workByWidgetName(process.argv[3]);
+        } else if (!helper.isProjectFolder('.')) {
+            throw 'Current folder isn\'t appsngen widget project.';
         }
     }
 } catch (err) {

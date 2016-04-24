@@ -1,53 +1,38 @@
 (function () {
     'use strict';
 
-    var program = require('commander');
-    var jsonfile = require('jsonfile');
-    var bluebird = require('bluebird');
-    var Promise = bluebird.Promise;
+    var program = require('./../src/customcommander');
+    var Promise = require('bluebird').Promise;
     var helper = require('./../src/clihelper');
+    var registrycontroller = require('./../src/registrycontroller');
     var path = require('path');
 
-    var widgetName, widgetPath, registry;
-    var registryPath = path.join(__dirname, '..', 'registry.json');
+    var widgetName, widgetPath;
 
     program
-    .arguments('<name> <path>')
-    .action(function (name, path) {
-        widgetName = name;
-        widgetPath = path;
-    })
-    .parse(process.argv);
+        .arguments('<name> <path>')
+        .action(function (name, path) {
+            widgetName = name;
+            widgetPath = path;
+        })
+        .parse(process.argv);
 
     if (!widgetName || !widgetPath) {
         console.error('You should provide widget name and path to widget folder');
         process.exit(1);
     }
 
-    helper.validateWidgetName(widgetName)
+    //helper.validateWidgetName(widgetName)
+    Promise.resolve()
     .then(function () {
         if (helper.isProjectFolder(widgetPath)) {
             return Promise.resolve();
+        } else {
+            return Promise.reject('Provided path isn\'t appsngen widget project.');
         }
     })
     .then(function () {
-        try {
-            registry = jsonfile.readFileSync(registryPath);
-        } catch (err) {
-            if (err.code !== 'ENOENT') {
-                throw err;
-            }
-        }
-        registry = registry || {};
-        if (registry[widgetName]) {
-            throw 'Widget with this name already exist.';
-        }
-        registry[widgetName] = {
-            path: path.resolve(widgetPath)
-        };
-        jsonfile.writeFileSync(registryPath, registry, {
-            spaces: 4
-        });
+        registrycontroller.addWidget(widgetName, path.resolve(widgetPath));
     })
     .catch(function (err) {
         console.error(err.toString());

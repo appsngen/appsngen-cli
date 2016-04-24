@@ -7,12 +7,11 @@ var path = require('path');
 var fs = require('fs');
 var mkdirp = require('mkdirp');
 var program = require('./../src/customcommander');
-var jsonfile = require('jsonfile');
 var helper = require('./../src/clihelper');
-var _s = require('underscore.string');
+var registrycontroller = require('./../src/registrycontroller');
+var Promise = require('bluebird').Promise;
 
-var registryPath = path.join(__dirname, '..', 'registry.json');
-var widgetName, widgetPath, registry, widgetId;
+var widgetName, widgetPath;
 
 program
     .alias('appsngen widget create')
@@ -33,41 +32,34 @@ if (typeof widgetPath !== 'undefined') {
 } else {
     widgetPath = path.join(process.cwd(), widgetName);
 }
-helper.checkSystemConfiguration();
-widgetId = _s.slugify(widgetName);
-helper.validateWidgetName(widgetName, widgetId)
+
+new Promise(function (resolve) {
+    try {
+        if (fs.readdirSync(widgetPath).length !== 0) {
+            throw 'Path already exists and is not empty: ' + path.resolve(widgetPath);
+        }
+        return resolve();
+    } catch (e) {
+        if (e.code !== 'ENOENT') {
+            throw e;
+        }
+    }})
     .then(function () {
-        try {
-            if (fs.readdirSync(widgetPath).length !== 0) {
-                throw 'Path already exists and is not empty: ' + path.resolve(widgetPath);
-            }
-        } catch (e) {
-            if (e.code !== 'ENOENT') {
-                throw e;
-            }
-        }
-        try {
-            registry = jsonfile.readFileSync(registryPath);
-        } catch (e) {
-            if (e.code !== 'ENOENT') {
-                throw e;
-            }
-        }
-        registry = registry || {};
-        if (registry[widgetName]) {
-            throw 'Widget with this name already exist.';
-        }
+        return helper.validateWidgetName(widgetName);
+    })
+    .then(function () {
+        console.log('Chech system configuration.');
+        helper.checkSystemConfiguration();
+        console.log('Check completed successfully.');
+        return Promise.resolve();
+    })
+    .then(function () {
         mkdirp.sync(widgetPath);
         execSync('npm run yo appsngen-web-widget "' + path.resolve(widgetPath) + '" "' + widgetName + '"', {
             cwd: path.join(__dirname, '..'),
             stdio: 'inherit'
         });
-        registry[widgetName] = {
-            path: path.resolve(widgetPath)
-        };
-        jsonfile.writeFileSync(registryPath, registry, {
-            spaces: 4
-        });
+        registrycontroller.addWidget(widgetName, widgetPath);
     })
     .catch(function (error) {
         console.error(error.toString());

@@ -11,6 +11,8 @@
     var statSync = require('fs').statSync;
     var config = require('./../cli-config.json');
     var authcontroller = require('./authcontroller');
+    var registrycontroller = require('./registrycontroller');
+    var _s = require('underscore.string');
 
     //add file extension to current file in this extension not exists
     exports.normalizePathToCurrentFile = function () {
@@ -21,7 +23,9 @@
         process.argv[1] = currentFile;
     };
 
-    exports.validateWidgetName = function (widgetName, widgetId) {
+    exports.validateWidgetName = function (widgetName) {
+        var widgetId = _s.slugify(widgetName);
+
         return authcontroller.getWidgetAccessToken()
             .then(function (response) {
                 return post(config.serviceAddress + '/rest-services/widgets/is-valid', {
@@ -71,5 +75,42 @@
                           'or update generator to version ' + generatorRequirements);
             process.exit(1);
         }
+    };
+
+    exports.workByWidgetName = function (name) {
+        var widgetsList;
+
+        try {
+            widgetsList = registrycontroller.getWidgetsList();
+
+            if (typeof name !== 'undefined') {
+                if (widgetsList[name]) {
+                    process.chdir(widgetsList[name].path);
+                } else {
+                    throw 'Widget "' + name + '" doesn\'t exist';
+                }
+            } else if (!this.isProjectFolder(process.cwd())) {
+                throw 'Current folder isn\'t appsngen widget project.';
+            }
+        } catch (err) {
+            console.error(err.toString());
+            process.exit(1);
+        }
+    };
+
+    exports.getPhonegapCredentials = function () {
+        return config.credentials.phonegap;
+    };
+
+    exports.getWidgetNameByPath = function (path) {
+        var name;
+        var widgetsList = registrycontroller.getWidgetsList();
+
+        for (name in widgetsList) {
+            if (widgetsList[name].path === path) {
+                return name;
+            }
+        }
+        throw 'No widgets registered in ' + path;
     };
 })();
