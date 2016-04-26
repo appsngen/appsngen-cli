@@ -60,7 +60,8 @@
         }
     });
 
-    request('https://build.phonegap.com/api/v1/apps/2038944/android?access_token=' + phonegapCredentials.access_token)
+    request('https://build.phonegap.com/api/v1/apps/' + widgetPhonegapId +
+            '/android?access_token=' + phonegapCredentials.access_token)
         .on('response', function (response) {
             if (response.statusCode === 404) {
                 isSuccessfulDownload = false;
