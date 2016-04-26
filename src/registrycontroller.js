@@ -42,12 +42,6 @@
         }
     };
 
-    exports.isWidgetNameUnique = function (name) {
-        var widgetsList = this.getWidgetsList();
-
-        return !widgetsList[name];
-    };
-
     exports.addWidget = function (name, path) {
         var widgetsList = this.getWidgetsList();
 
