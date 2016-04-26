@@ -102,6 +102,15 @@
         return config.credentials.phonegap;
     };
 
+    exports.isPhonegapAuthorized = function () {
+        if (!this.getPhonegapCredentials().access_token) {
+            console.error('You don\'t have PhoneGap Build access token.\n' +
+                'Use "appsngen phonegap access" command to get one.');
+            process.exit(1);
+        }
+    };
+
+
     exports.getWidgetNameByPath = function (path) {
         var name;
         var widgetsList = registrycontroller.getWidgetsList();
@@ -111,6 +120,7 @@
                 return name;
             }
         }
-        throw 'No widgets registered in ' + path;
+        console.error('No widgets registered in ' + path);
+        process.exit(1);
     };
 })();

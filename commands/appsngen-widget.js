@@ -47,5 +47,6 @@ program
     .command('run', 'runs widget locally')
     .command('preview', 'preview widget at AppsNgen')
     .command('deploy', 'deploys widget to AppsNgen')
+    .command('remote', 'set of commands to work with PhoneGap Build service')
     .command('list', 'print widgets list')
     .parse(process.argv);

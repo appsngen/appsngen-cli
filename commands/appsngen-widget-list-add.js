@@ -2,12 +2,11 @@
     'use strict';
 
     var program = require('./../src/customcommander');
-    var Promise = require('bluebird').Promise;
     var helper = require('./../src/clihelper');
     var registrycontroller = require('./../src/registrycontroller');
     var path = require('path');
 
-    var widgetName, widgetPath;
+    var widgetName, widgetPath, widgetsList;
 
     program
         .arguments('<name> <path>')
@@ -22,20 +21,18 @@
         process.exit(1);
     }
 
-    //helper.validateWidgetName(widgetName)
-    Promise.resolve()
-    .then(function () {
-        if (helper.isProjectFolder(widgetPath)) {
-            return Promise.resolve();
+    widgetsList = registrycontroller.getWidgetsList();
+    try {
+        if (!widgetsList[widgetName]) {
+            if (!helper.isProjectFolder(widgetPath)) {
+                throw 'Provided path isn\'t appsngen widget project.';
+            }
+            registrycontroller.addWidget(widgetName, path.resolve(widgetPath));
         } else {
-            return Promise.reject('Provided path isn\'t appsngen widget project.');
+           throw 'Widget with same name already exists.';
         }
-    })
-    .then(function () {
-        registrycontroller.addWidget(widgetName, path.resolve(widgetPath));
-    })
-    .catch(function (err) {
+    } catch (err) {
         console.error(err.toString());
         process.exit(1);
-    });
+    }
 })();
