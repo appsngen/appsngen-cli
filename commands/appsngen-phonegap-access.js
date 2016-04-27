@@ -52,6 +52,9 @@
                 });
                 console.log('Access token received.');
                 break;
+            case 400:
+                console.log('Bad PhoneGap authentication token.');
+                process.exit(1);
             case 404:
                 console.log('No access token for specified user.\n' +
                             'Use "appsngen phonegap access [authToken]" to get one.\n' +
@@ -59,7 +62,6 @@
                             'https://github.com/appsngen/developers-documentation/' +
                             'wiki/How-to-get-PhoneGap-Authentication-Tokens');
                 process.exit(1);
-                break;
             default:
                 console.log('Unexpected response: ' + response.statusCode);
                 console.log(response.body);
