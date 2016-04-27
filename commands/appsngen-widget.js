@@ -3,8 +3,6 @@
 var program = require('./../src/customcommander');
 var path = require('path');
 var jsonfile = require('jsonfile');
-var authcontroller = require('./../src/authcontroller');
-var execSync = require('child_process').execSync;
 var helper = require('./../src/clihelper');
 
 var ADDRESSABLE_COMMANDS = [
@@ -15,12 +13,9 @@ var ADDRESSABLE_COMMANDS = [
 ];
 var registry, widgetName, callWithName;
 
+helper.checkAppsngenAuthorization(); //will terminate process in case of authorization fail
+
 try {
-    if (!authcontroller.isAuthorized()) {
-        execSync('appsngen login', {
-            stdio: 'inherit'
-        });
-    }
     if (ADDRESSABLE_COMMANDS.indexOf(process.argv[2]) !== -1) {
         callWithName = process.argv.length >= 4 &&
             process.argv[3].indexOf('-') !== 0; //check 4th argument isn't option
@@ -39,11 +34,7 @@ try {
         }
     }
 } catch (err) {
-    if (err.cmd && err.cmd === 'appsngen login') {
-        console.log('You should login to appsngen.');
-    } else {
-        console.error(err.toString());
-    }
+    console.error(err.toString());
     process.exit(1);
 }
 

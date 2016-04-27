@@ -72,4 +72,17 @@
             process.exit(1);
         }
     };
+    
+    exports.checkAppsngenAuthorization = function () {
+        try {
+            if (!authcontroller.isAuthorized()) {
+                execSync('appsngen login', {
+                    stdio: 'inherit'
+                });
+            }
+        } catch (err) {
+            console.error(err.toString());
+            process.exit(1);
+        }
+    };
 })();

@@ -3,6 +3,7 @@
 
     var program = require('./../src/customcommander');
     var authcontroller = require('./../src/authcontroller');
+    var helper = require('./../src/clihelper');
     var path = require('path');
     var jsonfile = require('jsonfile');
     var Promise = require('bluebird').Promise;
@@ -24,6 +25,8 @@
             authToken = token;
         })
         .parse(process.argv);
+
+    helper.checkAppsngenAuthorization(); //will terminate process in case of authorization fail
 
     if (typeof authToken !== 'undefined') {
         requestOptions.method = 'POST';
