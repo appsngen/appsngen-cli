@@ -54,11 +54,7 @@
     exports.isAuthorized = function () {
         var appsngenCredentials = config.credentials && config.credentials.appsngen;
 
-        if (appsngenCredentials && (appsngenCredentials.expiresIn + appsngenCredentials.received) >= Date.now()) {
-            return true;
-        }
-
-        return false;
+        return appsngenCredentials && (appsngenCredentials.expiresIn + appsngenCredentials.received) >= Date.now();
     };
 
     exports.getIdentityToken = function () {
