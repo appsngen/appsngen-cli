@@ -7,6 +7,7 @@
     var request = require('request');
     var fs = require('fs');
     var _ = require('underscore');
+    var archiver = require('archiver');
     var config = require('./../cli-config.json');
     var authcontroller = require('./authcontroller');
 
@@ -37,6 +38,8 @@
             process.exit(1);
         }
     };
+
+    exports.archivePath = path.join(process.cwd(), 'dist', 'phonegapPackage.zip');
 
     exports.create = function () {
         var packageConfig, rcConfig;
@@ -123,5 +126,20 @@
         });
 
         return platforms;
+    };
+
+    exports.createArchive = function (output) {
+        var sourcePath = path.join(process.cwd(), 'cordova');
+        var zipPackage = archiver.create('zip');
+        zipPackage.on('error', function (err) {
+            console.error(err.toString());
+            process.exit(1);
+        });
+        zipPackage.pipe(output);
+        zipPackage.append(fs.createReadStream(path.join(sourcePath, 'config.xml')), {
+            name: 'config.xml'
+        });
+        zipPackage.directory(path.join(sourcePath, 'www'), 'www');
+        zipPackage.finalize();        
     };
 })();

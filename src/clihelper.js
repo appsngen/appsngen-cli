@@ -102,8 +102,10 @@
         return config.credentials.phonegap;
     };
 
-    exports.isPhonegapAuthorized = function () {
-        if (!this.getPhonegapCredentials().access_token) {
+    exports.checkPhonegapAuthorization = function () {
+        var phonegapCredentials = this.getPhonegapCredentials();
+
+        if (!phonegapCredentials || !phonegapCredentials.access_token) {
             console.error('You don\'t have PhoneGap Build access token.\n' +
                 'Use "appsngen phonegap access" command to get one.');
             process.exit(1);
@@ -111,16 +113,17 @@
     };
 
 
-    exports.getWidgetNameByPath = function (path) {
+    exports.getWidgetNameByPath = function (widgetPath) {
         var name;
         var widgetsList = registrycontroller.getWidgetsList();
+        widgetPath = path.resolve(widgetPath);
 
         for (name in widgetsList) {
-            if (widgetsList[name].path === path) {
+            if (widgetsList[name].path === widgetPath) {
                 return name;
             }
         }
-        console.error('No widgets registered in ' + path);
+        console.error('No widgets registered in ' + widgetPath);
         process.exit(1);
     };
 })();

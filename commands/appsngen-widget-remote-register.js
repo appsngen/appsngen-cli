@@ -4,14 +4,13 @@
     var program = require('./../src/customcommander');
     var helper =  require('./../src/clihelper');
     var registrycontroller = require('./../src/registrycontroller');
-    var archiver = require('archiver');
-    var path = require('path');
+    var cordovacontroller = require('./../src/cordovacontroller');
     var fs = require('fs');
     var request = require('request');
 
     var phonegapCredentials = helper.getPhonegapCredentials();
     var keys = {};
-    var widgetName, zipPackage, output, sourcePath, zipPath;
+    var widgetName, output;
 
     program
         .arguments('[name]')
@@ -27,7 +26,7 @@
         widgetName = helper.getWidgetNameByPath(process.cwd());
     }
 
-    helper.isPhonegapAuthorized(); //will terminate process if not authorized
+    helper.checkPhonegapAuthorization(); //will terminate process if not authorized
 
     ['key_ios', 'key_android'].forEach(function (el) {
         if (program[el]) {
@@ -36,15 +35,13 @@
             };
         }
     });
-    sourcePath = path.join(process.cwd(), 'cordova');
-    zipPath = path.join(process.cwd(), 'dist', 'phonegapPackage.zip');
 
-    output = fs.createWriteStream(zipPath);
+    output = fs.createWriteStream(cordovacontroller.archivePath);
     output.on('close', function () {
         var req, form;
 
         req = request.post('https://build.phonegap.com/api/v1/apps?access_token=' +
-            phonegapCredentials['access_token'], function (err, resp) {
+            phonegapCredentials.access_token, function (err, resp) {
             var body, widgetsList;
 
             if (err) {
@@ -53,7 +50,7 @@
             }
 
             body = JSON.parse(resp.body);
-            fs.unlinkSync(zipPath);
+            fs.unlinkSync(cordovacontroller.archivePath);
             if (resp.statusCode === 201) {
                 widgetsList = registrycontroller.getWidgetsList();
                 widgetsList[widgetName].phonegap_id = body.id;
@@ -71,18 +68,7 @@
             create_method: 'file',
             keys: keys
         }));
-        form.append('file', fs.createReadStream(zipPath));
+        form.append('file', fs.createReadStream(cordovacontroller.archivePath));
     });
-
-    zipPackage = archiver.create('zip');
-    zipPackage.on('error', function (err) {
-        console.error(err.toString());
-        process.exit(1);
-    });
-    zipPackage.pipe(output);
-    zipPackage.append(fs.createReadStream(path.join(sourcePath, 'config.xml')), {
-        name: 'config.xml'
-    });
-    zipPackage.directory(path.join(sourcePath, 'www'), 'www');
-    zipPackage.finalize();
+    cordovacontroller.createArchive(output);
 })();

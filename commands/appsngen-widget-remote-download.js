@@ -40,7 +40,7 @@
         console.log('Missing "platform" argument.');
         program.help();
     }
-    helper.isPhonegapAuthorized(); //will terminate process if not authorized
+    helper.checkPhonegapAuthorization(); //will terminate process if not authorized
     if (!widgetPhonegapId) {
         console.log('Widget "' + widgetName + '" doesn\'t have PhoneGap Id.');
         console.log('Use "appsngen widget remote register" command to resolve this issue.');
@@ -54,7 +54,7 @@
             outputName = outputName.substring(outputName.lastIndexOf('/.') + 2);
             fs.renameSync(outputPath, path.join(process.cwd(), 'dist', outputName));
         } else {
-            console.error('No application with PhoneGap ID: ' + widgetPhonegapId);
+            console.error('Download of application unavailable right now.');
             fs.unlinkSync(outputPath);
             process.exit(1);
         }
