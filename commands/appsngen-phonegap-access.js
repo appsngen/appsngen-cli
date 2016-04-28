@@ -64,14 +64,10 @@
                             'wiki/How-to-get-PhoneGap-Authentication-Tokens');
                 process.exit(1);
                 break;
-            case 500:
+            default:
                 console.log('Unexpected response from backend. Please try again.');
                 process.exit(1);
                 break;
-            default:
-                console.log('Unexpected response: ' + response.statusCode);
-                console.log(response.body);
-                process.exit(1);
         }
     })
     .catch(function (err) {
