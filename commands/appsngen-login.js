@@ -13,6 +13,7 @@
         switch (response.statusCode) {
             case 201:
             config = jsonfile.readFileSync(configFilePath);
+            config.credentials = config.credentials || {};
             config.credentials.appsngen = response.body;
             config.credentials.appsngen.received = Date.now();
             jsonfile.writeFileSync(configFilePath, config, {
