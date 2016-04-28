@@ -40,7 +40,7 @@
     request(requestOptions)
     .then(function (response) {
         var config;
-        var configFilePath = path.join(__dirname, './../cli-config.json');
+        var configFilePath = path.join(__dirname, '/../cli-config.json');
 
         switch (response.statusCode) {
             case 200:
@@ -51,6 +51,10 @@
                     spaces: 4
                 });
                 console.log('Access token received.');
+                break;
+            case 400:
+                console.log('Bad PhoneGap authentication token.');
+                process.exit(1);
                 break;
             case 404:
                 console.log('No access token for specified user.\n' +
