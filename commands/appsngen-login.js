@@ -8,7 +8,7 @@
     authcontroller.authorize()
     .then(function (response) {
         var config;
-        var configFilePath = path.join(__dirname, './../cli-config.json');
+        var configFilePath = path.join(__dirname, '/../cli-config.json');
 
         switch (response.statusCode) {
             case 201:
