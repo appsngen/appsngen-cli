@@ -1,6 +1,5 @@
 (function() {
     'use strict';
-    /*jshint bitwise: false*/
 
     var bluebird = require('bluebird');
     var execSync = require('child_process').execSync;
@@ -33,7 +32,7 @@
         try {
             if (!this.isAuthorized()) {
                 refreshToken();
-                config = jsonfile.readFileSync(path.join(__dirname, './../cli-config.json'));
+                config = jsonfile.readFileSync(path.join(__dirname, '/../cli-config.json'));
             }
             return config.credentials.appsngen.identityToken;
         } catch (error) {

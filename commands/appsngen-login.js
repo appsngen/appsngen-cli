@@ -12,23 +12,23 @@
 
         switch (response.statusCode) {
             case 201:
-            config = jsonfile.readFileSync(configFilePath);
-            config.credentials = config.credentials || {};
-            config.credentials.appsngen = response.body;
-            config.credentials.appsngen.received = Date.now();
-            jsonfile.writeFileSync(configFilePath, config, {
-                spaces: 4
-            });
-            console.log('Authorization completed successfully.');
-            break;
+                config = jsonfile.readFileSync(configFilePath);
+                config.credentials = {};
+                config.credentials.appsngen = response.body;
+                config.credentials.appsngen.received = Date.now();
+                jsonfile.writeFileSync(configFilePath, config, {
+                    spaces: 4
+                });
+                console.log('Authorization completed successfully.');
+                break;
             case 401:
-            console.log('Invalid username or password.');
-            process.exit(1);
-            break;
+                console.log('Invalid username or password.');
+                process.exit(1);
+                break;
             default:
-            console.log(response.body.message);
-            console.log('Unexpected response: ' + response.statusCode);
-            process.exit(1);
+                console.log(response.body.message);
+                console.log('Unexpected response: ' + response.statusCode);
+                process.exit(1);
         }
     })
     .catch(function(error) {
