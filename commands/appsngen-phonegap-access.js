@@ -70,8 +70,8 @@
                 break;
         }
     })
-    .catch(function (err) {
-        console.error(err);
+    .catch(function (error) {
+        console.error(error);
         process.exit(1);
     });
 })();

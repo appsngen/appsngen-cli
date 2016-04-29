@@ -49,11 +49,11 @@
         //TODO create more complete check
         try {
             return !!statSync(path.join(widgetPath, '.appsngenrc'));
-        } catch (err) {
-            if (err.code === 'ENOENT') {
+        } catch (error) {
+            if (error.code === 'ENOENT') {
                 return false;
             } else {
-                throw err;
+                throw error;
             }
         }
     };
@@ -80,8 +80,8 @@
                     stdio: 'inherit'
                 });
             }
-        } catch (err) {
-            console.error(err.toString());
+        } catch (error) {
+            console.error(error.toString());
             process.exit(1);
         }
     };

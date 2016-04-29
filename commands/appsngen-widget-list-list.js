@@ -15,12 +15,12 @@ try {
         }
     }
     console.log(table.toString());
-} catch (err) {
-    if (err.code === 'ENOENT') {
+} catch (error) {
+    if (error.code === 'ENOENT') {
         console.log('Widgets list is empty.');
         process.exit(0);
     } else {
-        console.error(err.toString());
+        console.error(error.toString());
         process.exit(1);
     }
 }

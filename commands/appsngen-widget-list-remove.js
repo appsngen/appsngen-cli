@@ -33,9 +33,9 @@
         registry = jsonfile.readFileSync(registryPath);
         if (registry[widgetName]) {
             if (program.hard) {
-                rmdir(registry[widgetName].path, function (err) {
-                    if(err) {
-                        throw err;
+                rmdir(registry[widgetName].path, function (error) {
+                    if(error) {
+                        throw error;
                     }
                     removeRegistryRecord(widgetName);
                 });
@@ -43,11 +43,11 @@
                 removeRegistryRecord(widgetName);
             }
         }
-    } catch (err) {
-        if (err.code === 'ENOENT') {
+    } catch (error) {
+        if (error.code === 'ENOENT') {
             console.log('Widgets list is empty.');
         } else {
-            console.error(err);
+            console.error(error);
         }
         process.exit(1);
     }

@@ -33,8 +33,8 @@ try {
             }
         }
     }
-} catch (err) {
-    console.error(err.toString());
+} catch (error) {
+    console.error(error.toString());
     process.exit(1);
 }
 
