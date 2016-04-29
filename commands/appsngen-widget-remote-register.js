@@ -8,9 +8,8 @@
     var fs = require('fs');
     var request = require('request');
 
-    var phonegapCredentials = helper.getPhonegapCredentials();
     var keys = {};
-    var widgetName, output;
+    var widgetName, archivePath, output, phonegapCredentials;
 
     program
         .arguments('[name]')
@@ -27,6 +26,7 @@
     }
 
     helper.checkPhonegapAuthorization(); //will terminate process if not authorized
+    phonegapCredentials = helper.getPhonegapCredentials();
 
     ['key_ios', 'key_android'].forEach(function (el) {
         if (program[el]) {
@@ -36,24 +36,25 @@
         }
     });
 
-    output = fs.createWriteStream(cordovacontroller.archivePath);
+    archivePath = cordovacontroller.getArchivePath(process.cwd());
+    output = fs.createWriteStream(archivePath);
     output.on('close', function () {
         var req, form;
 
         req = request.post('https://build.phonegap.com/api/v1/apps?access_token=' +
-            phonegapCredentials.access_token, function (err, resp) {
+            phonegapCredentials.access_token, function (error, resp) {
             var body, widgetsList;
 
-            if (err) {
-                console.error(err.toString());
+            if (error) {
+                console.error(error.toString());
                 process.exit(1);
             }
 
             body = JSON.parse(resp.body);
-            fs.unlinkSync(cordovacontroller.archivePath);
+            fs.unlinkSync(archivePath);
             if (resp.statusCode === 201) {
                 widgetsList = registrycontroller.getWidgetsList();
-                widgetsList[widgetName].phonegap_id = body.id;
+                widgetsList[widgetName].phonegapId = body.id;
                 registrycontroller.updateWidgetsList(widgetsList);
                 console.log('Upload success.\n' +
                     'id: ' + body.id + ' title: ' + body.title);
@@ -68,7 +69,7 @@
             create_method: 'file',
             keys: keys
         }));
-        form.append('file', fs.createReadStream(cordovacontroller.archivePath));
+        form.append('file', fs.createReadStream(archivePath));
     });
     cordovacontroller.createArchive(output);
 })();

@@ -53,11 +53,11 @@
         //TODO create more complete check
         try {
             return !!statSync(path.join(widgetPath, '.appsngenrc'));
-        } catch (err) {
-            if (err.code === 'ENOENT') {
+        } catch (error) {
+            if (error.code === 'ENOENT') {
                 return false;
             } else {
-                throw err;
+                throw error;
             }
         }
     };
@@ -92,8 +92,8 @@
             } else if (!this.isProjectFolder(process.cwd())) {
                 throw 'Current folder isn\'t appsngen widget project.';
             }
-        } catch (err) {
-            console.error(err.toString());
+        } catch (error) {
+            console.error(error.toString());
             process.exit(1);
         }
     };
@@ -112,6 +112,18 @@
         }
     };
 
+    exports.getWidgetPhonegapId = function (name) {
+        var widgetList = registrycontroller.getWidgetsList();
+        var id = widgetList[name].phonegapId;
+        
+        if (id) {
+            return id;
+        } else {
+            console.log('Widget doesn\'t have PhoneGap Id.');
+            console.log('Use "appsngen widget remote register" command to resolve this issue.');
+            process.exit(1);
+        }
+    };
 
     exports.getWidgetNameByPath = function (widgetPath) {
         var name;

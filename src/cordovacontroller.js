@@ -11,7 +11,7 @@
     var config = require('./../cli-config.json');
     var authcontroller = require('./authcontroller');
 
-    var SUPPORTED_PLATFORMS = ['browser', 'android', 'ios'];
+    var LOCAL_SUPPORTED_PLATFORMS = ['browser', 'android', 'ios'];
     var rcFilePath = path.join(process.cwd(), '/.appsngenrc');
     var writeIntegrationFile = function (token, urn, serviceAddress) {
         var template, compiled;
@@ -39,7 +39,11 @@
         }
     };
 
-    exports.archivePath = path.join(process.cwd(), 'dist', 'phonegapPackage.zip');
+    exports.REMOTE_SUPPORTED_PLATFORMS = ['android', 'ios'];
+
+    exports.getArchivePath = function (root) {
+        return path.join(root, 'dist', 'phonegapPackage.zip');
+    };
 
     exports.create = function () {
         var packageConfig, rcConfig;
@@ -118,7 +122,7 @@
     exports.parsePlatforms = function (options) {
         var platforms = [];
 
-        SUPPORTED_PLATFORMS.forEach(function (el) {
+        LOCAL_SUPPORTED_PLATFORMS.forEach(function (el) {
             if (options[el]) {
                 platforms.push(el);
                 options[el] = false;

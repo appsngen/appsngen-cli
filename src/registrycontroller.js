@@ -9,11 +9,11 @@
     var getRegistry = function () {
         try {
             return jsonfile.readFileSync(registryPath);
-        } catch (err) {
-            if (err.code === 'ENOENT') {
+        } catch (error) {
+            if (error.code === 'ENOENT') {
                 return {};
             } else {
-                throw err;
+                throw error;
             }
         }
     };
@@ -36,8 +36,8 @@
             jsonfile.writeFileSync(registryPath, registry, {
                 spaces: 4
             });
-        } catch (err) {
-            console.error(err.toString());
+        } catch (error) {
+            console.error(error.toString());
             process.exit(1);
         }
     };

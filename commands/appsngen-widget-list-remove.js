@@ -28,9 +28,9 @@
     widgetsList = registrycontroller.getWidgetsList();
     if (widgetsList[widgetName]) {
         if (program.hard) {
-            rmdir(widgetsList[widgetName].path, function (err) {
-                if(err) {
-                    console.error(err.toString());
+            rmdir(widgetsList[widgetName].path, function (error) {
+                if(error) {
+                    console.error(error.toString());
                     process.exit(1);
                 }
                 removeRegistryRecord(widgetName);

@@ -3,15 +3,11 @@
 
     var program = require('./../src/customcommander');
     var helper = require('./../src/clihelper');
-    var registrycontroller = require('./../src/registrycontroller');
+    var cordovacontroller = require('./../src/cordovacontroller');
     var fs = require('fs');
     var path = require('path');
     var request = require('request');
 
-    var SUPPORTED_PLATFORMS = [
-        'android',
-        'ios'
-    ];
     var outputPath, platform, widgetName, widgetPhonegapId, phonegapCredentials,
         output, outputName, isSuccessfulDownload;
 
@@ -21,7 +17,7 @@
         .action(function (name, p) {
             if (!p) {
                 platform = name;
-                widgetName = helper.getWidgetNameByPath(path.resolve(process.cwd()));
+                widgetName = helper.getWidgetNameByPath('.');
             } else {
                 widgetName = name;
                 platform = p;
@@ -29,23 +25,17 @@
             }
         })
         .on('--help', function () {
-            console.log('Supported platforms: \n\t' + SUPPORTED_PLATFORMS.join('\n\t'));
+            console.log('Supported platforms: \n\t' + cordovacontroller.REMOTE_SUPPORTED_PLATFORMS.join('\n\t'));
         })
         .parse(process.argv);
 
-    phonegapCredentials = helper.getPhonegapCredentials();
-    widgetPhonegapId = registrycontroller.getWidgetsList()[widgetName].phonegap_id;
-
-    if (!platform || SUPPORTED_PLATFORMS.indexOf(platform) === -1) {
+    if (!platform || cordovacontroller.REMOTE_SUPPORTED_PLATFORMS.indexOf(platform) === -1) {
         console.log('Missing "platform" argument.');
         program.help();
     }
     helper.checkPhonegapAuthorization(); //will terminate process if not authorized
-    if (!widgetPhonegapId) {
-        console.log('Widget "' + widgetName + '" doesn\'t have PhoneGap Id.');
-        console.log('Use "appsngen widget remote register" command to resolve this issue.');
-        process.exit(1);
-    }
+    widgetPhonegapId = helper.getWidgetPhonegapId(widgetName); //will terminate process if doesn't have id
+    phonegapCredentials = helper.getPhonegapCredentials();
 
     outputPath = path.join(process.cwd(), 'dist', 'temp');
     output = fs.createWriteStream(outputPath);
@@ -61,7 +51,7 @@
     });
 
     request('https://build.phonegap.com/api/v1/apps/' + widgetPhonegapId +
-            '/android?access_token=' + phonegapCredentials.access_token)
+            '/' + platform +'?access_token=' + phonegapCredentials.access_token)
         .on('response', function (response) {
             if (response.statusCode === 404) {
                 isSuccessfulDownload = false;

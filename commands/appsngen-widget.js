@@ -28,11 +28,11 @@ try {
             throw 'Current folder isn\'t appsngen widget project.';
         }
     }
-} catch (err) {
-    if (err.cmd && err.cmd === 'appsngen login') {
+} catch (error) {
+    if (error.cmd && error.cmd === 'appsngen login') {
         console.log('You should login to appsngen.');
     } else {
-        console.error(err.toString());
+        console.error(error.toString());
     }
     process.exit(1);
 }
