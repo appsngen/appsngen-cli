@@ -71,7 +71,7 @@
         }
     })
     .catch(function (error) {
-        console.error(error);
+        console.error(error.toString());
         process.exit(1);
     });
 })();
