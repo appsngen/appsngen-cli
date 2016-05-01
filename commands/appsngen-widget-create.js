@@ -32,21 +32,18 @@ if (typeof widgetPath !== 'undefined') {
 } else {
     widgetPath = path.join(process.cwd(), widgetName);
 }
+try {
+    if (fs.readdirSync(widgetPath).length !== 0) {
+        throw 'Path already exists and is not empty: ' + widgetPath;
+    }
+} catch (error) {
+    if (error.code !== 'ENOENT') {
+        console.error(error.toString());
+        process.exit(1);
+    }
+}
 
-new Promise(function (resolve) {
-    try {
-        if (fs.readdirSync(widgetPath).length !== 0) {
-            throw 'Path already exists and is not empty: ' + path.resolve(widgetPath);
-        }
-        return resolve();
-    } catch (e) {
-        if (e.code !== 'ENOENT') {
-            throw e;
-        }
-    }})
-    .then(function () {
-        return helper.validateWidgetName(widgetName);
-    })
+helper.validateWidgetName(widgetName)
     .then(function () {
         console.log('Chech system configuration.');
         helper.checkSystemConfiguration();
