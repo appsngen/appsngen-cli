@@ -33,9 +33,9 @@
     .then(function () {
         try {
             registry = jsonfile.readFileSync(registryPath);
-        } catch (err) {
-            if (err.code !== 'ENOENT') {
-                throw err;
+        } catch (error) {
+            if (error.code !== 'ENOENT') {
+                throw error;
             }
         }
         registry = registry || {};
@@ -49,8 +49,8 @@
             spaces: 4
         });
     })
-    .catch(function (err) {
-        console.error(err.toString());
+    .catch(function (error) {
+        console.error(error.toString());
         process.exit(1);
     });
 })();

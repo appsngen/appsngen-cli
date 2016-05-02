@@ -14,7 +14,6 @@
     var buildAcceptableArgs = ['release', 'browserify', 'buildConfig'];
 
     program
-    .alias('appsngen widget run')
     .option('--android', 'Build for android platform')
     .option('--ios', 'Build for ios platform')
     .option('--browser', 'Build for browser')
@@ -42,7 +41,7 @@
             }
         }
     }
-    
+
     try {
         config = jsonfile.readFileSync(path.join(process.cwd(), './.appsngenrc'));
 
@@ -72,8 +71,8 @@
             stdio: 'inherit',
             cwd: cordovaPath
         });
-    } catch (err) {
-        console.error(err.toString());
+    } catch (error) {
+        console.error(error.toString());
         process.exit(1);
     }
 })();

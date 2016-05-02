@@ -44,16 +44,16 @@
                 }
             });
     };
-    
+
     exports.isProjectFolder = function (widgetPath) {
         //TODO create more complete check
         try {
             return !!statSync(path.join(widgetPath, '.appsngenrc'));
-        } catch (err) {
-            if (err.code === 'ENOENT') {
+        } catch (error) {
+            if (error.code === 'ENOENT') {
                 return false;
             } else {
-                throw err;
+                throw error;
             }
         }
     };
@@ -69,6 +69,19 @@
                           'You have globally installed old version of generator-appsngen-web-widget\n' +
                           'For correct work of appsngen-cli you should either delete global generator, \n' +
                           'or update generator to version ' + generatorRequirements);
+            process.exit(1);
+        }
+    };
+    
+    exports.checkAppsngenAuthorization = function () {
+        try {
+            if (!authcontroller.isAuthorized()) {
+                execSync('appsngen login', {
+                    stdio: 'inherit'
+                });
+            }
+        } catch (error) {
+            console.error(error.toString());
             process.exit(1);
         }
     };

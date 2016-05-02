@@ -15,7 +15,6 @@ var registryPath = path.join(__dirname, '..', 'registry.json');
 var widgetName, widgetPath, registry, widgetId;
 
 program
-    .alias('appsngen widget create')
     .usage('<name> [path]')
     .arguments('<name> [path]')
     .action(function (name, path) {
@@ -41,16 +40,16 @@ helper.validateWidgetName(widgetName, widgetId)
             if (fs.readdirSync(widgetPath).length !== 0) {
                 throw 'Path already exists and is not empty: ' + path.resolve(widgetPath);
             }
-        } catch (e) {
-            if (e.code !== 'ENOENT') {
-                throw e;
+        } catch (error) {
+            if (error.code !== 'ENOENT') {
+                throw error;
             }
         }
         try {
             registry = jsonfile.readFileSync(registryPath);
-        } catch (e) {
-            if (e.code !== 'ENOENT') {
-                throw e;
+        } catch (error) {
+            if (error.code !== 'ENOENT') {
+                throw error;
             }
         }
         registry = registry || {};
