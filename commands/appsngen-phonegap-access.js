@@ -59,7 +59,7 @@
             case 404:
                 console.log('No access token for specified user.\n' +
                             'Use "appsngen phonegap access [authToken]" to get one.\n' +
-                            'For instaructions how to get PhoneGap Authentication Token folow the link:\n' +
+                            'For instructions how to get PhoneGap Authentication Token folow the link:\n' +
                             'https://github.com/appsngen/developers-documentation/' +
                             'wiki/How-to-get-PhoneGap-Authentication-Tokens');
                 process.exit(1);
