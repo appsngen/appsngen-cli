@@ -14,7 +14,6 @@ var Promise = require('bluebird').Promise;
 var widgetName, widgetPath;
 
 program
-    .alias('appsngen widget create')
     .usage('<name> [path]')
     .arguments('<name> [path]')
     .action(function (name, path) {
@@ -33,6 +32,9 @@ if (typeof widgetPath !== 'undefined') {
     widgetPath = path.join(process.cwd(), widgetName);
 }
 try {
+    if (registrycontroller.getWidgetsList()[widgetName]) {
+        throw 'Widget with same name already exists.';
+    }
     if (fs.readdirSync(widgetPath).length !== 0) {
         throw 'Path already exists and is not empty: ' + widgetPath;
     }

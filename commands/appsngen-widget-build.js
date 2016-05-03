@@ -14,7 +14,6 @@
     var rcConfig = jsonfile.readFileSync(rcFilePath);
 
     program
-    .alias('appsngen widget build')
     .option('--android', 'Build for android platform')
     .option('--ios', 'Build for ios platform')
     .option('--browser', 'Build for browser')

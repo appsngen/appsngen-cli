@@ -12,14 +12,13 @@
     };
 
     program
-        .alias('appsngen widget list remove')
         .arguments('<name>')
         .usage('<name> [option]')
         .option('--hard', 'delete widget folder')
         .action(function (name) {
-        widgetName = name;
-    })
-    .parse(process.argv);
+            widgetName = name;
+        })
+        .parse(process.argv);
 
     if (typeof widgetName === 'undefined') {
         program.help();
@@ -38,5 +37,8 @@
         } else {
             removeRegistryRecord(widgetName);
         }
+    } else {
+        console.log('Widget with provided name doesn\'t exist.');
+        process.exit(1);
     }
 })();

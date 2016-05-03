@@ -1,8 +1,6 @@
 #! /usr/bin/env node
 
 var program = require('./../src/customcommander');
-var authcontroller = require('./../src/authcontroller');
-var execSync = require('child_process').execSync;
 var helper = require('./../src/clihelper');
 
 var ADDRESSABLE_COMMANDS = [
@@ -13,12 +11,9 @@ var ADDRESSABLE_COMMANDS = [
 ];
 var callWithName;
 
+helper.checkAppsngenAuthorization(); //will terminate process in case of authorization fail
+
 try {
-    if (!authcontroller.isAuthorized()) {
-        execSync('appsngen login', {
-            stdio: 'inherit'
-        });
-    }
     if (ADDRESSABLE_COMMANDS.indexOf(process.argv[2]) !== -1) {
         callWithName = process.argv.length >= 4 &&
             process.argv[3].indexOf('-') !== 0; //check 4th argument isn't option
@@ -29,18 +24,13 @@ try {
         }
     }
 } catch (error) {
-    if (error.cmd && error.cmd === 'appsngen login') {
-        console.log('You should login to appsngen.');
-    } else {
-        console.error(error.toString());
-    }
+    console.error(error.toString());
     process.exit(1);
 }
 
 helper.normalizePathToCurrentFile();
 
 program
-    .alias('appsngen widget')
     .usage('[command]')
     .command('create', 'creates widget')
     .command('build', 'builds widget sources')

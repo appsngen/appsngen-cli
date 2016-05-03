@@ -48,7 +48,7 @@
                 }
             });
     };
-    
+
     exports.isProjectFolder = function (widgetPath) {
         //TODO create more complete check
         try {
@@ -112,10 +112,23 @@
         }
     };
 
+    exports.checkAppsngenAuthorization = function () {
+        try {
+            if (!authcontroller.isAuthorized()) {
+                execSync('appsngen login', {
+                    stdio: 'inherit'
+                });
+            }
+        } catch (error) {
+            console.error(error.toString());
+            process.exit(1);
+        }
+    };
+
     exports.getWidgetPhonegapId = function (name) {
         var widgetList = registrycontroller.getWidgetsList();
         var id = widgetList[name].phonegapId;
-        
+
         if (id) {
             return id;
         } else {

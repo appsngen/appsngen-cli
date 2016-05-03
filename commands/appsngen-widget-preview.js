@@ -23,14 +23,14 @@
     try {
         devboxConfig = jsonfile.readFileSync(devboxConfigPath);
         projectConfig = jsonfile.readFileSync('./.appsngenrc');
-    } catch (err) {
-        errorHandler(err);
+    } catch (error) {
+        errorHandler(error);
     }
 
     archiveName = path.basename(projectConfig.zipFilePath);
-    rmdir(path.join(devboxPath, '/widgets'), function(err) {
-        if (err) {
-            errorHandler(err);
+    rmdir(path.join(devboxPath, '/widgets'), function(error) {
+        if (error) {
+            errorHandler(error);
         }
         fs.mkdirSync(path.join(devboxPath, '/widgets'));
         fsExt.copySync(path.resolve(projectConfig.zipFilePath), path.join(devboxPath, '/widgets/', archiveName));

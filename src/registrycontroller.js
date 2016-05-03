@@ -44,10 +44,7 @@
 
     exports.addWidget = function (name, path) {
         var widgetsList = this.getWidgetsList();
-
-        if (widgetsList[name]) {
-            throw 'Widget with this name already exist.';
-        }
+        
         widgetsList[name] = {
             path: path
         };
