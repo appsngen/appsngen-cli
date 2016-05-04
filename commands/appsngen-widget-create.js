@@ -47,7 +47,7 @@ try {
 
 helper.validateWidgetName(widgetName)
     .then(function () {
-        console.log('Chech system configuration.');
+        console.log('Check system configuration.');
         helper.checkSystemConfiguration();
         console.log('Check completed successfully.');
         return Promise.resolve();

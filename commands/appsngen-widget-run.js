@@ -14,16 +14,16 @@
     var buildAcceptableArgs = ['release', 'browserify', 'buildConfig'];
 
     program
-    .option('--android', 'Build for android platform')
-    .option('--ios', 'Build for ios platform')
-    .option('--browser', 'Build for browser')
-    .option('--list', 'Lists available targets')
-    .option('--release', 'Deploy a release build')
-    .option('--nobuild', 'Skip building')
-    .option('--browserify', 'Compile plugin JS at build time using browserify instead of runtime')
-    .option('--target <targetDevice>', 'Deploy to specific target')
-    .option('--buildConfig <configFile>', 'Use the specified build configuration file.')
-    .parse(process.argv);
+        .option('--android', 'Build for android platform')
+        .option('--ios', 'Build for ios platform')
+        .option('--browser', 'Build for browser')
+        .option('--list', 'Lists available targets')
+        .option('--release', 'Deploy a release build')
+        .option('--nobuild', 'Skip building')
+        .option('--browserify', 'Compile plugin JS at build time using browserify instead of runtime')
+        .option('--target <targetDevice>', 'Deploy to specific target')
+        .option('--buildConfig <configFile>', 'Use the specified build configuration file.')
+        .parse(process.argv);
 
     options = program.opts();
     platforms = cordovacontroller.parsePlatforms(options);

@@ -29,9 +29,14 @@
         })
         .parse(process.argv);
 
-    if (!platform || cordovacontroller.REMOTE_SUPPORTED_PLATFORMS.indexOf(platform) === -1) {
+    if (!platform) {
         console.log('Missing "platform" argument.');
         program.help();
+    } else if (cordovacontroller.REMOTE_SUPPORTED_PLATFORMS.indexOf(platform) === -1) {
+        console.log('Not supported platform: "' + platform + '"\n' +
+                    'Supported platforms: ' + cordovacontroller.REMOTE_SUPPORTED_PLATFORMS.join(', ') +
+                    '\nFor more information use "--help" option.');
+        process.exit(1);
     }
     helper.checkPhonegapAuthorization(); //will terminate process if not authorized
     widgetPhonegapId = helper.getWidgetPhonegapId(widgetName); //will terminate process if doesn't have id
@@ -43,6 +48,7 @@
         if (isSuccessfulDownload) {
             outputName = outputName.substring(outputName.lastIndexOf('/.') + 2);
             fs.renameSync(outputPath, path.join(process.cwd(), 'dist', outputName));
+            console.log('Download complete successfully.');
         } else {
             console.error('Download of application unavailable right now.');
             fs.unlinkSync(outputPath);

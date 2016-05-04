@@ -14,13 +14,13 @@
     var rcConfig = jsonfile.readFileSync(rcFilePath);
 
     program
-    .option('--android', 'Build for android platform')
-    .option('--ios', 'Build for ios platform')
-    .option('--browser', 'Build for browser')
-    .option('--release', 'Deploy a release build')
-    .option('--browserify', 'Compile plugin JS at build time using browserify instead of runtime')
-    .option('--buildConfig <configFile>', 'Use the specified build configuration file.')
-    .parse(process.argv);
+        .option('--android', 'Build for android platform')
+        .option('--ios', 'Build for ios platform')
+        .option('--browser', 'Build for browser')
+        .option('--release', 'Deploy a release build')
+        .option('--browserify', 'Compile plugin JS at build time using browserify instead of runtime')
+        .option('--buildConfig <configFile>', 'Use the specified build configuration file.')
+        .parse(process.argv);
 
     options = program.opts();
     platforms = cordovacontroller.parsePlatforms(options);
@@ -32,35 +32,35 @@
         stdio: 'inherit'
     });
     uploadcontroller
-    .uploadWidget(rcConfig)
-    .then(function() {
-        rcConfig = jsonfile.readFileSync(rcFilePath);
-        if (typeof rcConfig.cordova === 'undefined') {
-            cordovacontroller.create();
+        .uploadWidget(rcConfig)
+        .then(function() {
             rcConfig = jsonfile.readFileSync(rcFilePath);
-        }
-        platforms.forEach(function (platform) {
-            if (rcConfig.cordova.platforms.indexOf(platform) === -1) {
-                cordovacontroller.addPlatform(platform);
+            if (typeof rcConfig.cordova === 'undefined') {
+                cordovacontroller.create();
+                rcConfig = jsonfile.readFileSync(rcFilePath);
             }
-        });
-        cordovacontroller.modify();
-        for (option in options) {
-            if (options[option]) {
-                if (typeof options[option] === 'boolean') {
-                    commandOptions += ' --' + option;
-                } else {
-                    commandOptions += ' --' + option + '=' + options[option];
+            platforms.forEach(function (platform) {
+                if (rcConfig.cordova.platforms.indexOf(platform) === -1) {
+                    cordovacontroller.addPlatform(platform);
+                }
+            });
+            cordovacontroller.modify();
+            for (option in options) {
+                if (options[option]) {
+                    if (typeof options[option] === 'boolean') {
+                        commandOptions += ' --' + option;
+                    } else {
+                        commandOptions += ' --' + option + '=' + options[option];
+                    }
                 }
             }
-        }
-        execSync('npm run cordova-manipulation build ' + platforms.join(' ') +
-        (commandOptions ? ' -- ' + commandOptions: ''), {
-            stdio: 'inherit'
+            execSync('npm run cordova-manipulation build ' + platforms.join(' ') +
+                (commandOptions ? ' -- ' + commandOptions: ''), {
+                    stdio: 'inherit'
+                });
+        })
+        .catch(function (error) {
+            console.error(error);
+            process.exit(1);
         });
-    })
-    .catch(function (error) {
-        console.error(error);
-        process.exit(1);
-    });
 })();
