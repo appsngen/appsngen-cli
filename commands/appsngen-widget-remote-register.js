@@ -13,8 +13,8 @@
 
     program
         .arguments('[name]')
-        .option('--key_ios <keyId>', 'signing key id for ios')
-        .option('--key_android <keyId>', 'signing key id for android')
+        .option('--key-ios <keyId>', 'signing key id for ios')
+        .option('--key-android <keyId>', 'signing key id for android')
         .action(function (name) {
             widgetName = name;
         })
@@ -28,7 +28,7 @@
     helper.checkPhonegapAuthorization(); //will terminate process if not authorized
     phonegapCredentials = helper.getPhonegapCredentials();
 
-    ['key_ios', 'key_android'].forEach(function (el) {
+    ['keyIos', 'keyAndroid'].forEach(function (el) {
         if (program[el]) {
             keys[el.substring(4)] = {
                 id: program[el]
