@@ -1,26 +1,23 @@
-var jsonfile = require('jsonfile');
-var path = require('path');
-var Table = require('easy-table');
+(function () {
+    'use strict';
 
-var registry, item;
-var table = new Table();
+    var Table = require('easy-table');
+    var registrycontroller = require('./../src/registrycontroller');
 
-try {
-    registry = jsonfile.readFileSync(path.join(__dirname, '..', 'registry.json'));
-    for (item in registry) {
-        if (registry.hasOwnProperty(item)) {
-            table.cell('Name', item);
-            table.cell('Path', registry[item].path);
+    var widget;
+    var widgetsList = registrycontroller.getWidgetsList();
+    var table = new Table();
+
+    for (widget in widgetsList) {
+        if (widgetsList.hasOwnProperty(widget)) {
+            table.cell('Name', widget);
+            table.cell('Path', widgetsList[widget].path);
             table.newRow();
         }
     }
-    console.log(table.toString());
-} catch (error) {
-    if (error.code === 'ENOENT') {
-        console.log('Widgets list is empty.');
-        process.exit(0);
+    if (table.rows.length) {
+        console.log(table.toString());
     } else {
-        console.error(error.toString());
-        process.exit(1);
+        console.log('Widgets list is empty.');
     }
-}
+})();

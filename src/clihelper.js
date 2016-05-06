@@ -11,6 +11,8 @@
     var statSync = require('fs').statSync;
     var config = require('./../cli-config.json');
     var authcontroller = require('./authcontroller');
+    var registrycontroller = require('./registrycontroller');
+    var _s = require('underscore.string');
 
     //add file extension to current file in this extension not exists
     exports.normalizePathToCurrentFile = function () {
@@ -21,7 +23,9 @@
         process.argv[1] = currentFile;
     };
 
-    exports.validateWidgetName = function (widgetName, widgetId) {
+    exports.validateWidgetName = function (widgetName) {
+        var widgetId = _s.slugify(widgetName);
+
         return authcontroller.getWidgetAccessToken()
             .then(function (response) {
                 return post(config.serviceAddress + '/rest-services/widgets/is-valid', {
@@ -72,7 +76,42 @@
             process.exit(1);
         }
     };
-    
+
+    exports.workByWidgetName = function (name) {
+        var widgetsList;
+
+        try {
+            widgetsList = registrycontroller.getWidgetsList();
+
+            if (typeof name !== 'undefined') {
+                if (widgetsList[name]) {
+                    process.chdir(widgetsList[name].path);
+                } else {
+                    throw 'Widget "' + name + '" doesn\'t exist';
+                }
+            } else if (!this.isProjectFolder(process.cwd())) {
+                throw 'Current folder isn\'t appsngen widget project.';
+            }
+        } catch (error) {
+            console.error(error.toString());
+            process.exit(1);
+        }
+    };
+
+    exports.getPhonegapCredentials = function () {
+        return config.credentials.phonegap;
+    };
+
+    exports.checkPhonegapAuthorization = function () {
+        var phonegapCredentials = this.getPhonegapCredentials();
+
+        if (!phonegapCredentials || !phonegapCredentials.access_token) {
+            console.error('You don\'t have PhoneGap Build access token.\n' +
+                'Use "appsngen phonegap access" command to get one.');
+            process.exit(1);
+        }
+    };
+
     exports.checkAppsngenAuthorization = function () {
         try {
             if (!authcontroller.isAuthorized()) {
@@ -84,5 +123,32 @@
             console.error(error.toString());
             process.exit(1);
         }
+    };
+
+    exports.getWidgetPhonegapId = function (name) {
+        var widgetList = registrycontroller.getWidgetsList();
+        var id = widgetList[name].phonegapId;
+
+        if (id) {
+            return id;
+        } else {
+            console.log('Widget doesn\'t have PhoneGap Id.');
+            console.log('Use "appsngen widget remote register" command to resolve this issue.');
+            process.exit(1);
+        }
+    };
+
+    exports.getWidgetNameByPath = function (widgetPath) {
+        var name;
+        var widgetsList = registrycontroller.getWidgetsList();
+        widgetPath = path.resolve(widgetPath);
+
+        for (name in widgetsList) {
+            if (widgetsList[name].path === widgetPath) {
+                return name;
+            }
+        }
+        console.error('No widgets registered in ' + widgetPath);
+        process.exit(1);
     };
 })();

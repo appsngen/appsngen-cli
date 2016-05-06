@@ -7,10 +7,11 @@
     var request = require('request');
     var fs = require('fs');
     var _ = require('underscore');
+    var archiver = require('archiver');
     var config = require('./../cli-config.json');
     var authcontroller = require('./authcontroller');
 
-    var SUPPORTED_PLATFORMS = ['browser', 'android', 'ios'];
+    var LOCAL_SUPPORTED_PLATFORMS = ['browser', 'android', 'ios'];
     var rcFilePath = path.join(process.cwd(), '/.appsngenrc');
     var writeIntegrationFile = function (token, urn, serviceAddress) {
         var template, compiled;
@@ -36,6 +37,12 @@
             console.error(error.toString());
             process.exit(1);
         }
+    };
+
+    exports.REMOTE_SUPPORTED_PLATFORMS = ['android', 'ios'];
+
+    exports.getArchivePath = function (root) {
+        return path.join(root, 'dist', 'phonegapPackage.zip');
     };
 
     exports.create = function () {
@@ -115,7 +122,7 @@
     exports.parsePlatforms = function (options) {
         var platforms = [];
 
-        SUPPORTED_PLATFORMS.forEach(function (el) {
+        LOCAL_SUPPORTED_PLATFORMS.forEach(function (el) {
             if (options[el]) {
                 platforms.push(el);
                 options[el] = false;
@@ -123,5 +130,20 @@
         });
 
         return platforms;
+    };
+
+    exports.createArchive = function (output) {
+        var sourcePath = path.join(process.cwd(), 'cordova');
+        var zipPackage = archiver.create('zip');
+        zipPackage.on('error', function (err) {
+            console.error(err.toString());
+            process.exit(1);
+        });
+        zipPackage.pipe(output);
+        zipPackage.append(fs.createReadStream(path.join(sourcePath, 'config.xml')), {
+            name: 'config.xml'
+        });
+        zipPackage.directory(path.join(sourcePath, 'www'), 'www');
+        zipPackage.finalize();        
     };
 })();

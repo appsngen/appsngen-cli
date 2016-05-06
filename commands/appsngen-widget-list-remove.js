@@ -2,53 +2,43 @@
     'use strict';
 
     var program = require('./../src/customcommander');
+    var registrycontroller = require('./../src/registrycontroller');
     var rmdir = require('rmdir');
-    var jsonfile = require('jsonfile');
-    var path = require('path');
 
-    var widgetName, registry;
-    var registryPath = path.join(__dirname, '..', 'registry.json');
-
+    var widgetName, widgetsList;
     var removeRegistryRecord = function (name) {
-        registry[name] = undefined;
-        jsonfile.writeFileSync(registryPath, registry, {
-            spaces: 4
-        });
+        widgetsList[name] = undefined;
+        registrycontroller.updateWidgetsList(widgetsList);
     };
 
     program
-    .arguments('<name>')
-    .usage('<name> [option]')
-    .option('--hard', 'delete widget folder')
-    .action(function (name) {
-        widgetName = name;
-    })
-    .parse(process.argv);
+        .arguments('<name>')
+        .usage('<name> [option]')
+        .option('--hard', 'delete widget folder')
+        .action(function (name) {
+            widgetName = name;
+        })
+        .parse(process.argv);
 
     if (typeof widgetName === 'undefined') {
         program.help();
     }
 
-    try {
-        registry = jsonfile.readFileSync(registryPath);
-        if (registry[widgetName]) {
-            if (program.hard) {
-                rmdir(registry[widgetName].path, function (error) {
-                    if(error) {
-                        throw error;
-                    }
-                    removeRegistryRecord(widgetName);
-                });
-            } else {
+    widgetsList = registrycontroller.getWidgetsList();
+    if (widgetsList[widgetName]) {
+        if (program.hard) {
+            rmdir(widgetsList[widgetName].path, function (error) {
+                if(error) {
+                    console.error(error.toString());
+                    process.exit(1);
+                }
                 removeRegistryRecord(widgetName);
-            }
-        }
-    } catch (error) {
-        if (error.code === 'ENOENT') {
-            console.log('Widgets list is empty.');
+            });
         } else {
-            console.error(error);
+            removeRegistryRecord(widgetName);
         }
+    } else {
+        console.log('Widget with provided name doesn\'t exist.');
         process.exit(1);
     }
 })();

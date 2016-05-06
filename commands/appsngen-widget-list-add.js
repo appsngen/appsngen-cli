@@ -1,56 +1,38 @@
 (function () {
     'use strict';
 
-    var program = require('commander');
-    var jsonfile = require('jsonfile');
-    var bluebird = require('bluebird');
-    var Promise = bluebird.Promise;
+    var program = require('./../src/customcommander');
     var helper = require('./../src/clihelper');
+    var registrycontroller = require('./../src/registrycontroller');
     var path = require('path');
 
-    var widgetName, widgetPath, registry;
-    var registryPath = path.join(__dirname, '..', 'registry.json');
+    var widgetName, widgetPath, widgetsList;
 
     program
-    .arguments('<name> <path>')
-    .action(function (name, path) {
-        widgetName = name;
-        widgetPath = path;
-    })
-    .parse(process.argv);
+        .arguments('<name> <path>')
+        .action(function (name, path) {
+            widgetName = name;
+            widgetPath = path;
+        })
+        .parse(process.argv);
 
     if (!widgetName || !widgetPath) {
         console.error('You should provide widget name and path to widget folder');
         process.exit(1);
     }
 
-    helper.validateWidgetName(widgetName)
-    .then(function () {
-        if (helper.isProjectFolder(widgetPath)) {
-            return Promise.resolve();
-        }
-    })
-    .then(function () {
-        try {
-            registry = jsonfile.readFileSync(registryPath);
-        } catch (error) {
-            if (error.code !== 'ENOENT') {
-                throw error;
+    widgetsList = registrycontroller.getWidgetsList();
+    try {
+        if (!widgetsList[widgetName]) {
+            if (!helper.isProjectFolder(widgetPath)) {
+                throw 'Provided path isn\'t appsngen widget project.';
             }
+            registrycontroller.addWidget(widgetName, path.resolve(widgetPath));
+        } else {
+           throw 'Widget with same name already exists.';
         }
-        registry = registry || {};
-        if (registry[widgetName]) {
-            throw 'Widget with this name already exist.';
-        }
-        registry[widgetName] = {
-            path: path.resolve(widgetPath)
-        };
-        jsonfile.writeFileSync(registryPath, registry, {
-            spaces: 4
-        });
-    })
-    .catch(function (error) {
+    } catch (error) {
         console.error(error.toString());
         process.exit(1);
-    });
+    }
 })();
