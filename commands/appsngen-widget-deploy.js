@@ -14,12 +14,13 @@
 
     try {
         rcConfig = jsonfile.readFileSync(rcConfigPath);
-        uploader.uploadWidget(rcConfig)
-        .then(function (urn) {
-            if (rcConfig.openInBrowserAfterUpload) {
-                open(config.serviceAddress + '/product/marketplace/widgets/config/' + urn);
-            }
-        });
+        uploader
+            .uploadWidget(rcConfig)
+            .then(function (urn) {
+                if (rcConfig.openInBrowserAfterUpload) {
+                    open(config.serviceAddress + '/product/marketplace/widgets/config/' + urn);
+                }
+            });
     } catch (error) {
         console.error(error.toString());
         process.exit(1);

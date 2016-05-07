@@ -35,7 +35,7 @@
     "commander": "2.9.0",
     "easy-table": "1.0.0",
     "fs-extra": "0.26.6",
-    "generator-appsngen-web-widget": "0.3.9",
+    "generator-appsngen-web-widget": "0.3.10",
     "jsonfile": "2.2.3",
     "mkdirp": "0.5.1",
     "open": "0.0.5",

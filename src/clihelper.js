@@ -2,11 +2,10 @@
     'use strict';
 
     var path = require('path');
-    var bluebird = require('bluebird');
     var request = require('request');
     var jsonfile = require('jsonfile');
     var execSync = require('child_process').execSync;
-    var Promise = bluebird.Promise;
+    var Promise = require('bluebird').Promise;
     var post = Promise.promisify(request.post);
     var statSync = require('fs').statSync;
     var config = require('./../cli-config.json');
@@ -99,7 +98,7 @@
     };
 
     exports.getPhonegapCredentials = function () {
-        return config.credentials.phonegap;
+        return registrycontroller.getCredentials().phonegap;
     };
 
     exports.checkPhonegapAuthorization = function () {

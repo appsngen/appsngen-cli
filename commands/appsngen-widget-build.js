@@ -28,7 +28,7 @@
         platforms = ['browser'];
     }
     platforms = platforms || ['browser'];
-    execSync('grunt', {
+    execSync('npm run grunt', {
         stdio: 'inherit'
     });
     uploadcontroller

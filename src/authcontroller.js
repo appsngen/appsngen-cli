@@ -1,13 +1,11 @@
 (function() {
     'use strict';
 
-    var bluebird = require('bluebird');
     var execSync = require('child_process').execSync;
-    var jsonfile = require('jsonfile');
-    var path = require('path');
     var readlineSync = require('readline-sync');
-    var post = bluebird.Promise.promisify(require('request').post);
+    var post = require('bluebird').Promise.promisify(require('request').post);
     var config = require('./../cli-config.json');
+    var registrycontroller = require('./../src/registrycontroller');
     process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0'; //WARNING should be removed
 
     var refreshToken = function () {
@@ -23,7 +21,7 @@
     };
 
     exports.isAuthorized = function () {
-        var appsngenCredentials = config.credentials && config.credentials.appsngen;
+        var appsngenCredentials = registrycontroller.getCredentials().appsngen;
 
         return appsngenCredentials && (appsngenCredentials.expiresIn + appsngenCredentials.received) >= Date.now();
     };
@@ -32,9 +30,8 @@
         try {
             if (!this.isAuthorized()) {
                 refreshToken();
-                config = jsonfile.readFileSync(path.join(__dirname, '/../cli-config.json'));
             }
-            return config.credentials.appsngen.identityToken;
+            return registrycontroller.getCredentials().appsngen.identityToken;
         } catch (error) {
             if (error.cmd && error.cmd === 'appsngen login') {
                 console.log('You should login to appsngen.');
