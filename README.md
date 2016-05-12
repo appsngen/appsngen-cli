@@ -45,11 +45,11 @@ Run in terminal `npm install -g appsngen-cli`(for Mac add `sudo`)
 * `--key-ios <keyId>` - to sign application with specified ios signing key
 * `--key-android <keyId>` - to sign application with specified android signing key
  
-`appsngen widget remote build [name] [options]` - start build application for all platforms at PhoneGap Build, if `widget_name` specified then run command for widget with specified name.
+`appsngen widget remote build [widget_name] [options]` - start build application for all platforms at PhoneGap Build, if `widget_name` specified then run command for widget with specified name.
 * `--noupload` - to skip uploading phase
 * `--platform <platform>` - start build for specific platform
 
-`appsngen widget remote download [name] <platform>` - download application for specified platform
+`appsngen widget remote download [widget_name] <platform>` - download application for specified platform, if `widget_name` specified then run command for widget with specified name.
 
 `appsngen widget list` - print list of widgets
 
