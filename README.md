@@ -10,13 +10,13 @@ Command Line Interface to interact with AppsNgen API. It is a single enry point 
 
 You should have installed **npm** and **node**(https://nodejs.org).
 
-1. Download repository(https://github.com/appsngen/appsngen-cli.git)
-2. Unpack it, and go to **appsngen-cli** folder
-3. Run `npm install -g`(for Mac and Unix add `sudo`)
+Run in terminal `npm install -g appsngen-cli`(for Mac add `sudo`)
 
 ## Usage
 
 `appsngen login` - logins user to appsngen
+
+`appsngen phonegap access [authToken]` - recive access token to work with PhoneGap Build service.
 
 `appsngen widget create <name> [path]` - generate basic project structure with given name (if path is specified, then generate project at given path).
 
@@ -38,6 +38,18 @@ You should have installed **npm** and **node**(https://nodejs.org).
 `appsngen widget preview [widget_name]` - preview widget locally in **dev-box**, if name is specified then run command in `widget_name` folder. 
 
 `appsngen widget deploy [widget_name]` - deploy widget to *appsngen.com*, if name is specified then run command in `widget_name` folder. 
+
+`appsngen widget remote keys` - lists all available signing keys for all platforms
+
+`appsngen widget remote register [widget_name] [options]` - create new application at PhoneGap Build service, if `widget_name` specified then run command for widget with specified name.
+* `--key-ios <keyId>` - to sign application with specified ios signing key
+* `--key-android <keyId>` - to sign application with specified android signing key
+ 
+`appsngen widget remote build [name] [options]` - start build application for all platforms at PhoneGap Build, if `widget_name` specified then run command for widget with specified name.
+* `--noupload` - to skip uploading phase
+* `--platform <platform>` - start build for specific platform
+
+`appsngen widget remote download [name] <platform>` - download application for specified platform
 
 `appsngen widget list` - print list of widgets
 
