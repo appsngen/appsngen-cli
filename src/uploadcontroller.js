@@ -53,12 +53,25 @@
                 }
             })
             .then(function (response) {
-                console.log('Upload success!');
-                options.urn = JSON.parse(response.body).urn;
-                return Promise.resolve(options.urn);
+                switch (response.statusCode) {
+                    case 200:
+                    case 201:
+                        console.log('Upload success!');
+                        options.urn = JSON.parse(response.body).urn;
+                        return Promise.resolve(options.urn);
+                    case 400:
+                        console.log('Upload failed.\n' +
+                                    'Bad widget package.');
+                        process.exit(1);
+                        break;
+                    default:
+                        console.log('Unexpected response from backend. Please try again.');
+                        process.exit(1);
+                        break;
+                }
             })
             .then(function (urn) {
-                var rcConfigPath = path.join(process.cwd(), './.appsngenrc');
+                var rcConfigPath = path.join(process.cwd(), '/.appsngenrc');
                 var rcConfig = jsonfile.readFileSync(rcConfigPath);
                 rcConfig.urn = urn;
                 jsonfile.writeFileSync(rcConfigPath, rcConfig, {

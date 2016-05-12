@@ -3,8 +3,9 @@
 
     var jsonfile = require('jsonfile');
     var path = require('path');
+    var mkdirp = require('mkdirp');
 
-    var registryPath = path.join(__dirname, '..', 'registry.json');
+    var registryPath = path.join(process.env.HOME, '.appsngen-cli', 'registry.json');
 
     var getRegistry = function () {
         try {
@@ -16,6 +17,43 @@
                 throw error;
             }
         }
+    };
+
+    var updateRegistry = function (registry) {
+        try {
+            jsonfile.writeFileSync(registryPath, registry, {
+                spaces: 4
+            });
+        } catch (error) {
+            if (error.code === 'ENOENT') {
+                mkdirp.sync(path.dirname(registryPath));
+                updateRegistry(registry);
+            } else {
+                console.error(error.toString());
+                process.exit(1);
+            }
+        }
+    };
+
+    exports.addCredentials = function (name, credentials) {
+        var registry = getRegistry();
+
+        registry.credentials = registry.credentials || {};
+        registry.credentials[name] = credentials;
+        updateRegistry(registry);
+    };
+
+    exports.removeCredentials = function () {
+        var registry = getRegistry();
+
+        registry.credentials = null;
+        updateRegistry(registry);
+    };
+
+    exports.getCredentials = function() {
+        var registry = getRegistry();
+
+        return registry.credentials || {};
     };
 
     exports.getWidgetsList = function () {
@@ -32,19 +70,12 @@
         var registry = getRegistry();
 
         registry.widgets = widgetsList;
-        try {
-            jsonfile.writeFileSync(registryPath, registry, {
-                spaces: 4
-            });
-        } catch (error) {
-            console.error(error.toString());
-            process.exit(1);
-        }
+        updateRegistry(registry);
     };
 
     exports.addWidget = function (name, path) {
         var widgetsList = this.getWidgetsList();
-        
+
         widgetsList[name] = {
             path: path
         };
