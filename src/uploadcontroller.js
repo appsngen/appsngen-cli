@@ -13,18 +13,16 @@
     var authcontroller = require('./authcontroller');
 
     exports.uploadWidget = function (settings) {
-        var options = {};
+        var options = {
+            token: authcontroller.getIdentityToken()
+        };
         var serviceAddress = config.serviceAddress;
         var zipFilePath = settings.zipFilePath;
         var replaceIfExists = settings.replaceIfExists;
 
-        return Promise.all([
-                authcontroller.getWidgetAccessToken(),
-                readFile(zipFilePath, 'binary')
-            ])
-            .then(function (result) {
-                options.token = result[0].body.accessToken;
-                options.zipFile = new Buffer(result[1], 'binary');
+        return readFile(zipFilePath, 'binary')
+            .then(function (zipData) {
+                options.zipFile = new Buffer(zipData, 'binary');
                 return post(serviceAddress + '/viewer/widgets',
                     {
                         body: options.zipFile,
