@@ -1,5 +1,3 @@
-#! /usr/bin/env node
-
 var program = require('./../src/customcommander');
 var helper = require('./../src/clihelper');
 

@@ -59,6 +59,7 @@ helper.validateWidgetName(widgetName)
             stdio: 'inherit'
         });
         registrycontroller.addWidget(widgetName, widgetPath);
+        execSync('appsngen widget build "' + widgetName + '"');
     })
     .catch(function (error) {
         console.error(error.toString());
