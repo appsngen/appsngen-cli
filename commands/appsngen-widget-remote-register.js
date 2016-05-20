@@ -30,7 +30,7 @@
 
     ['keyIos', 'keyAndroid'].forEach(function (el) {
         if (program[el]) {
-            keys[el.substring(4)] = {
+            keys[el.substring(3).toLowerCase()] = {
                 id: program[el]
             };
         }
@@ -45,13 +45,13 @@
             phonegapCredentials.access_token, function (error, resp) {
             var body, widgetsList;
 
+            fs.unlinkSync(archivePath);
             if (error) {
                 console.error(error.toString());
                 process.exit(1);
             }
 
             body = JSON.parse(resp.body);
-            fs.unlinkSync(archivePath);
             if (resp.statusCode === 201) {
                 widgetsList = registrycontroller.getWidgetsList();
                 widgetsList[widgetName].phonegapId = body.id;
