@@ -10,11 +10,14 @@
     var archive, archivePath, widgetName, phonegapAccessToken, widgetPhonegapId;
     var startBuild = function () {
         var url = 'https://build.phonegap.com/api/v1/apps/' + widgetPhonegapId + '/build';
-        if (program.platform && cordovacontroller.REMOTE_SUPPORTED_PLATFORMS.indexOf(program.platform) !== -1) {
-            url += '/' + program.platform;
-        } else {
-            console.error('Unsupported platform: ' + program.platform);
-            process.exit(1);
+
+        if (program.platform) {
+            if (cordovacontroller.REMOTE_SUPPORTED_PLATFORMS.indexOf(program.platform) !== -1) {
+                url += '/' + program.platform;
+            } else {
+                console.error('Unsupported platform: ' + program.platform);
+                process.exit(1);
+            }
         }
         url += '?access_token=' + phonegapAccessToken;
 
@@ -74,7 +77,7 @@
     helper.checkPhonegapAuthorization(); //will terminate process if not authorized
 
     phonegapAccessToken = helper.getPhonegapCredentials().access_token;
-    
+
     if (typeof widgetName === 'undefined') {
         widgetName = helper.getWidgetNameByPath(process.cwd());
     }
