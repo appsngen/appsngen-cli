@@ -44,9 +44,9 @@
 
     outputPath = path.join(process.cwd(), 'dist', 'temp');
     output = fs.createWriteStream(outputPath);
-    output.on('close', function () {
+    output.on('finish', function () {
         if (isSuccessfulDownload) {
-            outputName = outputName.substring(outputName.lastIndexOf('/.') + 2);
+            outputName = outputName.substring(outputName.lastIndexOf('/') + 1);
             fs.renameSync(outputPath, path.join(process.cwd(), 'dist', outputName));
             console.log('Download complete successfully.');
         } else {
