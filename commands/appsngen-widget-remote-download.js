@@ -7,6 +7,7 @@
     var fs = require('fs');
     var path = require('path');
     var request = require('request');
+    var ProgressBar = require('progress');
 
     var outputPath, platform, widgetName, widgetPhonegapId, phonegapCredentials,
         output, outputName, isSuccessfulDownload;
@@ -17,11 +18,9 @@
         .action(function (name, p) {
             if (!p) {
                 platform = name;
-                widgetName = helper.getWidgetNameByPath('.');
             } else {
                 widgetName = name;
                 platform = p;
-                helper.workByWidgetName(widgetName);
             }
         })
         .on('--help', function () {
@@ -38,6 +37,11 @@
                     '\nFor more information use "--help" option.');
         process.exit(1);
     }
+    if (!widgetName) {
+        widgetName = helper.getWidgetNameByPath('.');
+    } else {
+        helper.workByWidgetName(widgetName);
+    }
     helper.checkPhonegapAuthorization(); //will terminate process if not authorized
     widgetPhonegapId = helper.getWidgetPhonegapId(widgetName); //will terminate process if doesn't have id
     phonegapCredentials = helper.getPhonegapCredentials();
@@ -48,7 +52,8 @@
         if (isSuccessfulDownload) {
             outputName = outputName.substring(outputName.lastIndexOf('/') + 1);
             fs.renameSync(outputPath, path.join(process.cwd(), 'dist', outputName));
-            console.log('Download complete successfully.');
+            console.log('Download complete successfully.\n' +
+                'Application downloaded to: ' + path.resolve(outputName));
         } else {
             console.error('Download of application unavailable right now.');
             fs.unlinkSync(outputPath);
@@ -59,11 +64,28 @@
     request('https://build.phonegap.com/api/v1/apps/' + widgetPhonegapId +
             '/' + platform +'?access_token=' + phonegapCredentials.access_token)
         .on('response', function (response) {
+            var bar;
+            var dataLength = parseInt(response.headers['content-length']);
+
             if (response.statusCode === 404) {
                 isSuccessfulDownload = false;
             } else {
                 isSuccessfulDownload = true;
                 outputName = response.request.path;
+
+                console.log();
+                bar = new ProgressBar('  downloading [:bar] :percent :etas', {
+                    complete: '=',
+                    incomplete: ' ',
+                    width: 20,
+                    total: dataLength
+                });
+                response.on('data', function (chunk) {
+                    bar.tick(chunk.length);
+                });
+                response.on('end', function () {
+                    console.log('\n');
+                });
             }
         })
         .pipe(output);
