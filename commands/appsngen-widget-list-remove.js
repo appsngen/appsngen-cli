@@ -7,6 +7,8 @@
 
     var widgetName, widgetsList;
     var removeRegistryRecord = function (name) {
+        console.log('WARNING: widget package might remain at appsngen.com' +
+            (widgetsList[name].phonegapId ? ' and build.phonegap.com.': '.'));
         widgetsList[name] = undefined;
         registrycontroller.updateWidgetsList(widgetsList);
     };
