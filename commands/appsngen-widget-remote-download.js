@@ -17,11 +17,9 @@
         .action(function (name, p) {
             if (!p) {
                 platform = name;
-                widgetName = helper.getWidgetNameByPath('.');
             } else {
                 widgetName = name;
                 platform = p;
-                helper.workByWidgetName(widgetName);
             }
         })
         .on('--help', function () {
@@ -37,6 +35,11 @@
                     'Supported platforms: ' + cordovacontroller.REMOTE_SUPPORTED_PLATFORMS.join(', ') +
                     '\nFor more information use "--help" option.');
         process.exit(1);
+    }
+    if (!widgetName) {
+        widgetName = helper.getWidgetNameByPath('.');
+    } else {
+        helper.workByWidgetName(widgetName);
     }
     helper.checkPhonegapAuthorization(); //will terminate process if not authorized
     widgetPhonegapId = helper.getWidgetPhonegapId(widgetName); //will terminate process if doesn't have id
