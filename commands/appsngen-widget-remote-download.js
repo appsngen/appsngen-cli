@@ -51,7 +51,8 @@
         if (isSuccessfulDownload) {
             outputName = outputName.substring(outputName.lastIndexOf('/') + 1);
             fs.renameSync(outputPath, path.join(process.cwd(), 'dist', outputName));
-            console.log('Download complete successfully.');
+            console.log('Download complete successfully.\n' +
+                'Application downloaded to: ' + path.resolve(outputName));
         } else {
             console.error('Download of application unavailable right now.');
             fs.unlinkSync(outputPath);
