@@ -9,7 +9,7 @@
 
     var archive, archivePath, widgetName, phonegapAccessToken, widgetPhonegapId;
 
-    var checkBuildStatus = function (url, platforms) {
+    var checkBuildStatus = function (url, statusUrl, platforms) {
         var ind = 0;
         var TIMEOUT = 60;
         var waitSymbols = [
@@ -37,6 +37,7 @@
                     if (isEveryPlatformBuilded) {
                         clearInterval(indicatorId);
                         console.log('\rBuild finished.');
+                        console.log('Check status at: ' + statusUrl);
                     }
                 });
                 ind = 1;
@@ -46,6 +47,7 @@
     var startBuild = function () {
         var platforms;
         var checkUrl = 'https://build.phonegap.com/api/v1/apps/' + widgetPhonegapId;
+        var statusUrl = 'https://build.phonegap.com/apps/' + widgetPhonegapId;
         var url = checkUrl + '/build';
 
         if (program.platform) {
@@ -68,7 +70,7 @@
 
             if (resp.statusCode === 202) {
                 console.log('Build successfully started.');
-                checkBuildStatus(checkUrl, platforms || cordovacontroller.REMOTE_SUPPORTED_PLATFORMS);
+                checkBuildStatus(checkUrl, statusUrl, platforms || cordovacontroller.REMOTE_SUPPORTED_PLATFORMS);
             } else {
                 console.log('Unable to start build.');
                 process.exit(1);
