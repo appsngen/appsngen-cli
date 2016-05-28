@@ -66,9 +66,7 @@
         var command = 'npm ls -g --json generator-appsngen-web-widget';
 
         try {
-            systemInfo = execSync(command, {
-                stdio: 'ignore'
-            }).toString();
+            systemInfo = execSync(command).toString();
         } catch (error) {
             if (error.cmd === command) {
                 //no generator installed in system configuration acceptable

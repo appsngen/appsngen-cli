@@ -5,7 +5,7 @@
     var path = require('path');
     var mkdirp = require('mkdirp');
 
-    var registryPath = path.join(process.env.HOME, '.appsngen-cli', 'registry.json');
+    var registryPath = path.join(process.env.HOME || process.env.USERPROFILE, '.appsngen-cli', 'registry.json');
 
     var getRegistry = function () {
         try {
