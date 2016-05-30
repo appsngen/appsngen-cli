@@ -7,6 +7,7 @@
     var fs = require('fs');
     var path = require('path');
     var request = require('request');
+    var ProgressBar = require('progress');
 
     var outputPath, platform, widgetName, widgetPhonegapId, phonegapCredentials,
         output, outputName, isSuccessfulDownload;
@@ -64,11 +65,28 @@
     request('https://build.phonegap.com/api/v1/apps/' + widgetPhonegapId +
             '/' + platform +'?access_token=' + phonegapCredentials.access_token)
         .on('response', function (response) {
+            var bar;
+            var dataLength = parseInt(response.headers['content-length'], 10);
+
             if (response.statusCode === 404) {
                 isSuccessfulDownload = false;
             } else {
                 isSuccessfulDownload = true;
                 outputName = response.request.path;
+
+                console.log();
+                bar = new ProgressBar('  downloading [:bar] :percent :etas', {
+                    complete: '=',
+                    incomplete: ' ',
+                    width: 20,
+                    total: dataLength
+                });
+                response.on('data', function (chunk) {
+                    bar.tick(chunk.length);
+                });
+                response.on('end', function () {
+                    console.log('\n');
+                });
             }
         })
         .pipe(output);
