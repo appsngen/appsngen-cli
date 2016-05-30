@@ -62,9 +62,23 @@
     };
 
     exports.checkSystemConfiguration = function () {
-        var systemInfo = JSON.parse(execSync('npm ls -g --json generator-appsngen-web-widget').toString());
-        var generatorInfo = systemInfo.dependencies['generator-appsngen-web-widget'];
-        var generatorRequirements = (jsonfile.readFileSync(path.join(__dirname, '..', 'package.json')))
+        var systemInfo, generatorInfo, generatorRequirements;
+        var command = 'npm ls -g --json generator-appsngen-web-widget';
+
+        try {
+            systemInfo = execSync(command).toString();
+        } catch (error) {
+            if (error.cmd === command) {
+                //no generator installed in system configuration acceptable
+                return;
+            } else {
+                console.error(error.toString());
+                process.exit(1);
+            }
+        }
+        systemInfo = JSON.parse(systemInfo);
+        generatorInfo = systemInfo.dependencies['generator-appsngen-web-widget'];
+        generatorRequirements = (jsonfile.readFileSync(path.join(__dirname, '..', 'package.json')))
                 .dependencies['generator-appsngen-web-widget'];
 
         if (generatorInfo && generatorInfo.version !== generatorRequirements) {

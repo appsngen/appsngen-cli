@@ -17,11 +17,9 @@
         .action(function (name, p) {
             if (!p) {
                 platform = name;
-                widgetName = helper.getWidgetNameByPath('.');
             } else {
                 widgetName = name;
                 platform = p;
-                helper.workByWidgetName(widgetName);
             }
         })
         .on('--help', function () {
@@ -38,6 +36,11 @@
                     '\nFor more information use "--help" option.');
         process.exit(1);
     }
+    if (!widgetName) {
+        widgetName = helper.getWidgetNameByPath('.');
+    } else {
+        helper.workByWidgetName(widgetName);
+    }
     helper.checkPhonegapAuthorization(); //will terminate process if not authorized
     widgetPhonegapId = helper.getWidgetPhonegapId(widgetName); //will terminate process if doesn't have id
     phonegapCredentials = helper.getPhonegapCredentials();
@@ -47,8 +50,10 @@
     output.on('finish', function () {
         if (isSuccessfulDownload) {
             outputName = outputName.substring(outputName.lastIndexOf('/') + 1);
-            fs.renameSync(outputPath, path.join(process.cwd(), 'dist', outputName));
-            console.log('Download complete successfully.');
+            outputName = path.join(process.cwd(), 'dist', outputName);
+            fs.renameSync(outputPath, outputName);
+            console.log('Download complete successfully.\n' +
+                'Application downloaded to: ' + outputName);
         } else {
             console.error('Download of application unavailable right now.');
             fs.unlinkSync(outputPath);
