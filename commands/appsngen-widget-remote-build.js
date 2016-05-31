@@ -8,17 +8,61 @@
     var request = require('request');
 
     var archive, archivePath, widgetName, phonegapAccessToken, widgetPhonegapId;
+
+    var checkBuildStatus = function (url, statusUrl, platforms) {
+        var elapsedTime = 0;
+        var indicatorSymbolInd = 0;
+        var statusCheckInterval = 6000; //ms
+        var animationInterval = 100; //ms
+        var waitSymbols = [
+            '-',
+            '\\',
+            '|',
+            '/'
+        ];
+        var indicatorId = setInterval(function () {
+            process.stdout.write('\b\r' + waitSymbols[indicatorSymbolInd++ % 4]);
+            elapsedTime += animationInterval;
+
+            if (elapsedTime >= statusCheckInterval) {
+                request(url, function (error, response) {
+                    var body, isEveryPlatformBuilded;
+
+                    if (error) {
+                        console.error(error.toString());
+                        process.exit(1);
+                    }
+
+                    body = JSON.parse(response.body);
+                    isEveryPlatformBuilded = platforms.every(function (platform) {
+                        return body.status[platform] !== 'pending';
+                    });
+                    if (isEveryPlatformBuilded) {
+                        clearInterval(indicatorId);
+                        console.log('\rBuild finished.');
+                        console.log('Check status at: ' + statusUrl);
+                    }
+                });
+                elapsedTime = 0;
+            }
+        }, animationInterval);
+    };
     var startBuild = function () {
-        var url = 'https://build.phonegap.com/api/v1/apps/' + widgetPhonegapId + '/build';
+        var platforms;
+        var checkUrl = 'https://build.phonegap.com/api/v1/apps/' + widgetPhonegapId;
+        var statusUrl = 'https://build.phonegap.com/apps/' + widgetPhonegapId;
+        var url = checkUrl + '/build';
 
         if (program.platform) {
             if (cordovacontroller.REMOTE_SUPPORTED_PLATFORMS.indexOf(program.platform) !== -1) {
+                platforms = [program.platform];
                 url += '/' + program.platform;
             } else {
                 console.error('Unsupported platform: ' + program.platform);
                 process.exit(1);
             }
         }
+        checkUrl += '?access_token=' + phonegapAccessToken;
         url += '?access_token=' + phonegapAccessToken;
 
         request.post(url, function (error, resp) {
@@ -29,6 +73,7 @@
 
             if (resp.statusCode === 202) {
                 console.log('Build successfully started.');
+                checkBuildStatus(checkUrl, statusUrl, platforms || cordovacontroller.REMOTE_SUPPORTED_PLATFORMS);
             } else {
                 console.log('Unable to start build.');
                 process.exit(1);
