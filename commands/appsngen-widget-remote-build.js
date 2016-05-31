@@ -10,8 +10,10 @@
     var archive, archivePath, widgetName, phonegapAccessToken, widgetPhonegapId;
 
     var checkBuildStatus = function (url, platforms) {
-        var ind = 0;
-        var TIMEOUT = 60;
+        var elapsedTime = 0;
+        var indicatorSymbolInd = 0;
+        var statusCheckInterval = 6000; //ms
+        var animationInterval = 100; //ms
         var waitSymbols = [
             '-',
             '\\',
@@ -19,9 +21,10 @@
             '/'
         ];
         var indicatorId = setInterval(function () {
-            process.stdout.write('\b\r' + waitSymbols[ind++ % 4]);
+            process.stdout.write('\b\r' + waitSymbols[indicatorSymbolInd++ % 4]);
+            elapsedTime += animationInterval;
 
-            if (ind % TIMEOUT === 0) {
+            if (elapsedTime >= statusCheckInterval) {
                 request(url, function (error, response) {
                     var body, isEveryPlatformBuilded;
 
@@ -39,9 +42,9 @@
                         console.log('\rBuild finished.');
                     }
                 });
-                ind = 1;
+                elapsedTime = 0;
             }
-        }, 100);
+        }, animationInterval);
     };
     var startBuild = function () {
         var platforms;
