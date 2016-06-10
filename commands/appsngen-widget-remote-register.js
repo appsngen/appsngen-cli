@@ -2,11 +2,12 @@
     'use strict';
 
     var program = require('./../src/customcommander');
-    var helper =  require('./../src/clihelper');
+    var helper = require('./../src/clihelper');
     var registrycontroller = require('./../src/registrycontroller');
-    var cordovacontroller = require('./../src/cordovacontroller');
+    var phonegapcontroller = require('./../src/phonegapcontroller');
     var fs = require('fs');
-    var request = require('request');
+    var phonegapIntegration = require('appsngen-phonegap-integration');
+    var path = require('path');
 
     var keys = {};
     var widgetName, archivePath, output, phonegapCredentials;
@@ -25,7 +26,7 @@
         widgetName = helper.getWidgetNameByPath(process.cwd());
     }
 
-    helper.checkPhonegapAuthorization(); //will terminate process if not authorized
+    helper.checkPhonegapAuthorization(); // will terminate process if not authorized
     phonegapCredentials = helper.getPhonegapCredentials();
 
     ['keyIos', 'keyAndroid'].forEach(function (el) {
@@ -36,40 +37,24 @@
         }
     });
 
-    archivePath = cordovacontroller.getArchivePath(process.cwd());
+    archivePath = phonegapcontroller.getArchivePath(process.cwd());
     output = fs.createWriteStream(archivePath);
     output.on('close', function () {
-        var req, form;
+        phonegapIntegration.registerPhonegapApp(phonegapCredentials.access_token, archivePath, keys,
+            function (error, info) {
+                var widgetsList;
 
-        req = request.post('https://build.phonegap.com/api/v1/apps?access_token=' +
-            phonegapCredentials.access_token, function (error, resp) {
-            var body, widgetsList;
+                fs.unlinkSync(archivePath);
+                if (error) {
+                    console.error(error.toString());
+                    process.exit(1);
+                }
 
-            fs.unlinkSync(archivePath);
-            if (error) {
-                console.error(error.toString());
-                process.exit(1);
-            }
-
-            body = JSON.parse(resp.body);
-            if (resp.statusCode === 201) {
                 widgetsList = registrycontroller.getWidgetsList();
-                widgetsList[widgetName].phonegapId = body.id;
+                widgetsList[widgetName].phonegapId = info.id;
                 registrycontroller.updateWidgetsList(widgetsList);
-                console.log('Upload success.\n' +
-                    'id: ' + body.id + ' title: ' + body.title);
-            } else {
-                console.error(body.error);
-                process.exit(1);
-            }
-        });
-        form = req.form();
-        form.append('data', JSON.stringify({
-            title: 'temp', //required field, PhoneGap Build replace it with title from config.xml
-            create_method: 'file',
-            keys: keys
-        }));
-        form.append('file', fs.createReadStream(archivePath));
+                console.log('Upload success.\n' + 'id: ' + info.id + ' title: ' + info.title);
+            });
     });
-    cordovacontroller.createArchive(output);
+    phonegapIntegration.generatePhonegapZipPackage(path.join('.', 'phonegap'), output);
 })();

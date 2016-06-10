@@ -37,13 +37,14 @@
     "fs-extra": "0.26.6",
     "generator-appsngen-web-widget": "0.3.10",
     "jsonfile": "2.2.3",
+    "jscs": "3.0.3",
+    "jshint": "2.9.2",
     "mkdirp": "0.5.1",
     "open": "0.0.5",
     "progress": "1.1.8",
     "readline-sync": "1.4.1",
     "request": "2.69.0",
     "rmdir": "1.2.0",
-    "underscore": "1.8.3",
     "underscore.string": "3.3.4",
     "yo": "1.7.0"
   }

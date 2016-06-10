@@ -3,11 +3,11 @@
 
     var program = require('./../src/customcommander');
     var helper = require('./../src/clihelper');
-    var cordovacontroller = require('./../src/cordovacontroller');
     var fs = require('fs');
     var path = require('path');
     var request = require('request');
     var ProgressBar = require('progress');
+    var phonegapIntegration = require('appsngen-phonegap-integration');
 
     var outputPath, platform, widgetName, widgetPhonegapId, phonegapCredentials,
         output, outputName, isSuccessfulDownload;
@@ -24,16 +24,16 @@
             }
         })
         .on('--help', function () {
-            console.log('Supported platforms: \n\t' + cordovacontroller.REMOTE_SUPPORTED_PLATFORMS.join('\n\t'));
+            console.log('Supported platforms: \n\t' + phonegapIntegration.SUPPORTED_PLATFORMS.join('\n\t'));
         })
         .parse(process.argv);
 
     if (!platform) {
         console.log('Missing "platform" argument.');
         program.help();
-    } else if (cordovacontroller.REMOTE_SUPPORTED_PLATFORMS.indexOf(platform) === -1) {
+    } else if (phonegapIntegration.SUPPORTED_PLATFORMS.indexOf(platform) === -1) {
         console.log('Not supported platform: "' + platform + '"\n' +
-                    'Supported platforms: ' + cordovacontroller.REMOTE_SUPPORTED_PLATFORMS.join(', ') +
+                    'Supported platforms: ' + phonegapIntegration.SUPPORTED_PLATFORMS.join(', ') +
                     '\nFor more information use "--help" option.');
         process.exit(1);
     }
@@ -42,8 +42,8 @@
     } else {
         helper.workByWidgetName(widgetName);
     }
-    helper.checkPhonegapAuthorization(); //will terminate process if not authorized
-    widgetPhonegapId = helper.getWidgetPhonegapId(widgetName); //will terminate process if doesn't have id
+    helper.checkPhonegapAuthorization(); // will terminate process if not authorized
+    widgetPhonegapId = helper.getWidgetPhonegapId(widgetName); // will terminate process if doesn't have id
     phonegapCredentials = helper.getPhonegapCredentials();
 
     outputPath = path.join(process.cwd(), 'dist', 'temp');
@@ -62,32 +62,39 @@
         }
     });
 
-    request('https://build.phonegap.com/api/v1/apps/' + widgetPhonegapId +
-            '/' + platform +'?access_token=' + phonegapCredentials.access_token)
-        .on('response', function (response) {
-            var bar;
-            var dataLength = parseInt(response.headers['content-length'], 10);
-
-            if (response.statusCode === 404) {
-                isSuccessfulDownload = false;
-            } else {
-                isSuccessfulDownload = true;
-                outputName = response.request.path;
-
-                console.log();
-                bar = new ProgressBar('  downloading [:bar] :percent :etas', {
-                    complete: '=',
-                    incomplete: ' ',
-                    width: 20,
-                    total: dataLength
-                });
-                response.on('data', function (chunk) {
-                    bar.tick(chunk.length);
-                });
-                response.on('end', function () {
-                    console.log('\n');
-                });
+    phonegapIntegration.getDownloadLink(widgetPhonegapId, platform, phonegapCredentials.access_token,
+        function (error, location) {
+            if (error) {
+                console.error(error.toString());
+                process.exit(1);
             }
-        })
-        .pipe(output);
+
+            request(location)
+                .on('response', function (response) {
+                    var bar;
+                    var dataLength = parseInt(response.headers['content-length'], 10);
+
+                    if (response.statusCode === 404) {
+                        isSuccessfulDownload = false;
+                    } else {
+                        isSuccessfulDownload = true;
+                        outputName = response.request.path;
+
+                        console.log();
+                        bar = new ProgressBar('  downloading [:bar] :percent :etas', {
+                            complete: '=',
+                            incomplete: ' ',
+                            width: 20,
+                            total: dataLength
+                        });
+                        response.on('data', function (chunk) {
+                            bar.tick(chunk.length);
+                        });
+                        response.on('end', function () {
+                            console.log('\n');
+                        });
+                    }
+                })
+                .pipe(output);
+        });
 })();
