@@ -30,6 +30,7 @@
   "homepage": "https://github.com/appsngen/appsngen-cli#readme",
   "dependencies": {
     "appsngen-dev-box": "2.0.11",
+    "appsngen-phonegap-integration": "0.0.1",
     "archiver": "1.0.0",
     "bluebird": "3.3.4",
     "commander": "2.9.0",
