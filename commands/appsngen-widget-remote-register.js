@@ -10,7 +10,7 @@
     var path = require('path');
 
     var keys = {};
-    var widgetName, archivePath, output, phonegapCredentials;
+    var widgetName, archivePath, phonegapCredentials;
 
     program
         .arguments('[name]')
@@ -38,8 +38,7 @@
     });
 
     archivePath = phonegapcontroller.getArchivePath(process.cwd());
-    output = fs.createWriteStream(archivePath);
-    output.on('close', function () {
+    phonegapIntegration.generatePhonegapZipPackage(path.join('.', 'phonegap'), archivePath, function () {
         phonegapIntegration.registerPhonegapApp(phonegapCredentials.access_token, archivePath, keys,
             function (error, info) {
                 var widgetsList;
@@ -56,5 +55,4 @@
                 console.log('Upload success.\n' + 'id: ' + info.id + ' title: ' + info.title);
             });
     });
-    phonegapIntegration.generatePhonegapZipPackage(path.join('.', 'phonegap'), output);
 })();
