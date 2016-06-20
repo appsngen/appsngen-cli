@@ -9,7 +9,7 @@
     var phonegapIntegration = require('appsngen-phonegap-integration');
     var path = require('path');
 
-    var archive, archivePath, widgetName, phonegapAccessToken, widgetPhonegapId;
+    var archivePath, widgetName, phonegapAccessToken, widgetPhonegapId;
 
     var checkBuildStatus = function (url, statusUrl, platforms) {
         var indicatorId;
@@ -113,12 +113,15 @@
     archivePath = phonegapcontroller.getArchivePath(process.cwd());
 
     if (!program.noupload) {
-        archive = fs.createWriteStream(archivePath);
-        archive.on('close', function () {
+        phonegapIntegration.generatePhonegapZipPackage(path.join('.', 'phonegap'), archivePath, function (error) {
+            if (error) {
+                console.error(error.toString());
+                process.exit(1);
+            }
+
             phonegapIntegration.updatePhonegapApp(widgetPhonegapId, phonegapAccessToken,
                 archivePath, updateCallback);
         });
-        phonegapIntegration.generatePhonegapZipPackage(path.join('.', 'phonegap'), archive);
     } else {
         startBuild();
     }
