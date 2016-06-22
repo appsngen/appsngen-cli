@@ -17,7 +17,7 @@
         };
 
         return upload(options)
-            .then(function (urn) {
+            .then(function writeUrnToConfig(urn) {
                 var rcConfigPath = path.join(process.cwd(), '.appsngenrc');
                 var rcConfig = jsonfile.readFileSync(rcConfigPath);
                 rcConfig.urn = urn;
