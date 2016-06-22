@@ -18,7 +18,7 @@
 
         return upload(options)
             .then(function (urn) {
-                var rcConfigPath = path.join(process.cwd(), '/.appsngenrc');
+                var rcConfigPath = path.join(process.cwd(), '.appsngenrc');
                 var rcConfig = jsonfile.readFileSync(rcConfigPath);
                 rcConfig.urn = urn;
                 jsonfile.writeFileSync(rcConfigPath, rcConfig, {
