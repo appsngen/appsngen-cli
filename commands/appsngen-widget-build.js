@@ -5,11 +5,11 @@
     var program = require('./../src/customcommander');
     var path = require('path');
     var jsonfile = require('jsonfile');
-    var cordovacontroller = require('./../src/cordovacontroller');
+    var phonegapcontroller = require('./../src/phonegapcontroller');
     var uploadcontroller = require('./../src/uploadcontroller');
 
     var platforms, options, option;
-    var commandOptions = ''; // options passed to cordova build command
+    var commandOptions = ''; // options passed to phonegap build command
     var rcFilePath = path.join(process.cwd(), '/.appsngenrc');
     var rcConfig = jsonfile.readFileSync(rcFilePath);
 
@@ -23,7 +23,7 @@
         .parse(process.argv);
 
     options = program.opts();
-    platforms = cordovacontroller.parsePlatforms(options);
+    platforms = phonegapcontroller.parsePlatforms(options);
     if (platforms.length === 0) {
         platforms = ['browser'];
     }
@@ -35,16 +35,11 @@
         .uploadWidget(rcConfig)
         .then(function() {
             rcConfig = jsonfile.readFileSync(rcFilePath);
-            if (typeof rcConfig.cordova === 'undefined') {
-                cordovacontroller.create();
+            if (typeof rcConfig.phonegap === 'undefined') {
+                phonegapcontroller.create();
                 rcConfig = jsonfile.readFileSync(rcFilePath);
             }
-            platforms.forEach(function (platform) {
-                if (rcConfig.cordova.platforms.indexOf(platform) === -1) {
-                    cordovacontroller.addPlatform(platform);
-                }
-            });
-            cordovacontroller.modify();
+            phonegapcontroller.modify();
             for (option in options) {
                 if (options[option]) {
                     if (typeof options[option] === 'boolean') {
@@ -54,7 +49,7 @@
                     }
                 }
             }
-            execSync('npm run cordova-manipulation build ' + platforms.join(' ') +
+            execSync('npm run phonegap-manipulation build ' + platforms.join(' ') +
                 (commandOptions ? ' -- ' + commandOptions: ''), {
                     stdio: 'inherit'
                 });
