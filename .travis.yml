@@ -5,4 +5,4 @@ git:
   depth: 3
 install: npm install -g jshint
 script:
-- jshint ./ --config ./.hooks/jshint/config.json
+- jshint ./ --config ./.hooks/js/config.json
