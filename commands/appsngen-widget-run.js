@@ -5,12 +5,12 @@
     var execSync = require('child_process').execSync;
     var path = require('path');
     var jsonfile = require('jsonfile');
-    var cordovacontroller = require('./../src/cordovacontroller');
+    var phonegapcontroller = require('./../src/phonegapcontroller');
 
     var platforms, config, options, option, tmpString;
     var buildArgs = '';
     var runArgs = '';
-    var cordovaPath = path.join(process.cwd(), 'cordova');
+    var phonegapPath = path.join(process.cwd(), 'phonegap');
     var buildAcceptableArgs = ['release', 'browserify', 'buildConfig'];
 
     program
@@ -26,7 +26,7 @@
         .parse(process.argv);
 
     options = program.opts();
-    platforms = cordovacontroller.parsePlatforms(options);
+    platforms = phonegapcontroller.parsePlatforms(options);
 
     for (option in options) {
         if (options[option]) {
@@ -45,8 +45,7 @@
     try {
         config = jsonfile.readFileSync(path.join(process.cwd(), './.appsngenrc'));
 
-
-        //set default platform if no platforms passed
+        // set default platform if no platforms passed
         if (platforms.length === 0) {
             platforms = ['browser'];
         }
@@ -54,22 +53,16 @@
             runArgs += [' -- --port=' + config.port];
         }
 
-        //skip building phase if call with --nobuild flag, and check
-        //does required platform was built before
+        // skip building phase if call with --nobuild flag, and check
+        // does required platform was built before
         if (!program.nobuild) {
             execSync('appsngen widget build --' + platforms.join(' --') + buildArgs, {
                 stdio: 'inherit'
             });
-        } else {
-            if (!config.cordova || !platforms.every(function (el) {
-                return config.cordova.indexOf(el) !== -1;
-            })) {
-                throw 'Required platforms wasn\'t built yet.';
-            }
         }
-        execSync('npm run cordova-manipulation run ' + platforms.join(' ') + (runArgs ? ' -- ' + runArgs : ''), {
+        execSync('npm run phonegap-manipulation run ' + platforms.join(' ') + (runArgs ? ' -- ' + runArgs : ''), {
             stdio: 'inherit',
-            cwd: cordovaPath
+            cwd: phonegapPath
         });
     } catch (error) {
         console.error(error.toString());

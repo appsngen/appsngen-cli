@@ -22,7 +22,7 @@
     "strict"      : true,
     "trailing"    : true,
     "maxparams"   : 5,
-    "maxdepth"    : 3,
+    "maxdepth"    : 4,
     "maxstatements": 50,
     "maxcomplexity": false,
     "maxlen"       : 120,
@@ -91,8 +91,6 @@
         "jsPlumb": true,
         "confirm": true,
         "d3": true,
-        "interact": true,
-        "process": true,
-        "__dirname": true
+        "interact": true
     }
 }

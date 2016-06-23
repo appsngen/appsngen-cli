@@ -9,10 +9,21 @@
 
 ex=0
 okResult="OK"
-jslintConfigPath=".hooks/jshint/config.json"
-jslintIgnorePath=".hooks/jshint/ignore.txt"
+
+jshintPath="node_modules/.bin/jshint"
+jslintConfigPath=".hooks/js/config.json"
+
+jscsPath="node_modules/.bin/jscs"
+jscsConfigPath=".hooks/js/.jscsrc"
+
+shouldIgnoreJsPath=".hooks/js/shouldignore.js"
 
 #printf "hook START \n"
+
+if [ ! -d "node_modules" ]; then
+    printf "node_modules are required for pre-commit hook \nplease run 'npm install' in the root of repo \n"
+    exit 1
+fi
 
 listOfFiles=$(git diff --cached --name-only --diff-filter=ACMR) #get list of files
 
@@ -20,31 +31,52 @@ listOfFiles=$(git diff --cached --name-only --diff-filter=ACMR) #get list of fil
 IFS=$'\n'
 for changedFile in $listOfFiles
 do
-	#printf "checking:$changedFile \n"
+    #printf "checking:$changedFile \n"
 
-	filename=$(basename "$changedFile")
-	extension="${filename##*.}"
+    filename=$(basename "$changedFile")
+    extension="${filename##*.}"
 
-	if [ $extension == $filename ]
-	then
-		extension=""
-	fi
+    if [ $extension == $filename ]
+    then
+        extension=""
+    fi
 
-	#printf "extension = $extension \n"
+    #printf "extension = $extension \n"
 
-	case "$extension" in
-	"js")
-		#printf "call jshint \n"
-		result=$(jshint $changedFile --config=$jslintConfigPath --exclude-path=$jslintIgnorePath)
+    case "$extension" in
+    "js")        
+        result=$(node $shouldIgnoreJsPath $changedFile)
 
-		printf "$result \n"
+        if [ "$result" == "false" ]
+        then
+            printf "> call jshint for $changedFile\n"
+            result=$($jshintPath $changedFile --config $jslintConfigPath)
 
-		if [ "$result" != "" ]
-		then
-			ex=1
-		fi
-		;;
-	esac
+            if [ "$result" != "" ]
+            then
+                printf "$result \n"
+                ex=1
+            else
+                printf "$okResult \n"
+            fi
+
+            printf "> call jscs for $changedFile\n"
+            result=$($jscsPath --max-old-space-size=4096 $changedFile -c $jscsConfigPath)
+
+            if [ "$result" != "" ]
+            then
+                printf "$result \n"
+                ex=1
+            else
+                printf "$okResult \n"
+            fi
+        else
+            printf "> ignored: $changedFile \n"
+        fi
+
+        printf "\n"
+        ;;
+    esac
 
 done
 
