@@ -1,6 +1,6 @@
 {
   "name": "appsngen-cli",
-  "version": "0.1.7",
+  "version": "0.1.8",
   "description": "Command Line Interface to interact with AppsNgen API",
   "scripts": {
     "test": "grunt nodeunit",
@@ -46,7 +46,6 @@
     "progress": "1.1.8",
     "readline-sync": "1.4.1",
     "request": "2.69.0",
-    "rmdir": "1.2.0",
     "underscore.string": "3.3.4",
     "yo": "1.7.0"
   }
