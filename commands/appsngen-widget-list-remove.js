@@ -13,7 +13,7 @@
             (widgetsList[name].phonegapId ? ' and build.phonegap.com.': '.'));
         widgetsList[name] = undefined;
         registrycontroller.updateWidgetsList(widgetsList);
-        console.log('Widget "'+ name +'" was successfully deleted.');
+        console.log('Widget "' + name + '" was successfully deleted.');
     };
     var removeWidgetHard = function (name) {
         remove(widgetsList[name].path, function (error) {
@@ -21,11 +21,10 @@
                 console.log(error.toString());
                 process.exit(1);
             }
-
             removeRegistryRecord(name);
         });
     };
-    var getConfirmation  = function () {
+    var getConfirmation = function () {
         var confirmation;
 
         confirmation = readlineSync.keyInYNStrict('Are you sure?');
@@ -57,14 +56,15 @@
         }
     }
 
-
     if (program.hard) {
         getConfirmation(); // will terminate the process if get no as an answer
         removeWidgetHard(widgetName);
     } else if (program.clearAll) {
         getConfirmation(); // will terminate the process if get no as an answer
         for (widgetName in widgetsList) {
-            removeWidgetHard(widgetName);
+            if (widgetsList.hasOwnProperty(widgetName)) {
+                removeWidgetHard(widgetName);
+            }
         }
     } else {
         removeRegistryRecord(widgetName);
