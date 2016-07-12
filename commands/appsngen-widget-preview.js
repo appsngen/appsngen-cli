@@ -7,7 +7,6 @@
     var path = require('path');
     var fs = require('fs');
     var fsExt = require('fs-extra');
-    var rmdir = require('rmdir');
     var child_process = require('child_process');
     var open = require('open');
 
@@ -28,7 +27,7 @@
     }
 
     archiveName = path.basename(projectConfig.zipFilePath);
-    rmdir(path.join(devboxPath, '/widgets'), function(error) {
+    fsExt.remove(path.join(devboxPath, '/widgets'), function(error) {
         if (error) {
             errorHandler(error);
         }
@@ -42,9 +41,9 @@
             if (fs.statSync(devboxCachePath).isFile()) {
                 fs.unlinkSync(devboxCachePath);
             }
-        } catch (error) {
-            if (error.code !== 'ENOENT') {
-                errorHandler(error);
+        } catch (err) {
+            if (err.code !== 'ENOENT') {
+                errorHandler(err);
             }
         }
         child_process.fork('server.js', {
