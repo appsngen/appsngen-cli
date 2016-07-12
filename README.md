@@ -2,7 +2,7 @@
 Command Line Interface to interact with AppsNgen API. It is a single enry point to AppsNgen capabilities such as:
 * create widget
 * preview widget locally
-* upload and reupload widget to the AppsNgen system
+* upload widget to the AppsNgen system
 * preview at AppsNgen website
 * create native allication based on widget. Currently we use [Apache Cordova](https://cordova.apache.org/) for native applications generation
 
@@ -20,7 +20,12 @@ Run in terminal `npm install -g appsngen-cli`(for Mac add `sudo`)
 
 `appsngen phonegap access [authToken]` - recive access token to work with PhoneGap Build service.
 
-`appsngen widget create <name> [path]` - generate basic project structure with given name (if path is specified, then generate project at given path). Max length of widget name is 50 characters.
+`appsngen widget create <name> [path]` - generate basic project structure with given name (if path is specified, then generate project at given path). 
+Constrains for widget name: 
+* max length is 50 characters
+* name shouldn't be empty (or consist only of whitespaces)
+* should consist of latin letters, numbers or secial characters: ".", "-", "_".
+* should be unique within organization
 
 `appsngen widget build [widget_name] [options]` - build native appliaction for the specified platform (default value: `browser`), if name is specified then run command in `widget_name` folder. 
  * `--ios, --android, --browser` - build application for ios, android and browser platform respectively
