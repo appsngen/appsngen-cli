@@ -1,6 +1,7 @@
 (function () {
     'use strict';
 
+    var Promise = require('bluebird').Promise;
     var path = require('path');
     var jsonfile = require('jsonfile');
     var config = require('./../cli-config.json');
@@ -12,27 +13,35 @@
         'android',
         'ios'
     ];
-    var rcFilePath = path.join(process.cwd(), '/.appsngenrc');
+    var rcFilePath = path.join(process.cwd(), '.appsngenrc');
 
     exports.getArchivePath = function (root) {
         return path.join(root, 'dist', 'phonegapPackage.zip');
     };
 
     exports.create = function () {
-        var packageConfig, rcConfig;
+        return new Promise(function (resolve, reject) {
+            var packageConfig, rcConfig;
 
-        try {
-            packageConfig = jsonfile.readFileSync(path.join(process.cwd(), '/package.json'));
-            phonegapIntegration.createPhonegapPackage(path.join('.', 'phonegap'), packageConfig.name);
-            rcConfig = jsonfile.readFileSync(rcFilePath);
-            rcConfig.phonegap = true;
-            jsonfile.writeFileSync(rcFilePath, rcConfig, {
-                spaces: 4
-            });
-        } catch (error) {
-            console.error(error.toString());
-            process.exit(1);
-        }
+            try {
+                packageConfig = jsonfile.readFileSync(path.join(process.cwd(), 'package.json'));
+                phonegapIntegration.createPhonegapPackage(path.join('.', 'phonegap'), packageConfig.name,
+                    function (error) {
+                        if (error) {
+                            reject(error);
+                        } else {
+                            rcConfig = jsonfile.readFileSync(rcFilePath);
+                            rcConfig.phonegap = true;
+                            jsonfile.writeFileSync(rcFilePath, rcConfig, {
+                                spaces: 4
+                            });
+                            resolve();
+                        }
+                    });
+            } catch (error) {
+                reject(error);
+            }
+        });
     };
 
     exports.modify = function () {
@@ -42,7 +51,7 @@
             port: rcConfig.port,
             identityToken: authcontroller.getIdentityToken(),
             serviceAddress: config.serviceAddress,
-            projectPath: path.join(process.cwd(), 'phonegap')
+            packagePath: path.join(process.cwd(), 'phonegap')
         };
 
         phonegapIntegration.setIntegration(options, function (error) {

@@ -6,8 +6,11 @@
     var registrycontroller = require('./../src/registrycontroller');
     var phonegapcontroller = require('./../src/phonegapcontroller');
     var fs = require('fs');
+    var Promise = require('bluebird').Promise;
     var phonegapIntegration = require('appsngen-phonegap-integration');
     var path = require('path');
+    var generatePhonegapZipPackage = Promise.promisify(phonegapIntegration.generatePhonegapZipPackage);
+    var registerPhonegapApp = Promise.promisify(phonegapIntegration.registerPhonegapApp);
 
     var keys = {};
     var widgetName, archivePath, phonegapCredentials;
@@ -38,21 +41,23 @@
     });
 
     archivePath = phonegapcontroller.getArchivePath(process.cwd());
-    phonegapIntegration.generatePhonegapZipPackage(path.join('.', 'phonegap'), archivePath, function () {
-        phonegapIntegration.registerPhonegapApp(phonegapCredentials.access_token, archivePath, keys,
-            function (error, info) {
-                var widgetsList;
 
-                fs.unlinkSync(archivePath);
-                if (error) {
-                    console.error(error.toString());
-                    process.exit(1);
-                }
+    generatePhonegapZipPackage(path.join('.', 'phonegap'), archivePath)
+        .then(function () {
+            return registerPhonegapApp('temp', phonegapCredentials.access_token, archivePath, keys);
+        })
+        .then(function (info) {
+            var widgetsList = registrycontroller.getWidgetsList();
 
-                widgetsList = registrycontroller.getWidgetsList();
-                widgetsList[widgetName].phonegapId = info.id;
-                registrycontroller.updateWidgetsList(widgetsList);
-                console.log('Upload success.\n' + 'id: ' + info.id + ' title: ' + info.title);
-            });
-    });
+            widgetsList[widgetName].phonegapId = info.id;
+            registrycontroller.updateWidgetsList(widgetsList);
+            console.log('Upload success.\n' + 'id: ' + info.id + ' title: ' + info.title);
+        })
+        .catch(function (error) {
+            console.error(error.toString());
+            process.exit(1);
+        })
+        .finally(function () {
+            fs.unlinkSync(archivePath);
+        });
 })();
