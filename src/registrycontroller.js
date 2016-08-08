@@ -3,7 +3,7 @@
 
     var jsonfile = require('jsonfile');
     var path = require('path');
-    var mkdirp = require('mkdirp');
+    var mkdirsSync = require('fs-extra').mkdirsSync;
 
     var registryPath = path.join(process.env.HOME || process.env.USERPROFILE, '.appsngen-cli', 'registry.json');
 
@@ -26,7 +26,7 @@
             });
         } catch (error) {
             if (error.code === 'ENOENT') {
-                mkdirp.sync(path.dirname(registryPath));
+                mkdirsSync(path.dirname(registryPath));
                 updateRegistry(registry);
             } else {
                 console.error(error.toString());
