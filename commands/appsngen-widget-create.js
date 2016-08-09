@@ -53,14 +53,14 @@
             console.log('Check completed successfully.');
             return Promise.resolve();
         })
-        .then(function () {
+        .then(function generateProject() {
             fsExtra.mkdirsSync(widgetPath);
             execSync('npm run yo appsngen-web-widget "' + path.resolve(widgetPath) + '" "' + widgetName + '"', {
                 cwd: path.join(__dirname, '..'),
                 stdio: 'inherit'
             });
         })
-        .then(function () {
+        .then(function buildProject() {
             registrycontroller.addWidget(widgetName, widgetPath);
             execSync('appsngen widget build "' + widgetName + '"', {
                 stdio: 'inherit'
