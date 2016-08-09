@@ -4,7 +4,7 @@
     var execSync = require('child_process').execSync;
     var path = require('path');
     var fs = require('fs');
-    var mkdirp = require('mkdirp');
+    var fsExtra = require('fs-extra');
     var program = require('./../src/customcommander');
     var helper = require('./../src/clihelper');
     var registrycontroller = require('./../src/registrycontroller');
@@ -13,13 +13,13 @@
     var widgetName, widgetPath;
 
     program
-    .usage('<name> [path]')
-    .arguments('<name> [path]')
-    .action(function (name, path) {
-        widgetName = name;
-        widgetPath = path;
-    })
-    .parse(process.argv);
+        .usage('<name> [path]')
+        .arguments('<name> [path]')
+        .action(function (name, path) {
+            widgetName = name;
+            widgetPath = path;
+        })
+        .parse(process.argv);
 
     if (typeof widgetName === 'undefined') {
         console.error('No widget name provided');
@@ -44,26 +44,31 @@
         }
     }
 
-    helper.validateWidgetName(widgetName)
-    .then(function () {
-        console.log('Check system configuration.');
-        helper.checkSystemConfiguration();
-        console.log('Check completed successfully.');
-        return Promise.resolve();
-    })
-    .then(function () {
-        mkdirp.sync(widgetPath);
-        execSync('npm run yo appsngen-web-widget "' + path.resolve(widgetPath) + '" "' + widgetName + '"', {
-            cwd: path.join(__dirname, '..'),
-            stdio: 'inherit'
+    helper
+        .validateWidgetName(widgetName)
+        .then(function () {
+            console.log('Check system configuration.');
+            // will terminate the process in case of failure
+            helper.checkSystemConfiguration();
+            console.log('Check completed successfully.');
+            return Promise.resolve();
+        })
+        .then(function generateProject() {
+            fsExtra.mkdirsSync(widgetPath);
+            execSync('npm run yo appsngen-web-widget "' + path.resolve(widgetPath) + '" "' + widgetName + '"', {
+                cwd: path.join(__dirname, '..'),
+                stdio: 'inherit'
+            });
+        })
+        .then(function buildProject() {
+            registrycontroller.addWidget(widgetName, widgetPath);
+            execSync('appsngen widget build "' + widgetName + '"', {
+                stdio: 'inherit'
+            });
+        })
+        .catch(function () {
+            fsExtra.removeSync(widgetPath);
+            console.error('Unexpected behavior: generation fail.');
+            process.exit(1);
         });
-        registrycontroller.addWidget(widgetName, widgetPath);
-        execSync('appsngen widget build "' + widgetName + '"', {
-            stdio: 'inherit'
-        });
-    })
-    .catch(function (error) {
-        console.error(error.toString());
-        process.exit(1);
-    });
 })();
