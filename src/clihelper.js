@@ -4,6 +4,7 @@
     var path = require('path');
     var request = require('request');
     var jsonfile = require('jsonfile');
+    var stringSimilarity = require('string-similarity');
     var execSync = require('child_process').execSync;
     var Promise = require('bluebird').Promise;
     var post = Promise.promisify(request.post);
@@ -13,9 +14,10 @@
     var registrycontroller = require('./registrycontroller');
     var _s = require('underscore.string');
 
-    //add file extension to current file in this extension not exists
+    // add file extension to current file in this extension not exists
     exports.normalizePathToCurrentFile = function () {
         var currentFile = process.argv[1];
+
         if (path.extname(currentFile) !== '.js') {
             currentFile += '.js';
         }
@@ -49,9 +51,9 @@
     };
 
     exports.isProjectFolder = function (widgetPath) {
-        //TODO create more complete check
+        // TODO create more complete check
         try {
-            return !!statSync(path.join(widgetPath, '.appsngenrc'));
+            return Boolean(statSync(path.join(widgetPath, '.appsngenrc')));
         } catch (error) {
             if (error.code === 'ENOENT') {
                 return false;
@@ -69,7 +71,7 @@
             systemInfo = execSync(command).toString();
         } catch (error) {
             if (error.cmd === command) {
-                //no generator installed in system configuration acceptable
+                // no generator installed in system configuration acceptable
                 return;
             } else {
                 console.error(error.toString());
@@ -154,6 +156,7 @@
     exports.getWidgetNameByPath = function (widgetPath) {
         var name;
         var widgetsList = registrycontroller.getWidgetsList();
+
         widgetPath = path.resolve(widgetPath);
 
         for (name in widgetsList) {
@@ -163,5 +166,26 @@
         }
         console.error('No widgets registered in ' + widgetPath);
         process.exit(1);
+    };
+
+    exports.addHelpForInvalidCommand = function (commander) {
+        commander
+            .command('*', 'unknow command', {noHelp: true})
+            .action(function (command) {
+                var commandName;
+                var bestMatch;
+                var commandNames = [];
+
+                if (!this._execs[command] && !this.defaultExecutable) {
+                    for (commandName in this._execs) {
+                        if (this._execs.hasOwnProperty(commandName)) {
+                            commandNames.push(commandName);
+                        }
+                    }
+                    bestMatch = stringSimilarity.findBestMatch(command, commandNames).bestMatch.target;
+                    console.log('Unknown command: %s', command);
+                    console.log('Did you mean?\n\t', this._name.split('-').join(' '), bestMatch);
+                }
+            });
     };
 })();

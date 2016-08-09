@@ -3,8 +3,8 @@
 
     var commander = require('commander');
 
-    //overload function for custom help information
-    //require for every command define alias
+    // overload function for custom help information
+    // require for every command define alias
     commander.Command.prototype.helpInformation = function () {
         var usage, options;
         var desc = [];
@@ -32,7 +32,7 @@
         options = [
             '  Options:',
             '',
-            '' + this.optionHelp().replace(/^/gm, '    '),
+            this.optionHelp().replace(/^/gm, '    ').toString(),
             '',
             ''
         ];
