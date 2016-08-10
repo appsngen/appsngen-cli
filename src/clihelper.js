@@ -178,7 +178,7 @@
 
                 if (!this._execs[command] && !this.defaultExecutable) {
                     for (commandName in this._execs) {
-                        if (this._execs.hasOwnProperty(commandName)) {
+                        if (this._execs.hasOwnProperty(commandName) && commandName !== '*') {
                             commandNames.push(commandName);
                         }
                     }
