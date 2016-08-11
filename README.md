@@ -46,6 +46,8 @@ Constrains for widget name:
 
 `appsngen widget deploy [widget_name]` - deploy widget to *appsngen.com*, if name is specified then run command in `widget_name` folder. 
 
+> Supported platfroms for remote commands: `android`, `ios`
+
 `appsngen widget remote keys` - lists all available signing keys for all platforms
 
 `appsngen widget remote register [widget_name] [options]` - create new application at PhoneGap Build service, if `widget_name` specified then run command for widget with specified name.
