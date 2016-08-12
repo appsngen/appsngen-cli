@@ -184,7 +184,7 @@
                     }
                     bestMatch = stringSimilarity.findBestMatch(command, commandNames).bestMatch;
 
-                    if (bestMatch.rating) {
+                    if (bestMatch.rating >= 0.5) {
                         console.log('Unknown command: %s', command);
                         console.log('Did you mean?\n\t', this._name.split('-').join(' '), bestMatch.target);
                     } else {
