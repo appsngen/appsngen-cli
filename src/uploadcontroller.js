@@ -20,15 +20,12 @@
             .then(function writeUrnToConfig(urn) {
                 var rcConfigPath = path.join(process.cwd(), '.appsngenrc');
                 var rcConfig = jsonfile.readFileSync(rcConfigPath);
+
                 rcConfig.urn = urn;
                 jsonfile.writeFileSync(rcConfigPath, rcConfig, {
                     spaces: 4
                 });
                 return Promise.resolve(urn);
-            })
-            .catch(function (error) {
-                console.error(error.toString());
-                process.exit(1);
             });
     };
 })();
