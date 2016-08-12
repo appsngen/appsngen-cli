@@ -182,9 +182,14 @@
                             commandNames.push(commandName);
                         }
                     }
-                    bestMatch = stringSimilarity.findBestMatch(command, commandNames).bestMatch.target;
-                    console.log('Unknown command: %s', command);
-                    console.log('Did you mean?\n\t', this._name.split('-').join(' '), bestMatch);
+                    bestMatch = stringSimilarity.findBestMatch(command, commandNames).bestMatch;
+
+                    if (bestMatch.rating) {
+                        console.log('Unknown command: %s', command);
+                        console.log('Did you mean?\n\t', this._name.split('-').join(' '), bestMatch.target);
+                    } else {
+                        this.help();
+                    }
                 }
             });
     };
