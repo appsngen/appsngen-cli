@@ -10,8 +10,8 @@
 
     var platforms, options, option;
     var commandOptions = ''; // options passed to phonegap build command
-    var rcFilePath = path.join(process.cwd(), '/.appsngenrc');
-    var rcConfig = jsonfile.readFileSync(rcFilePath);
+    var rcFilePath = path.join(process.cwd(), '.appsngenrc');
+    var rcConfig = jsonfile.readFileSync(rcFilePath); // add processing in case of rc file absence
 
     program
         .option('--android', 'Build for android platform')
@@ -24,21 +24,18 @@
 
     options = program.opts();
     platforms = phonegapcontroller.parsePlatforms(options);
-    if (platforms.length === 0) {
-        platforms = ['browser'];
-    }
-    platforms = platforms || ['browser'];
+    platforms = platforms.length ? platforms : ['browser'];
     execSync('npm run grunt', {
         stdio: 'inherit'
     });
     uploadcontroller
         .uploadWidget(rcConfig)
         .then(function() {
-            rcConfig = jsonfile.readFileSync(rcFilePath);
             if (typeof rcConfig.phonegap === 'undefined') {
-                phonegapcontroller.create();
-                rcConfig = jsonfile.readFileSync(rcFilePath);
+                return phonegapcontroller.create();
             }
+        })
+        .then(function () {
             phonegapcontroller.modify();
             for (option in options) {
                 if (options[option]) {

@@ -1,7 +1,7 @@
 (function () {
     'use strict';
 
-    var execSync = require('child_process').execSync;
+    var childProcess = require('child_process');
     var path = require('path');
     var fs = require('fs');
     var fsExtra = require('fs-extra');
@@ -52,23 +52,29 @@
             helper.checkSystemConfiguration();
             console.log('Check completed successfully.');
             return Promise.resolve();
+        }, function (rejectReason) {
+            console.log('ERROR: ', rejectReason);
+            process.exit(1);
         })
         .then(function generateProject() {
             fsExtra.mkdirsSync(widgetPath);
-            execSync('npm run yo appsngen-web-widget "' + path.resolve(widgetPath) + '" "' + widgetName + '"', {
-                cwd: path.join(__dirname, '..'),
-                stdio: 'inherit'
-            });
+            childProcess.execSync('npm run yo appsngen-web-widget "' + path.resolve(widgetPath) +
+                '" "' + widgetName + '"', {
+                    cwd: path.join(__dirname, '..'),
+                    stdio: 'inherit'
+                });
         })
         .then(function buildProject() {
             registrycontroller.addWidget(widgetName, widgetPath);
-            execSync('appsngen widget build "' + widgetName + '"', {
+            childProcess.execSync('appsngen widget build "' + widgetName + '"', {
                 stdio: 'inherit'
             });
         })
         .catch(function () {
             fsExtra.removeSync(widgetPath);
-            console.error('Unexpected behavior: generation fail.');
-            process.exit(1);
+            childProcess.exec('appsngen widget list remove ' + widgetName, function (){
+                console.error('Unexpected behavior: generation fail.');
+                process.exit(1);
+            });
         });
 })();

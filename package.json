@@ -1,6 +1,6 @@
 {
   "name": "appsngen-cli",
-  "version": "0.1.9",
+  "version": "0.1.10",
   "description": "Command Line Interface to interact with AppsNgen API",
   "scripts": {
     "test": "grunt nodeunit",
@@ -31,13 +31,13 @@
   "dependencies": {
     "appsngen-dev-box": "2.0.12",
     "appsngen-widget-upload": "0.0.2",
-    "appsngen-phonegap-integration": "0.0.1",
+    "appsngen-phonegap-integration": "0.0.17",
     "archiver": "1.0.0",
     "bluebird": "3.3.4",
     "commander": "2.9.0",
     "easy-table": "1.0.0",
     "fs-extra": "0.26.6",
-    "generator-appsngen-web-widget": "0.3.11",
+    "generator-appsngen-web-widget": "0.3.12",
     "jsonfile": "2.2.3",
     "jscs": "3.0.3",
     "jshint": "2.9.2",

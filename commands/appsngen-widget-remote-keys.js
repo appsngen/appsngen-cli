@@ -10,7 +10,7 @@
     helper.checkPhonegapAuthorization(); // will terminate process if not authorized
     accessToken = helper.getPhonegapCredentials().access_token;
 
-    phonegapIntegration.getKeys(accessToken, function (error, keys) {
+    phonegapIntegration.getKeys('', accessToken, function (error, keys) {
         var table;
 
         if (error) {
