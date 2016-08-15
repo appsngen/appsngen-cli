@@ -114,13 +114,20 @@
 
     if (!program.noupload) {
         phonegapIntegration.generatePhonegapZipPackage(path.join('.', 'phonegap'), archivePath, function (error) {
+            var updateOptions;
+
             if (error) {
                 console.error(error.toString());
                 process.exit(1);
             }
 
-            phonegapIntegration.updatePhonegapApp(widgetPhonegapId, phonegapAccessToken,
-                archivePath, updateCallback);
+            updateOptions = {
+                applicationId: widgetPhonegapId,
+                accessToken: phonegapAccessToken,
+                packagePath: archivePath,
+                keysObject: null
+            };
+            phonegapIntegration.updatePhonegapApp(updateOptions, updateCallback);
         });
     } else {
         startBuild();
