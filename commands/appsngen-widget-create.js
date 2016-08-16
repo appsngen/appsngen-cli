@@ -9,6 +9,7 @@
     var helper = require('./../src/clihelper');
     var registrycontroller = require('./../src/registrycontroller');
     var Promise = require('bluebird').Promise;
+    var exec = Promise.promisify(childProcess.exec);
 
     var widgetName, widgetPath;
 
@@ -48,29 +49,42 @@
         .validateWidgetName(widgetName)
         .then(function () {
             console.log('Check system configuration.');
-            // will terminate the process in case of failure
-            helper.checkSystemConfiguration();
-            console.log('Check completed successfully.');
-            return Promise.resolve();
+            helper.startLoadingIndicator();
+            return helper.checkSystemConfiguration(); // will terminate the process in case of failure
         }, function (rejectReason) {
             console.log('ERROR: ', rejectReason);
             process.exit(1);
         })
         .then(function generateProject() {
+            helper.stopLoadingIndicator();
+            console.log('Check completed successfully.');
             fsExtra.mkdirsSync(widgetPath);
-            childProcess.execSync('npm run yo appsngen-web-widget "' + path.resolve(widgetPath) +
-                '" "' + widgetName + '"', {
-                    cwd: path.join(__dirname, '..'),
-                    stdio: 'inherit'
-                });
+            try {
+                childProcess.execSync('npm run yo appsngen-web-widget "' + path.resolve(widgetPath) +
+                    '" "' + widgetName + '"', {
+                        cwd: path.join(__dirname, '..'),
+                        stdio: 'inherit'
+                    });
+                return Promise.resolve();
+            } catch (error) {
+                return Promise.reject(error);
+            }
         })
         .then(function buildProject() {
             registrycontroller.addWidget(widgetName, widgetPath);
-            childProcess.execSync('appsngen widget build "' + widgetName + '"', {
-                stdio: 'inherit'
-            });
+            console.log('Start building process.');
+            helper.startLoadingIndicator();
+            return exec('appsngen widget build "' + widgetName + '"');
         })
-        .catch(function () {
+        .then(function () {
+            helper.stopLoadingIndicator();
+            console.log('Building process completed successfully.' +
+                '\n\nWidget generation completed successfully.');
+        })
+        .catch(function (error) {
+            if (typeof error === 'string') {
+                console.error('ERROR:', error);
+            }
             fsExtra.removeSync(widgetPath);
             childProcess.exec('appsngen widget list remove ' + widgetName, function (){
                 console.error('Unexpected behavior: generation fail.');
