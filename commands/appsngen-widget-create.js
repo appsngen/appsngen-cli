@@ -8,8 +8,11 @@
     var program = require('./../src/customcommander');
     var helper = require('./../src/clihelper');
     var registrycontroller = require('./../src/registrycontroller');
+    var phonegapcontroller = require('./../src/phonegapcontroller');
+    var uploadcontroller = require('./../src/uploadcontroller');
     var Promise = require('bluebird').Promise;
     var exec = Promise.promisify(childProcess.exec);
+    var readFile = Promise.promisify(require('jsonfile').readFile);
 
     var widgetName, widgetPath;
 
@@ -45,10 +48,14 @@
         }
     }
 
+    console.log('Checking widget name.');
+    helper.startLoadingIndicator();
     helper
         .validateWidgetName(widgetName)
         .then(function () {
-            console.log('Check system configuration.');
+            helper.stopLoadingIndicator();
+            console.log('Check completed successfully.');
+            console.log('Checking system configuration.');
             helper.startLoadingIndicator();
             return helper.checkSystemConfiguration(); // will terminate the process in case of failure
         }, function (rejectReason) {
@@ -65,10 +72,20 @@
                         cwd: path.join(__dirname, '..'),
                         stdio: 'inherit'
                     });
+                process.chdir(widgetPath);
                 return Promise.resolve();
             } catch (error) {
                 return Promise.reject(error);
             }
+        })
+        .then(function () {
+            return readFile(path.join(widgetPath, '.appsngenrc'));
+        })
+        .then(function (config) {
+            return uploadcontroller.uploadWidget(config);
+        })
+        .then(function () {
+            return phonegapcontroller.create();
         })
         .then(function buildProject() {
             registrycontroller.addWidget(widgetName, widgetPath);

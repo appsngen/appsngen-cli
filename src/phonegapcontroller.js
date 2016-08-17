@@ -30,11 +30,6 @@
                         if (error) {
                             reject(error);
                         } else {
-                            rcConfig = jsonfile.readFileSync(rcFilePath);
-                            rcConfig.phonegap = true;
-                            jsonfile.writeFileSync(rcFilePath, rcConfig, {
-                                spaces: 4
-                            });
                             resolve();
                         }
                     });
@@ -54,13 +49,14 @@
             packagePath: path.join(process.cwd(), 'phonegap')
         };
 
-        phonegapIntegration.setIntegration(options, function (error) {
-            if (error) {
-                console.error(error.toString());
-                process.exit(1);
-            }
-
-            console.log('PhoneGap package successfully prepared.');
+        return new Promise(function (resolve, reject) {
+            phonegapIntegration.setIntegration(options, function (error) {
+                if (error) {
+                    reject(error);
+                    return;
+                }
+                resolve();
+            });
         });
     };
 
