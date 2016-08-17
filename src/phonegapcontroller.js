@@ -21,7 +21,7 @@
 
     exports.create = function () {
         return new Promise(function (resolve, reject) {
-            var packageConfig, rcConfig;
+            var packageConfig;
 
             try {
                 packageConfig = jsonfile.readFileSync(path.join(process.cwd(), 'package.json'));
