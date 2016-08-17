@@ -2,6 +2,7 @@ var program = require('./../src/customcommander');
 var helper = require('./../src/clihelper');
 
 helper.normalizePathToCurrentFile();
+helper.addHelpForInvalidCommand(program);
 
 program
     .alias('appsngen phonegap')

@@ -9,12 +9,13 @@ var ADDRESSABLE_COMMANDS = [
 ];
 var callWithName;
 
-helper.checkAppsngenAuthorization(); //will terminate process in case of authorization fail
+helper.addHelpForInvalidCommand(program);
+helper.checkAppsngenAuthorization(); // will terminate process in case of authorization fail
 
 try {
     if (ADDRESSABLE_COMMANDS.indexOf(process.argv[2]) !== -1) {
         callWithName = process.argv.length >= 4 &&
-            process.argv[3].indexOf('-') !== 0; //check 4th argument isn't option
+            process.argv[3].indexOf('-') !== 0; // check 4th argument isn't option
         if (callWithName) {
             helper.workByWidgetName(process.argv[3]);
         } else if (!helper.isProjectFolder('.')) {

@@ -5,6 +5,7 @@
     var path = require('path');
     var request = require('request');
     var jsonfile = require('jsonfile');
+    var stringSimilarity = require('string-similarity');
     var Promise = require('bluebird').Promise;
     var exec = Promise.promisify(childProcess.exec);
     var post = Promise.promisify(request.post);
@@ -191,5 +192,31 @@
         }
         console.error('No widgets registered in ' + widgetPath);
         process.exit(1);
+    };
+
+    exports.addHelpForInvalidCommand = function (commander) {
+        commander
+            .command('*', 'unknow command', {noHelp: true})
+            .action(function (command) {
+                var commandName;
+                var bestMatch;
+                var commandNames = [];
+
+                if (!this._execs[command] && !this.defaultExecutable) {
+                    for (commandName in this._execs) {
+                        if (this._execs.hasOwnProperty(commandName) && commandName !== '*') {
+                            commandNames.push(commandName);
+                        }
+                    }
+                    bestMatch = stringSimilarity.findBestMatch(command, commandNames).bestMatch;
+
+                    if (bestMatch.rating >= 0.5) {
+                        console.log('Unknown command: %s', command);
+                        console.log('Did you mean?\n\t', this._name.split('-').join(' '), bestMatch.target);
+                    } else {
+                        this.help();
+                    }
+                }
+            });
     };
 })();
