@@ -18,13 +18,13 @@
     var rcFilePath = path.join(process.cwd(), '.appsngenrc');
 
     program
-        .option('--android', 'Build for android platform')
-        .option('--ios', 'Build for ios platform')
-        .option('--browser', 'Build for browser')
-        .option('--release', 'Deploy a release build')
-        .option('--browserify', 'Compile plugin JS at build time using browserify instead of runtime')
+        .option('--android', 'Build for android platform.')
+        .option('--ios', 'Build for ios platform.')
+        .option('--browser', 'Build for browser.')
+        .option('--release', 'Deploy a release build.')
+        .option('--browserify', 'Compile plugin JS at build time using browserify instead of runtime.')
         .option('--buildConfig <configFile>', 'Use the specified build configuration file.')
-        .option('--verbose', 'Logs all outputs from all actions')
+        .option('--verbose', 'Logs all outputs from all actions.')
         .parse(process.argv);
 
     options = program.opts();
