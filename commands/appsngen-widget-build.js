@@ -82,7 +82,11 @@
             console.log('PhoneGap application successfully built.');
         })
         .catch(function (error) {
-            console.error(error.toString());
+            if (verboseCall) {
+                console.error(error.toString());
+            } else {
+                console.error('\nError: build failed. Try run with --verbose for more information.');
+            }
             process.exit(1);
         });
 })();
