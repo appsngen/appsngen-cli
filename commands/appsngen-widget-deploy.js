@@ -32,7 +32,7 @@
                     console.error('Connection error: Unable to access %s', config.serviceAddress);
                     break;
                 default:
-                    console.error(error.toString());
+                    console.error('Error: unable to deploy widget. Please try again later.');
             }
             process.exit(1);
         });
