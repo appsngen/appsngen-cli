@@ -12,7 +12,7 @@
     var readFile = Promise.promisify(jsonfile.readFile);
 
     var rcConfig;
-    var rcConfigPath = path.join(process.cwd(), './.appsngenrc');
+    var rcConfigPath = path.join(process.cwd(), '.appsngenrc');
 
     readFile(rcConfigPath)
         .then(function (configData) {

@@ -72,15 +72,13 @@
         })
         .then(function (stdout) {
             if (!program.nobuild) {
-                helper.stopLoadingIndicator();
                 if (verboseCall) {
                     console.log(stdout);
                 }
-                console.log('Build completed.');
+                console.log('\b\rBuild completed.');
             }
 
-            console.log('Start running application.');
-            helper.startLoadingIndicator();
+            console.log('\b\rStart running application.');
             return exec('npm run phonegap-manipulation run ' + platforms.join(' ') +
                 (runArgs ? ' -- ' + runArgs : ''), {
                     cwd: phonegapPath

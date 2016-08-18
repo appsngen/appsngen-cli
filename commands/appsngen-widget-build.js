@@ -39,26 +39,22 @@
     helper.startLoadingIndicator();
     exec('npm run grunt')
         .then(function (stdout) {
-            helper.stopLoadingIndicator();
             if (verboseCall) {
                 console.log(stdout);
             }
-            console.log('Widget package successfully prepared.');
+            console.log('\b\rWidget package successfully prepared.');
         })
         .then(function () {
             return readFile(rcFilePath);
         })
         .then(function (config) {
             rcConfig = config;
-            console.log('Uploading widget package.');
-            helper.startLoadingIndicator();
+            console.log('\b\rUploading widget package.');
             return uploadcontroller.uploadWidget(rcConfig);
         })
         .then(function() {
-            helper.stopLoadingIndicator();
-            console.log('Widget package successfully uploaded.');
-            console.log('Building PhonaGap application.');
-            helper.startLoadingIndicator();
+            console.log('\b\rWidget package successfully uploaded.');
+            console.log('\b\rBuilding PhonaGap application.');
             return phonegapcontroller.modify();
         })
         .then(function () {
