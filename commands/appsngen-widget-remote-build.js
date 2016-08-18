@@ -13,16 +13,7 @@
 
     var checkBuildStatus = function (url, statusUrl, platforms) {
         var indicatorId;
-        var elapsedTime = 0;
-        var indicatorSymbolInd = 0;
         var statusCheckInterval = 6000; // ms
-        var animationInterval = 100; // ms
-        var waitSymbols = [
-            '-',
-            '\\',
-            '|',
-            '/'
-        ];
 
         if (platforms === 'all') {
             platforms = phonegapIntegration.SUPPORTED_PLATFORMS;
@@ -31,31 +22,26 @@
         }
 
         indicatorId = setInterval(function () {
-            process.stdout.write('\b\r' + waitSymbols[indicatorSymbolInd++ % 4]);
-            elapsedTime += animationInterval;
+            request(url, function (error, response) {
+                var body, isEveryPlatformBuilded;
 
-            if (elapsedTime >= statusCheckInterval) {
-                request(url, function (error, response) {
-                    var body, isEveryPlatformBuilded;
+                if (error) {
+                    console.error('\b\rError: unable to check build status.');
+                    process.exit(1);
+                }
 
-                    if (error) {
-                        console.error(error.toString());
-                        process.exit(1);
-                    }
-
-                    body = JSON.parse(response.body);
-                    isEveryPlatformBuilded = platforms.every(function (platform) {
-                        return body.status[platform] !== 'pending';
-                    });
-                    if (isEveryPlatformBuilded) {
-                        clearInterval(indicatorId);
-                        console.log('\rBuild finished.');
-                        console.log('Check status at: ' + statusUrl);
-                    }
+                body = JSON.parse(response.body);
+                isEveryPlatformBuilded = platforms.every(function (platform) {
+                    return body.status[platform] !== 'pending';
                 });
-                elapsedTime = 0;
-            }
-        }, animationInterval);
+                if (isEveryPlatformBuilded) {
+                    clearInterval(indicatorId);
+                    helper.stopLoadingIndicator();
+                    console.log('\rBuild completed successfully.');
+                    console.log('Check status at: ' + statusUrl);
+                }
+            });
+        }, statusCheckInterval);
     };
     var startBuild = function () {
         var platform = 'all';
@@ -63,32 +49,29 @@
         var statusUrl = 'https://build.phonegap.com/apps/' + widgetPhonegapId;
 
         if (program.platform) {
-            if (phonegapIntegration.SUPPORTED_PLATFORMS.indexOf(program.platform) !== -1) {
-                platform = program.platform;
-            } else {
-                console.error('Unsupported platform: ' + program.platform);
-                process.exit(1);
-            }
+            platform = program.platform;
         }
         checkUrl += '?access_token=' + phonegapAccessToken;
 
+        console.log('\b\rStarting build at PhoneGap.');
         phonegapIntegration.buildPhonegapApp(widgetPhonegapId, platform, phonegapAccessToken,
             function (error) {
                 if (error) {
-                    console.error(error.toString());
+                    console.error('\b\rError: unable to start build application at PhoneGap.');
                     process.exit(1);
                 }
 
+                console.log('\b\rBuild successfully started.');
                 checkBuildStatus(checkUrl, statusUrl, platform);
             });
     };
     var updateCallback = function (error) {
         fs.unlink(archivePath);
         if (error) {
-            console.error(error.toString());
+            console.error('\b\rError: unable to update application at PhoneGap.');
             process.exit(1);
         }
-
+        console.log('\b\rUpdate completed successfully.');
         startBuild();
     };
 
@@ -99,7 +82,15 @@
         .action(function (name) {
             widgetName = name;
         })
+        .on('--help', function () {
+            console.log('Supported platforms: \n\t' + phonegapIntegration.SUPPORTED_PLATFORMS.join('\n\t'));
+        })
         .parse(process.argv);
+
+    if (program.platform && phonegapIntegration.SUPPORTED_PLATFORMS.indexOf(program.platform) === -1) {
+        console.error('\b\rUnsupported platform: ' + program.platform);
+        program.help(); // call process.exit after printing help
+    }
 
     helper.workByWidgetName(widgetName);
     helper.checkPhonegapAuthorization(); // will terminate process if not authorized
@@ -112,12 +103,14 @@
     widgetPhonegapId = helper.getWidgetPhonegapId(widgetName); // will terminate process if doesn't have id
     archivePath = phonegapcontroller.getArchivePath(process.cwd());
 
+    helper.startLoadingIndicator();
     if (!program.noupload) {
+        console.log('\b\rStart generating archive.');
         phonegapIntegration.generatePhonegapZipPackage(path.join('.', 'phonegap'), archivePath, function (error) {
             var updateOptions;
 
             if (error) {
-                console.error(error.toString());
+                console.error('\b\rError: unable to generate archive for updating application.');
                 process.exit(1);
             }
 
@@ -127,6 +120,8 @@
                 packagePath: archivePath,
                 keysObject: null
             };
+            console.log('\b\rGeneration completed successfully.');
+            console.log('\b\rUpdating application at PhoneGap.');
             phonegapIntegration.updatePhonegapApp(updateOptions, updateCallback);
         });
     } else {
