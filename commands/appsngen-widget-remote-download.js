@@ -65,7 +65,7 @@
     phonegapIntegration.getDownloadLink(widgetPhonegapId, platform, phonegapCredentials.access_token,
         function (error, location) {
             if (error) {
-                console.error(error.toString());
+                console.error('Error: unable to download application. Please try again later.');
                 process.exit(1);
             }
 

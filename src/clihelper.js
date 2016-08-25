@@ -1,18 +1,45 @@
 (function () {
     'use strict';
 
+    var childProcess = require('child_process');
     var path = require('path');
     var request = require('request');
     var jsonfile = require('jsonfile');
     var stringSimilarity = require('string-similarity');
-    var execSync = require('child_process').execSync;
     var Promise = require('bluebird').Promise;
+    var exec = Promise.promisify(childProcess.exec);
     var post = Promise.promisify(request.post);
     var statSync = require('fs').statSync;
     var config = require('./../cli-config.json');
     var authcontroller = require('./authcontroller');
     var registrycontroller = require('./registrycontroller');
     var _s = require('underscore.string');
+
+    var indicatorId;
+
+    exports.startLoadingIndicator = function () {
+        var indicatorSymbolInd = 0;
+        var animationInterval = 75; // ms
+        var waitSymbols = [
+            '-',
+            '\\',
+            '|',
+            '/'
+        ];
+
+        if (!indicatorId) {
+            indicatorId = setInterval(function () {
+                indicatorSymbolInd = ++indicatorSymbolInd % 4;
+                process.stdout.write('\b\r' + waitSymbols[indicatorSymbolInd]);
+            }, animationInterval);
+        }
+    };
+
+    exports.stopLoadingIndicator = function () {
+        clearInterval(indicatorId);
+        process.stdout.write('\b\r');
+        indicatorId = 0;
+    };
 
     // add file extension to current file in this extension not exists
     exports.normalizePathToCurrentFile = function () {
@@ -28,7 +55,7 @@
         var widgetId = _s.slugify(widgetName);
 
         return authcontroller.getWidgetAccessToken()
-            .then(function (response) {
+            .then(function validateWidgetNameUsingRestServices(response) {
                 return post(config.serviceAddress + '/rest-services/widgets/is-valid', {
                     body: {
                         name: widgetName,
@@ -67,29 +94,28 @@
         var systemInfo, generatorInfo, generatorRequirements;
         var command = 'npm ls -g --json generator-appsngen-web-widget';
 
-        try {
-            systemInfo = execSync(command).toString();
-        } catch (error) {
-            if (error.cmd === command) {
-                // no generator installed in system configuration acceptable
-                return;
-            } else {
-                console.error(error.toString());
-                process.exit(1);
-            }
-        }
-        systemInfo = JSON.parse(systemInfo);
-        generatorInfo = systemInfo.dependencies['generator-appsngen-web-widget'];
-        generatorRequirements = (jsonfile.readFileSync(path.join(__dirname, '..', 'package.json')))
-                .dependencies['generator-appsngen-web-widget'];
+        return exec(command).then(function processSystemConfigurationInformation(stdout) {
+            systemInfo = JSON.parse(stdout);
+            generatorInfo = systemInfo.dependencies['generator-appsngen-web-widget'];
+            generatorRequirements = (jsonfile.readFileSync(path.join(__dirname, '..', 'package.json')))
+                    .dependencies['generator-appsngen-web-widget'];
 
-        if (generatorInfo && generatorInfo.version !== generatorRequirements) {
-            console.error('Generating aborted.\n' +
-                          'You have globally installed old version of generator-appsngen-web-widget\n' +
-                          'For correct work of appsngen-cli you should either delete global generator, \n' +
-                          'or update generator to version ' + generatorRequirements);
-            process.exit(1);
-        }
+            if (generatorInfo && generatorInfo.version !== generatorRequirements) {
+                return Promise.reject('Generating aborted.\n' +
+                              'You have globally installed old version of generator-appsngen-web-widget\n' +
+                              'For correct work of appsngen-cli you should either delete global generator, \n' +
+                              'or update generator to version ' + generatorRequirements);
+            } else {
+                return Promise.resolve();
+            }
+        }, function (error) {
+            if (error.cmd.indexOf(command) >= 0) {
+                // no generator installed in system configuration acceptable
+                return Promise.resolve();
+            } else {
+                return Promise.reject(error);
+            }
+        });
     };
 
     exports.workByWidgetName = function (name) {
@@ -130,7 +156,7 @@
     exports.checkAppsngenAuthorization = function () {
         try {
             if (!authcontroller.isAuthorized()) {
-                execSync('appsngen login', {
+                childProcess.execSync('appsngen login', {
                     stdio: 'inherit'
                 });
             }

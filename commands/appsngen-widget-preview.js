@@ -10,30 +10,34 @@
     var child_process = require('child_process');
     var open = require('open');
 
-    var devboxConfig, projectConfig, archiveName;
+    var devboxConfig;
+    var projectConfig;
+    var archiveName;
+    var devBoxProcess;
+    var devBoxAddress;
     var devboxPath = path.dirname(require.resolve('appsngen-dev-box'));
     var devboxCachePath = path.join(devboxPath, 'views', 'config.json');
-    var devboxConfigPath = path.join(devboxPath, '/serverConfig.json');
-    var errorHandler = function(error) {
-        console.error(error.toString());
+    var devboxConfigPath = path.join(devboxPath, 'serverConfig.json');
+    var errorHandler = function() {
+        console.error('Unexpected error. Command aborted.');
         process.exit(1);
     };
 
     try {
         devboxConfig = jsonfile.readFileSync(devboxConfigPath);
-        projectConfig = jsonfile.readFileSync('./.appsngenrc');
+        projectConfig = jsonfile.readFileSync(path.join('.', '.appsngenrc'));
     } catch (error) {
-        errorHandler(error);
+        errorHandler();
     }
 
     archiveName = path.basename(projectConfig.zipFilePath);
     fsExt.remove(path.join(devboxPath, '/widgets'), function(error) {
         if (error) {
-            errorHandler(error);
+            errorHandler();
         }
-        fs.mkdirSync(path.join(devboxPath, '/widgets'));
-        fsExt.copySync(path.resolve(projectConfig.zipFilePath), path.join(devboxPath, '/widgets/', archiveName));
-        devboxConfig.widgets = [path.join('/widgets/', archiveName)];
+        fs.mkdirSync(path.join(devboxPath, 'widgets'));
+        fsExt.copySync(path.resolve(projectConfig.zipFilePath), path.join(devboxPath, 'widgets', archiveName));
+        devboxConfig.widgets = [path.join('widgets', archiveName)];
         jsonfile.writeFileSync(devboxConfigPath, devboxConfig, {
             spaces: 4
         });
@@ -43,14 +47,22 @@
             }
         } catch (err) {
             if (err.code !== 'ENOENT') {
-                errorHandler(err);
+                errorHandler();
             }
         }
-        child_process.fork('server.js', {
-            cwd: devboxPath
+        console.log('Starting DevBox ...');
+        devBoxProcess = child_process.fork('server.js', {
+            cwd: devboxPath,
+            silent: true
         });
-        open(devboxConfig.viewerProtocol + '://' + devboxConfig.devBoxHost + ':' + devboxConfig.devBoxPort +
-        '/views/index.html');
-        console.log('CTRL + C to shutdown dev-box server');
+        devBoxProcess.on('message', function (message) {
+            if (message === 'started') {
+                devBoxAddress = devboxConfig.viewerProtocol + '://' + devboxConfig.devBoxHost + ':' +
+                    devboxConfig.devBoxPort + '/views/index.html';
+                console.log('DevBox successfully started at %s', devBoxAddress);
+                open(devBoxAddress);
+                console.log('CTRL + C to shutdown dev-box server');
+            }
+        });
     });
 })();

@@ -8,7 +8,11 @@
     var program = require('./../src/customcommander');
     var helper = require('./../src/clihelper');
     var registrycontroller = require('./../src/registrycontroller');
+    var phonegapcontroller = require('./../src/phonegapcontroller');
+    var uploadcontroller = require('./../src/uploadcontroller');
     var Promise = require('bluebird').Promise;
+    var exec = Promise.promisify(childProcess.exec);
+    var readFile = Promise.promisify(require('jsonfile').readFile);
 
     var widgetName, widgetPath;
 
@@ -44,33 +48,56 @@
         }
     }
 
+    console.log('Checking widget name.');
+    helper.startLoadingIndicator();
     helper
         .validateWidgetName(widgetName)
-        .then(function () {
-            console.log('Check system configuration.');
-            // will terminate the process in case of failure
-            helper.checkSystemConfiguration();
-            console.log('Check completed successfully.');
-            return Promise.resolve();
+        .then(function validateSystemConfiguration() {
+            console.log('\b\rCheck completed successfully.');
+            console.log('\b\rValidate system configuration.');
+            return helper.checkSystemConfiguration(); // will terminate the process in case of failure
         }, function (rejectReason) {
             console.log('ERROR: ', rejectReason);
             process.exit(1);
         })
         .then(function generateProject() {
+            console.log('\b\rValidation completed successfully.');
             fsExtra.mkdirsSync(widgetPath);
-            childProcess.execSync('npm run yo appsngen-web-widget "' + path.resolve(widgetPath) +
-                '" "' + widgetName + '"', {
-                    cwd: path.join(__dirname, '..'),
-                    stdio: 'inherit'
-                });
+            try {
+                childProcess.execSync('npm run yo appsngen-web-widget "' + path.resolve(widgetPath) +
+                    '" "' + widgetName + '"', {
+                        cwd: path.join(__dirname, '..'),
+                        stdio: 'inherit'
+                    });
+                process.chdir(widgetPath);
+                return Promise.resolve();
+            } catch (error) {
+                return Promise.reject(error);
+            }
+        })
+        .then(function readConfigFile() {
+            return readFile(path.join(widgetPath, '.appsngenrc'));
+        })
+        .then(function uploadWidget(config) {
+            return uploadcontroller.uploadWidget(config);
+        })
+        .then(function createPhonegapProject() {
+            return phonegapcontroller.create();
         })
         .then(function buildProject() {
             registrycontroller.addWidget(widgetName, widgetPath);
-            childProcess.execSync('appsngen widget build "' + widgetName + '"', {
-                stdio: 'inherit'
-            });
+            console.log('\b\rStart building process.');
+            return exec('appsngen widget build "' + widgetName + '"');
         })
-        .catch(function () {
+        .then(function () {
+            helper.stopLoadingIndicator();
+            console.log('Building process completed successfully.' +
+                '\n\nWidget generation completed successfully.');
+        })
+        .catch(function (error) {
+            if (typeof error === 'string') {
+                console.error('ERROR:', error);
+            }
             fsExtra.removeSync(widgetPath);
             childProcess.exec('appsngen widget list remove ' + widgetName, function (){
                 console.error('Unexpected behavior: generation fail.');

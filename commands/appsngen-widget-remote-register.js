@@ -42,19 +42,31 @@
 
     archivePath = phonegapcontroller.getArchivePath(process.cwd());
 
+    console.log('Generating archive for registration.');
+    helper.startLoadingIndicator();
     generatePhonegapZipPackage(path.join('.', 'phonegap'), archivePath)
-        .then(function () {
+        .then(function registerPhonegapApplication() {
+            console.log('\b\rGeneration completed successfully.');
+            console.log('\b\rRegistring application to PhoneGap.');
             return registerPhonegapApp('temp', phonegapCredentials.access_token, archivePath, keys);
+        }, function () {
+            console.error('\b\rUnable to generate archive for registration.');
+            return Promise.reject();
         })
-        .then(function (info) {
+        .then(function storeInfoToRegistry(info) {
             var widgetsList = registrycontroller.getWidgetsList();
 
             widgetsList[widgetName].phonegapId = info.id;
             registrycontroller.updateWidgetsList(widgetsList);
-            console.log('Upload success.\n' + 'id: ' + info.id + ' title: ' + info.title);
+            helper.stopLoadingIndicator();
+            console.log('\b\rRegistration completed successfully.\n' + 'id: ' + info.id + ' title: ' + info.title);
+        }, function (reason) {
+            console.error('\b\rUnable to register widget at PhoneGap.');
+            console.error('\nError:', reason.message);
+            return Promise.reject();
         })
-        .catch(function (error) {
-            console.error(error.toString());
+        .catch(function () {
+            console.error('\n Operation aborted.');
             process.exit(1);
         })
         .finally(function () {

@@ -14,7 +14,7 @@
         var table;
 
         if (error) {
-            console.error(error.toString());
+            console.error('Error: unable to get siging key. Please try again later.');
             process.exit(1);
         }
 
