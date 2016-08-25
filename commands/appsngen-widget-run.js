@@ -104,7 +104,9 @@
                 console.log('\b\rBuild completed.');
             }
 
-            console.log('\b\rStart running application.');
+            console.log('\b\rStart running application.' +
+                        '\n Server running at http://localhost:' + port +
+                        '\n CTRL + C to shutdown server.');
             return exec('npm run phonegap-manipulation run ' + platforms.join(' ') +
                 (runArgs ? ' -- ' + runArgs : ''), {
                     cwd: phonegapPath
