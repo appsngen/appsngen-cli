@@ -112,12 +112,6 @@
                     cwd: phonegapPath
                 });
         })
-        .then(function (stdout) {
-            helper.stopLoadingIndicator();
-            if (verboseCall) {
-                console.log(stdout);
-            }
-        })
         .catch(function (error) {
             if (verboseCall) {
                 console.error('Error: ' + error.toString());

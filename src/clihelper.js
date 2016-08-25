@@ -55,7 +55,7 @@
         var widgetId = _s.slugify(widgetName);
 
         return authcontroller.getWidgetAccessToken()
-            .then(function (response) {
+            .then(function validateWidgetNameUsingRestServices(response) {
                 return post(config.serviceAddress + '/rest-services/widgets/is-valid', {
                     body: {
                         name: widgetName,
@@ -94,7 +94,7 @@
         var systemInfo, generatorInfo, generatorRequirements;
         var command = 'npm ls -g --json generator-appsngen-web-widget';
 
-        return exec(command).then(function (stdout) {
+        return exec(command).then(function processSystemConfigurationInformation(stdout) {
             systemInfo = JSON.parse(stdout);
             generatorInfo = systemInfo.dependencies['generator-appsngen-web-widget'];
             generatorRequirements = (jsonfile.readFileSync(path.join(__dirname, '..', 'package.json')))

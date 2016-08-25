@@ -52,16 +52,16 @@
     helper.startLoadingIndicator();
     helper
         .validateWidgetName(widgetName)
-        .then(function () {
+        .then(function validateSystemConfiguration() {
             console.log('\b\rCheck completed successfully.');
-            console.log('\b\rChecking system configuration.');
+            console.log('\b\rValidate system configuration.');
             return helper.checkSystemConfiguration(); // will terminate the process in case of failure
         }, function (rejectReason) {
             console.log('ERROR: ', rejectReason);
             process.exit(1);
         })
         .then(function generateProject() {
-            console.log('\b\rCheck completed successfully.');
+            console.log('\b\rValidation completed successfully.');
             fsExtra.mkdirsSync(widgetPath);
             try {
                 childProcess.execSync('npm run yo appsngen-web-widget "' + path.resolve(widgetPath) +
