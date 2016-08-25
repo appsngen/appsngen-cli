@@ -82,7 +82,7 @@
                         }
 
                         // selected port in use
-                        console.error('\b\rError: port ' + port + ' in use.' +
+                        console.error('\nError: port ' + port + ' in use.' +
                                       '\nOperation aborted.');
                         process.exit(1);
                     })
