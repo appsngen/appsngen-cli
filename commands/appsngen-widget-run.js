@@ -82,8 +82,8 @@
                         }
 
                         // selected port in use
-                        console.error('\b\rError: port ' + port + ' in use.');
-                        console.error('\b\rOperation aborted.');
+                        console.error('\b\rError: port ' + port + ' in use.' +
+                                      '\nOperation aborted.');
                         process.exit(1);
                     })
                     .once('listening', function() {
