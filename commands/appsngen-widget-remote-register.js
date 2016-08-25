@@ -45,7 +45,7 @@
     console.log('Generating archive for registration.');
     helper.startLoadingIndicator();
     generatePhonegapZipPackage(path.join('.', 'phonegap'), archivePath)
-        .then(function () {
+        .then(function registerPhonegapApplication() {
             console.log('\b\rGeneration completed successfully.');
             console.log('\b\rRegistring application to PhoneGap.');
             return registerPhonegapApp('temp', phonegapCredentials.access_token, archivePath, keys);
@@ -53,7 +53,7 @@
             console.error('\b\rUnable to generate archive for registration.');
             return Promise.reject();
         })
-        .then(function (info) {
+        .then(function storeInfoToRegistry(info) {
             var widgetsList = registrycontroller.getWidgetsList();
 
             widgetsList[widgetName].phonegapId = info.id;

@@ -15,12 +15,12 @@
     var rcConfigPath = path.join(process.cwd(), '.appsngenrc');
 
     readFile(rcConfigPath)
-        .then(function (configData) {
+        .then(function uploadWidget(configData) {
             rcConfig = configData;
 
             return uploader.uploadWidget(rcConfig);
         })
-        .then(function (urn) {
+        .then(function openWidgetInBrowser(urn) {
             console.log('Upload success.');
             if (rcConfig.openInBrowserAfterUpload) {
                 open(config.serviceAddress + '/product/widgets/' + urn + '/config');

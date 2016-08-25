@@ -53,18 +53,15 @@
     helper
         .validateWidgetName(widgetName)
         .then(function () {
-            helper.stopLoadingIndicator();
-            console.log('Check completed successfully.');
-            console.log('Checking system configuration.');
-            helper.startLoadingIndicator();
+            console.log('\b\rCheck completed successfully.');
+            console.log('\b\rChecking system configuration.');
             return helper.checkSystemConfiguration(); // will terminate the process in case of failure
         }, function (rejectReason) {
             console.log('ERROR: ', rejectReason);
             process.exit(1);
         })
         .then(function generateProject() {
-            helper.stopLoadingIndicator();
-            console.log('Check completed successfully.');
+            console.log('\b\rCheck completed successfully.');
             fsExtra.mkdirsSync(widgetPath);
             try {
                 childProcess.execSync('npm run yo appsngen-web-widget "' + path.resolve(widgetPath) +
@@ -78,19 +75,18 @@
                 return Promise.reject(error);
             }
         })
-        .then(function () {
+        .then(function readConfigFile() {
             return readFile(path.join(widgetPath, '.appsngenrc'));
         })
-        .then(function (config) {
+        .then(function uploadWidget(config) {
             return uploadcontroller.uploadWidget(config);
         })
-        .then(function () {
+        .then(function createPhonegapProject() {
             return phonegapcontroller.create();
         })
         .then(function buildProject() {
             registrycontroller.addWidget(widgetName, widgetPath);
-            console.log('Start building process.');
-            helper.startLoadingIndicator();
+            console.log('\b\rStart building process.');
             return exec('appsngen widget build "' + widgetName + '"');
         })
         .then(function () {

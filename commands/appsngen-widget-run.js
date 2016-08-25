@@ -10,6 +10,7 @@
     var helper = require('./../src/clihelper');
 
     var platforms, options, option, tmpString;
+    var port;
     var verboseCall;
     var buildArgs = '';
     var runArgs = '';
@@ -51,13 +52,14 @@
     }
 
     readFile(path.join(process.cwd(), '.appsngenrc'))
-        .then(function (config) {
+        .then(function prepareRequiredResources(config) {
             // set default platform if no platforms passed
             if (platforms.length === 0) {
                 platforms = ['browser'];
             }
             if (platforms.indexOf('browser') !== -1) {
-                runArgs += [' -- --port=' + config.port];
+                port = config.port;
+                runArgs += [' -- --port=' + port];
             }
 
             // skip building phase if call with --nobuild flag
@@ -70,7 +72,31 @@
                 return Promise.resolve();
             }
         })
-        .then(function (stdout) {
+        .then(function checkPortStatus() {
+            return new Promise(function (resolve, reject) {
+                var net = require('net');
+                var tester = net.createServer()
+                    .once('error', function (error) {
+                        if (error.code !== 'EADDRINUSE') {
+                            reject(error);
+                        }
+
+                        // selected port in use
+                        console.error('\b\rError: port ' + port + ' in use.');
+                        console.error('\b\rOperation aborted.');
+                        process.exit(1);
+                    })
+                    .once('listening', function() {
+                        tester
+                            .once('close', function() {
+                                resolve();
+                            })
+                            .close();
+                    })
+                    .listen(port);
+            });
+        })
+        .then(function runPhonegapApplication(stdout) {
             if (!program.nobuild) {
                 if (verboseCall) {
                     console.log(stdout);
@@ -92,7 +118,7 @@
         })
         .catch(function (error) {
             if (verboseCall) {
-                console.error(error.toString());
+                console.error('Error: ' + error.toString());
             } else {
                 console.error('\nError: build failed. Try run with --verbose for more information.');
             }

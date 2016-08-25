@@ -38,26 +38,26 @@
     console.log('Start preparing widget package.');
     helper.startLoadingIndicator();
     exec('npm run grunt')
-        .then(function (stdout) {
+        .then(function logBuildInformation(stdout) {
             if (verboseCall) {
                 console.log(stdout);
             }
             console.log('\b\rWidget package successfully prepared.');
         })
-        .then(function () {
+        .then(function readConfigFile() {
             return readFile(rcFilePath);
         })
-        .then(function (config) {
+        .then(function uploadWidgetWithProvidedConfig(config) {
             rcConfig = config;
             console.log('\b\rUploading widget package.');
             return uploadcontroller.uploadWidget(rcConfig);
         })
-        .then(function() {
+        .then(function updatePhonegapApplication() {
             console.log('\b\rWidget package successfully uploaded.');
             console.log('\b\rBuilding PhonaGap application.');
             return phonegapcontroller.modify();
         })
-        .then(function () {
+        .then(function buildPhonegapApplication() {
             for (option in options) {
                 if (options[option]) {
                     if (typeof options[option] === 'boolean') {
@@ -70,7 +70,7 @@
             return exec('npm run phonegap-manipulation build ' + platforms.join(' ') +
                 (commandOptions ? ' -- ' + commandOptions: ''));
         })
-        .then(function (stdout) {
+        .then(function logPhonegapBuildInformation(stdout) {
             helper.stopLoadingIndicator();
             if (verboseCall) {
                 console.log(stdout);
