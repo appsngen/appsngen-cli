@@ -1,6 +1,6 @@
 {
   "name": "appsngen-cli",
-  "version": "0.1.12",
+  "version": "0.1.13",
   "description": "Command Line Interface to interact with AppsNgen API",
   "scripts": {
     "test": "grunt nodeunit",
@@ -37,7 +37,7 @@
     "commander": "2.9.0",
     "easy-table": "1.0.0",
     "fs-extra": "0.26.6",
-    "generator-appsngen-web-widget": "0.3.12",
+    "generator-appsngen-web-widget": "0.3.13",
     "jsonfile": "2.2.3",
     "jscs": "3.0.3",
     "jshint": "2.9.2",
