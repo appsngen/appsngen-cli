@@ -2,8 +2,9 @@
     'use strict';
 
     var program = require('./../src/customcommander');
+    var childProcess = require('child_process');
     var Promise = require('bluebird').Promise;
-    var exec = Promise.promisify(require('child_process').exec);
+    var exec = Promise.promisify(childProcess.exec);
     var readFile = Promise.promisify(require('jsonfile').readFile);
     var path = require('path');
     var phonegapcontroller = require('./../src/phonegapcontroller');
@@ -16,6 +17,20 @@
     var runArgs = '';
     var phonegapPath = path.join(process.cwd(), 'phonegap');
     var buildAcceptableArgs = ['release', 'browserify', 'buildConfig'];
+    var logTargets = function (requiredPlatforms) {
+        try {
+            childProcess.execSync('npm run phonegap-manipulation run ' +
+                requiredPlatforms.join(' ') + '-- -d --list', {
+                    stdio: 'inherit',
+                    cwd: phonegapPath
+                });
+            process.exit(0);
+        } catch (error) {
+            console.error('Unexpected behavior: unable to get information about available targets');
+            console.log(error);
+            process.exit(1);
+        }
+    };
 
     program
         .option('--android', 'Build for android platform.')
@@ -36,6 +51,11 @@
         options.verbose = null;
     }
     platforms = phonegapcontroller.parsePlatforms(options);
+
+    // run custom processing in case of passing '--list' option
+    if (options.list) {
+        logTargets(platforms);
+    }
 
     for (option in options) {
         if (options[option]) {
