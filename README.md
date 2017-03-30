@@ -18,47 +18,19 @@ Run in terminal `npm install -g appsngen-cli`(for Mac add `sudo`)
 
 `appsngen logout` - logout user from appsngen
 
-`appsngen phonegap access [authToken]` - recive access token to work with PhoneGap Build service.
-
-`appsngen widget create <name> [path]` - generate basic project structure with given name (if path is specified, then generate project at given path). 
-Constrains for widget name: 
+`appsngen widget create <name> [path]` - generate basic project structure with given name (if path is specified, then generate project at given path).
+Constrains for widget name:
 * max length is 50 characters
 * name shouldn't be empty (or consist only of whitespaces)
 * should consist of latin letters, numbers or secial characters: ".", "-", "_".
 * should be unique within organization
 
-`appsngen widget build [widget_name] [options]` - build native appliaction for the specified platform (default value: `browser`), if name is specified then run command in `widget_name` folder. 
- * `--ios, --android, --browser` - build application for ios, android and browser platform respectively
- * `--release` - build release version
- * `--browserify` - compile plugin JS at build time using browserify instead of runtime
- * `--buildConfig <pathToConfigFile>` - use the specified build configuration file.
-  
-`appsngen widget run [widget_name] [options]` - run widget at specified platforms (default value: `browser`), if name is specified then run command in `widget_name` folder. 
- * `--ios, --android, --browser` - build application for ios, android and browser platform respectively
- * `--list` - lists available targets
- * `--release` - build release version
- * `--nobuild` - skip building
- * `--browserify` - compile plugin JS at build time using browserify instead of runtime
- * `--target <targetDevice>` - deploy to specific target
- * `--buildConfig <pathToConfigFile>` - use the specified build configuration file.
+`appsngen widget build [widget_name] [options]` - build appsngen widget, if name is specified then run command in `widget_name` folder.
+ * `--verbose` - prints all logs in time of build.
 
-`appsngen widget preview [widget_name]` - preview widget locally in **dev-box**, if name is specified then run command in `widget_name` folder. 
+`appsngen widget preview [widget_name]` - preview widget locally in **dev-box**, if name is specified then run command in `widget_name` folder.
 
-`appsngen widget deploy [widget_name]` - deploy widget to *appsngen.com*, if name is specified then run command in `widget_name` folder. 
-
-> Supported platfroms for remote commands: `android`, `ios`
-
-`appsngen widget remote keys` - lists all available signing keys for all platforms
-
-`appsngen widget remote register [widget_name] [options]` - create new application at PhoneGap Build service, if `widget_name` specified then run command for widget with specified name.
-* `--key-ios <keyId>` - to sign application with specified ios signing key
-* `--key-android <keyId>` - to sign application with specified android signing key
- 
-`appsngen widget remote build [widget_name] [options]` - start build application for all platforms at PhoneGap Build, if `widget_name` specified then run command for widget with specified name.
-* `--noupload` - to skip uploading phase
-* `--platform <platform>` - start build for specific platform
-
-`appsngen widget remote download [widget_name] <platform>` - download application for specified platform, if `widget_name` specified then run command for widget with specified name.
+`appsngen widget deploy [widget_name]` - deploy widget to *appsngen.com*, if name is specified then run command in `widget_name` folder.
 
 `appsngen widget list` - print list of widgets
 

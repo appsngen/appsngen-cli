@@ -8,7 +8,6 @@
     var program = require('./../src/customcommander');
     var helper = require('./../src/clihelper');
     var registrycontroller = require('./../src/registrycontroller');
-    var phonegapcontroller = require('./../src/phonegapcontroller');
     var uploadcontroller = require('./../src/uploadcontroller');
     var Promise = require('bluebird').Promise;
     var exec = Promise.promisify(childProcess.exec);
@@ -80,9 +79,6 @@
         })
         .then(function uploadWidget(config) {
             return uploadcontroller.uploadWidget(config);
-        })
-        .then(function createPhonegapProject() {
-            return phonegapcontroller.create();
         })
         .then(function buildProject() {
             registrycontroller.addWidget(widgetName, widgetPath);

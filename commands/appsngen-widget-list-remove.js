@@ -9,8 +9,7 @@
     var widgetName;
     var widgetsList;
     var removeRegistryRecord = function (name) {
-        console.log('WARNING: widget package might remain at appsngen.com' +
-            (widgetsList[name].phonegapId ? ' and build.phonegap.com.': '.'));
+        console.log('WARNING: widget package might remain at appsngen.com');
         widgetsList[name] = undefined;
         registrycontroller.updateWidgetsList(widgetsList);
         console.log('Widget "' + name + '" was successfully deleted.');
